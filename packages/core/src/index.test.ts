@@ -7,6 +7,7 @@ describe("@plant-ai/core public API", () => {
     expect(Object.keys(core).sort()).toEqual([
       "Garden",
       "GardenService",
+      "checkDbConnection",
       "closeOrm",
       "createRequestScope",
       "entities",

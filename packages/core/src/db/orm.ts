@@ -28,3 +28,16 @@ export async function closeOrm(): Promise<void> {
     await (await orm).close();
   }
 }
+
+export type DbConnectionStatus = { ok: true } | { ok: false; reason: string };
+
+/** Readiness probe: runs a real query, since MikroORM 7 connects lazily. */
+export async function checkDbConnection(): Promise<DbConnectionStatus> {
+  try {
+    const orm = await getOrm();
+    await orm.em.fork().getConnection().execute("select 1");
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, reason: error instanceof Error ? error.message : String(error) };
+  }
+}
