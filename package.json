@@ -1,24 +1,23 @@
 {
-  "name": "workspace-app",
+  "name": "plant-ai",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "npm run dev -w @plant-ai/app --",
+    "build": "npm run build -w @plant-ai/app",
+    "start": "npm run start -w @plant-ai/app --",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:migrate": "npm run db:migrate -w @plant-ai/core",
+    "db:migrate:create": "npm run db:migrate:create -w @plant-ai/core --",
+    "db:migrate:down": "npm run db:migrate:down -w @plant-ai/core",
+    "ui:add": "npm run ui:add -w @plant-ai/ui --"
   },
-  "dependencies": {
-    "next": "16.3.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.4",
-    "typescript": "^5"
-  }
+  "type": "module"
 }
