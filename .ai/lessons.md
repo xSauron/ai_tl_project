@@ -21,6 +21,16 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-13 — Integration tests must boot the production build, not `next dev`
+- **Context:** Integration tests (Testcontainers Postgres + `agent-browser`) need a stable app instance to point the browser at.
+- **Lesson:** `next start` requires `npm run build` first; `tests/integration/support/app-server.ts` fails fast with a clear error if `.next/BUILD_ID` is missing, instead of falling back to `next dev` (which would test a different code path than what ships).
+- **Action:** CI's `integration` job always runs `npm run build` before `npm run test:integration`. Do the same locally before running the integration suite.
+
+### 2026-10-13 — No Docker in this sandbox
+- **Context:** `docker info` fails here, so the Testcontainers-backed integration suite can't be exercised locally in this environment.
+- **Lesson:** Unit tests, typecheck, lint and build all run without Docker and were verified locally (100 % coverage, all green). The integration suite is CI-only in this sandbox; it still needs a real pass in CI (or on a machine with Docker, or via `INTEGRATION_DATABASE_ADMIN_URL` against an existing Postgres) before trusting it beyond static review.
+- **Action:** When adding integration tests in this sandbox, review them carefully (support code, selectors, expected copy) since they can't be run here — then confirm green once CI runs.
+
 ### 2026-10-13 — Next 16: `export const dynamic = "force-dynamic"` is legacy
 - **Context:** The engineering standards required DB access only in `force-dynamic` routes/pages.
 - **Lesson:** Next 16 docs list `dynamic` (with `revalidate` and `fetchCache`) as previous-model options, removed when Cache Components is enabled.

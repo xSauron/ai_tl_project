@@ -175,9 +175,11 @@ New reusable components go here:
 
 ## Tests
 
+- **100 % unit test coverage is mandatory.** Every new feature, module, branch and function ships with unit tests that fully cover it — `npm test` enforces 100 % statements/branches/functions/lines over `packages/*/src/**` (`vitest.config.ts`) and CI's `unit` job fails the PR otherwise. There is no "add tests later": a PR that drops coverage below 100 % does not merge. The only exclusions are the ones explicitly listed in `vitest.config.ts`, each with a reason comment (e.g. generated migrations, exercised by integration tests instead) — don't add new ones to dodge the gate; write the test.
+- Colocate unit tests next to the source as `<name>.test.ts(x)`, so missing coverage is easy to spot in review.
 - Pure modules (`grid-rules.ts`, companion detection, `sowing-windows.ts`) get **table-driven unit tests first**, covering edges: bed borders, multi-cell crops, empty bed, crops with no frost dependency, Southern Hemisphere / late frost.
 - AI parsing is tested against malformed, partial and hostile output, grid-rule violations and unknown crops.
-- Integration tests cover a stale bed write (409) and double-applying a proposal (applied once).
+- Integration tests (`tests/integration/`, `npm run test:integration`) boot the real app against an ephemeral PostgreSQL (Testcontainers) and drive it with `agent-browser`; CI's `integration` job runs them on every PR. They cover a stale bed write (409) and double-applying a proposal (applied once), on top of the always-on basics (home page, admin panel, `/api/health`).
 - A seed-integrity test checks that companion relations reference existing crops and are symmetric where the data says so.
 - Behavior changes ship with a test that fails on the old code. Bug fixes (especially security ones) ship a regression test.
 
@@ -215,10 +217,12 @@ New reusable components go here:
 | `docker compose up -d db` | Start PostgreSQL |
 | `npm run dev` / `npm run build` / `npm start` | Next.js dev / build / start |
 | `npm run typecheck` · `npm run lint` | Type-check / lint all workspaces |
+| `npm test` · `npm run test:watch` | Unit tests (Vitest) with 100 % coverage gate |
+| `npm run test:integration` | Integration tests: Testcontainers Postgres + built app + `agent-browser` (needs Docker, or `INTEGRATION_DATABASE_ADMIN_URL`; run `npm run build` first) |
 | `npm run db:migrate` · `db:migrate:create -- --name <slug>` · `db:migrate:down` | Migrations |
 | `npm run ui:add -- <component>` | Add a shadcn primitive |
 
-**Validation gate before every commit/PR:** `npm run typecheck && npm run lint && npm test && npm run build && npm audit --omit=dev`, and `/api/health` must still respond. Never set `NODE_ENV` yourself (`NODE_ENV=development` breaks `next build`).
+**Validation gate before every commit/PR:** `npm run typecheck && npm run lint && npm test && npm run build && npm audit --omit=dev`, and `/api/health` must still respond. Run `npm run test:integration` too whenever Docker is available (always true in CI — see `.github/workflows/ci.yml`, which runs lint, unit, build and integration as separate required checks on every PR). Never set `NODE_ENV` yourself (`NODE_ENV=development` breaks `next build`).
 
 ## Migration status (current code → target)
 
@@ -236,7 +240,6 @@ The repo is at the bootstrap stage. Follow §5 of the standards doc **one builda
 | ESLint `no-restricted-imports` layer rules; ESLint over all packages | ESLint covers `app` only | 3 |
 | shadcn primitives in `ui/src/components/ui/` | `ui/src/components/` | 3 |
 | Route groups `(marketing)`, `(auth)`, `(app)` | `(frontend)`, `(admin)/admin` | 3–5 |
-| Test runner (`npm test`) | none yet; add with the first pure module | 4–5 |
 | Auth (`auth` concept) | none yet | when first needed (before user-owned data) |
 
 Update this table in the same PR that closes a row. Delete the section once it's empty.
