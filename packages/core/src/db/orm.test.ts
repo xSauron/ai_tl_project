@@ -37,6 +37,34 @@ describe("getOrm", () => {
   });
 });
 
+describe("checkDbConnection", () => {
+  it("reports ok after a real round-trip query", async () => {
+    const execute = vi.fn().mockResolvedValue([{ "?column?": 1 }]);
+    const orm = { em: { fork: () => ({ getConnection: () => ({ execute }) }) } };
+    init.mockResolvedValue(orm);
+    const { checkDbConnection } = await loadOrmModule();
+
+    await expect(checkDbConnection()).resolves.toEqual({ ok: true });
+    expect(execute).toHaveBeenCalledWith("select 1");
+  });
+
+  it("returns the failure reason when the query fails", async () => {
+    const execute = vi.fn().mockRejectedValue(new Error("connection refused"));
+    const orm = { em: { fork: () => ({ getConnection: () => ({ execute }) }) } };
+    init.mockResolvedValue(orm);
+    const { checkDbConnection } = await loadOrmModule();
+
+    await expect(checkDbConnection()).resolves.toEqual({ ok: false, reason: "connection refused" });
+  });
+
+  it("stringifies non-Error failures", async () => {
+    init.mockRejectedValue("DATABASE_URL missing");
+    const { checkDbConnection } = await loadOrmModule();
+
+    await expect(checkDbConnection()).resolves.toEqual({ ok: false, reason: "DATABASE_URL missing" });
+  });
+});
+
 describe("closeOrm", () => {
   it("closes the cached ORM and forgets it", async () => {
     const first = { close: vi.fn() };
