@@ -8,14 +8,16 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-import pg from "pg";
-
-const { Client } = pg;
-
 export const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 export const ENV_FILE = path.join(ROOT_DIR, ".env");
+export const ENV_LOCAL_FILE = path.join(ROOT_DIR, ".env.local");
+// Same files and precedence as `mikro-orm.config.ts` / `next.config.ts`: `.env.local` wins.
+export const ENV_FILES_BY_PRECEDENCE = [ENV_LOCAL_FILE, ENV_FILE];
 export const ENV_EXAMPLE_FILE = path.join(ROOT_DIR, ".env.example");
 export const NODE_MODULES_DIR = path.join(ROOT_DIR, "node_modules");
+// npm rewrites this alongside package-lock.json on every install; the
+// node_modules directory's own mtime doesn't reliably change.
+export const NPM_HIDDEN_LOCKFILE = path.join(NODE_MODULES_DIR, ".package-lock.json");
 export const PACKAGE_LOCK_FILE = path.join(ROOT_DIR, "package-lock.json");
 export const DB_COMPOSE_SERVICE = "db";
 export const DB_HEALTHY_STATUS = "healthy";
@@ -42,7 +44,9 @@ export const defaultIo = {
     return { status: result.status, stdout: result.stdout ? result.stdout.toString() : "" };
   },
   async canConnectToDatabase(databaseUrl) {
-    const client = new Client({ connectionString: databaseUrl, connectionTimeoutMillis: DB_CONNECT_TIMEOUT_MS });
+    // Imported lazily: `pg` only exists after the installer's own `npm install` step.
+    const { default: pg } = await import("pg");
+    const client = new pg.Client({ connectionString: databaseUrl, connectionTimeoutMillis: DB_CONNECT_TIMEOUT_MS });
     try {
       await client.connect();
       await client.query("select 1");
@@ -79,10 +83,10 @@ function runOrThrow(io, command, args, options) {
 }
 
 export function isDependenciesInstallNeeded(io) {
-  if (!io.fileExists(NODE_MODULES_DIR)) {
+  if (!io.fileExists(NPM_HIDDEN_LOCKFILE)) {
     return true;
   }
-  return io.fileMtimeMs(PACKAGE_LOCK_FILE) > io.fileMtimeMs(NODE_MODULES_DIR);
+  return io.fileMtimeMs(PACKAGE_LOCK_FILE) > io.fileMtimeMs(NPM_HIDDEN_LOCKFILE);
 }
 
 export function installDependencies(io) {
@@ -155,13 +159,31 @@ function startDockerDatabase(io) {
   waitForDbHealthy(io);
 }
 
+export function loadEnvFiles(io) {
+  for (const envFile of ENV_FILES_BY_PRECEDENCE) {
+    if (io.fileExists(envFile)) {
+      io.loadEnvFile(envFile);
+    }
+  }
+}
+
+async function assertDatabaseUrlReachable(io, databaseUrl) {
+  if (databaseUrl && (await io.canConnectToDatabase(databaseUrl))) {
+    return;
+  }
+  throw new Error(
+    `PostgreSQL is running in Docker, but ${DATABASE_URL_VAR} still doesn't reach it, so migrations would fail. ` +
+      `Point ${DATABASE_URL_VAR} at the compose database (see .env.example), then re-run \`npm run setup\`.`,
+  );
+}
+
 /**
  * A `DATABASE_URL` that already answers wins over Docker — the installer
  * never starts a container when the user already pointed it at a database.
  */
 export async function ensureDatabaseAvailable(io) {
   logStep(io, "Checking for a reachable PostgreSQL database");
-  io.loadEnvFile(ENV_FILE);
+  loadEnvFiles(io);
   const databaseUrl = io.getEnv(DATABASE_URL_VAR);
   if (databaseUrl && (await io.canConnectToDatabase(databaseUrl))) {
     logSkip(io, `PostgreSQL (already reachable at ${DATABASE_URL_VAR})`);
@@ -169,6 +191,7 @@ export async function ensureDatabaseAvailable(io) {
   }
   io.log(`  No PostgreSQL reachable at ${DATABASE_URL_VAR} — falling back to Docker.`);
   startDockerDatabase(io);
+  await assertDatabaseUrlReachable(io, databaseUrl);
 }
 
 export function applyMigrations(io) {

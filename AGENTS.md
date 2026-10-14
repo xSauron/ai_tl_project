@@ -175,7 +175,7 @@ New reusable components go here:
 
 ## Tests
 
-- **100 % unit test coverage is mandatory.** Every new feature, module, branch and function ships with unit tests that fully cover it — `npm test` enforces 100 % statements/branches/functions/lines over `packages/*/src/**` (`vitest.config.ts`) and CI's `unit` job fails the PR otherwise. There is no "add tests later": a PR that drops coverage below 100 % does not merge. The only exclusions are the ones explicitly listed in `vitest.config.ts`, each with a reason comment (e.g. generated migrations, exercised by integration tests instead) — don't add new ones to dodge the gate; write the test.
+- **100 % unit test coverage is mandatory.** Every new feature, module, branch and function ships with unit tests that fully cover it — `npm test` enforces 100 % statements/branches/functions/lines over `packages/*/src/**` and `scripts/*.mjs` (`vitest.config.ts`) and CI's `unit` job fails the PR otherwise. There is no "add tests later": a PR that drops coverage below 100 % does not merge. The only exclusions are the ones explicitly listed in `vitest.config.ts`, each with a reason comment (e.g. generated migrations, exercised by integration tests instead) — don't add new ones to dodge the gate; write the test.
 - Colocate unit tests next to the source as `<name>.test.ts(x)`, so missing coverage is easy to spot in review.
 - Pure modules (`grid-rules.ts`, companion detection, `sowing-windows.ts`) get **table-driven unit tests first**, covering edges: bed borders, multi-cell crops, empty bed, crops with no frost dependency, Southern Hemisphere / late frost.
 - AI parsing is tested against malformed, partial and hostile output, grid-rule violations and unknown crops.
@@ -214,6 +214,7 @@ New reusable components go here:
 | Command | What |
 | --- | --- |
 | `npm install` | Install all workspaces |
+| `npm run setup` | Idempotent local installer: install, `.env`, reachable DB (or Docker `db`), migrations |
 | `docker compose up -d db` | Start PostgreSQL |
 | `npm run dev` / `npm run build` / `npm start` | Next.js dev / build / start |
 | `npm run typecheck` · `npm run lint` | Type-check / lint all workspaces |

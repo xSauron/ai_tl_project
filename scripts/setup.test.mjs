@@ -1,4 +1,5 @@
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -27,6 +28,10 @@ vi.mock("pg", () => ({ default: { Client: MockClient } }));
 import {
   DB_COMPOSE_SERVICE,
   DB_HEALTHCHECK_TIMEOUT_MS,
+  ENV_FILE,
+  ENV_LOCAL_FILE,
+  NPM_HIDDEN_LOCKFILE,
+  PACKAGE_LOCK_FILE,
   defaultIo,
   applyMigrations,
   createEnvFile,
@@ -35,6 +40,7 @@ import {
   installDependencies,
   isDbHealthy,
   isDependenciesInstallNeeded,
+  loadEnvFiles,
   main,
   waitForDbHealthy,
 } from "./setup.mjs";
@@ -57,29 +63,32 @@ function createFakeIo(overrides = {}) {
 }
 
 describe("isDependenciesInstallNeeded", () => {
-  it("is needed when node_modules does not exist", () => {
+  it("is needed when npm's hidden lockfile in node_modules does not exist", () => {
     const io = createFakeIo({ fileExists: vi.fn().mockReturnValue(false) });
 
     expect(isDependenciesInstallNeeded(io)).toBe(true);
     expect(io.fileMtimeMs).not.toHaveBeenCalled();
   });
 
-  it("is needed when the lockfile is newer than node_modules", () => {
+  it("is needed when package-lock.json is newer than npm's hidden lockfile", () => {
     const io = createFakeIo({
-      fileExists: vi.fn().mockReturnValue(true),
-      fileMtimeMs: vi.fn((filePath) => (filePath.endsWith("package-lock.json") ? 200 : 100)),
+      fileExists: vi.fn((filePath) => filePath === NPM_HIDDEN_LOCKFILE),
+      fileMtimeMs: vi.fn((filePath) => (filePath === PACKAGE_LOCK_FILE ? 200 : 100)),
     });
 
     expect(isDependenciesInstallNeeded(io)).toBe(true);
   });
 
-  it("is not needed when node_modules is at least as new as the lockfile", () => {
+  it("is not needed when npm's hidden lockfile is at least as new as package-lock.json", () => {
+    // Regression: npm writes both lockfiles together, while the node_modules
+    // directory's mtime can lag far behind and forced a reinstall every run.
     const io = createFakeIo({
-      fileExists: vi.fn().mockReturnValue(true),
-      fileMtimeMs: vi.fn((filePath) => (filePath.endsWith("package-lock.json") ? 100 : 200)),
+      fileExists: vi.fn((filePath) => filePath === NPM_HIDDEN_LOCKFILE),
+      fileMtimeMs: vi.fn().mockReturnValue(200),
     });
 
     expect(isDependenciesInstallNeeded(io)).toBe(false);
+    expect(io.fileMtimeMs).toHaveBeenCalledWith(NPM_HIDDEN_LOCKFILE);
   });
 });
 
@@ -219,6 +228,7 @@ describe("waitForDbHealthy", () => {
 describe("ensureDatabaseAvailable", () => {
   it("skips Docker entirely when DATABASE_URL is already reachable", async () => {
     const io = createFakeIo({
+      fileExists: vi.fn().mockReturnValue(true),
       getEnv: vi.fn().mockReturnValue("postgresql://plant_ai:plant_ai@localhost:5432/plant_ai"),
       canConnectToDatabase: vi.fn().mockResolvedValue(true),
     });
@@ -230,7 +240,7 @@ describe("ensureDatabaseAvailable", () => {
     expect(io.runCommand).not.toHaveBeenCalled();
   });
 
-  it("falls back to Docker when no DATABASE_URL is set", async () => {
+  it("falls back to Docker when no DATABASE_URL is set, then fails clearly because migrations need it", async () => {
     const io = createFakeIo({
       getEnv: vi.fn().mockReturnValue(undefined),
       runCommand: vi
@@ -241,16 +251,16 @@ describe("ensureDatabaseAvailable", () => {
         .mockReturnValueOnce({ status: 0, stdout: "healthy\n" }), // getDbContainerHealth
     });
 
-    await ensureDatabaseAvailable(io);
+    await expect(ensureDatabaseAvailable(io)).rejects.toThrow(/DATABASE_URL still doesn't reach it/);
 
     expect(io.canConnectToDatabase).not.toHaveBeenCalled();
     expect(io.runCommand).toHaveBeenCalledWith("docker", ["compose", "version"], { stdio: "ignore" });
   });
 
-  it("falls back to Docker when DATABASE_URL is set but unreachable", async () => {
+  it("falls back to Docker when DATABASE_URL is set but unreachable, then re-checks it", async () => {
     const io = createFakeIo({
-      getEnv: vi.fn().mockReturnValue("postgresql://nowhere:5432/plant_ai"),
-      canConnectToDatabase: vi.fn().mockResolvedValue(false),
+      getEnv: vi.fn().mockReturnValue("postgresql://plant_ai:plant_ai@localhost:5432/plant_ai"),
+      canConnectToDatabase: vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(true),
       runCommand: vi
         .fn()
         .mockReturnValueOnce({ status: 0, stdout: "" }) // ensureDockerAvailable
@@ -265,6 +275,23 @@ describe("ensureDatabaseAvailable", () => {
     expect(io.runCommand).toHaveBeenCalledWith("docker", ["compose", "up", "-d", DB_COMPOSE_SERVICE], {
       stdio: "inherit",
     });
+    expect(io.canConnectToDatabase).toHaveBeenCalledTimes(2);
+  });
+
+  it("fails clearly when the Docker database is healthy but DATABASE_URL points elsewhere", async () => {
+    const io = createFakeIo({
+      getEnv: vi.fn().mockReturnValue("postgresql://db.example.invalid:5432/plant_ai"),
+      canConnectToDatabase: vi.fn().mockResolvedValue(false),
+      runCommand: vi
+        .fn()
+        .mockReturnValueOnce({ status: 0, stdout: "" }) // ensureDockerAvailable
+        .mockReturnValueOnce({ status: 0, stdout: "abc123\n" }) // getDbContainerId (skip check) -> running
+        .mockReturnValueOnce({ status: 0, stdout: "abc123\n" }) // getDbContainerId (isDbHealthy)
+        .mockReturnValueOnce({ status: 0, stdout: "healthy\n" }), // getDbContainerHealth
+    });
+
+    await expect(ensureDatabaseAvailable(io)).rejects.toThrow(/DATABASE_URL still doesn't reach it/);
+    expect(io.canConnectToDatabase).toHaveBeenCalledTimes(2);
   });
 
   it("surfaces the combined error when DATABASE_URL is unreachable and Docker is unavailable", async () => {
@@ -275,6 +302,24 @@ describe("ensureDatabaseAvailable", () => {
     });
 
     await expect(ensureDatabaseAvailable(io)).rejects.toThrow(/Docker.*DATABASE_URL/);
+  });
+});
+
+describe("loadEnvFiles", () => {
+  it("loads .env.local before .env, matching the app and MikroORM precedence", () => {
+    const io = createFakeIo({ fileExists: vi.fn().mockReturnValue(true) });
+
+    loadEnvFiles(io);
+
+    expect(io.loadEnvFile.mock.calls).toEqual([[ENV_LOCAL_FILE], [ENV_FILE]]);
+  });
+
+  it("skips env files that don't exist", () => {
+    const io = createFakeIo({ fileExists: vi.fn((filePath) => filePath === ENV_FILE) });
+
+    loadEnvFiles(io);
+
+    expect(io.loadEnvFile.mock.calls).toEqual([[ENV_FILE]]);
   });
 });
 
@@ -349,6 +394,33 @@ describe("defaultIo.canConnectToDatabase", () => {
     clientBehavior.endError = new Error("not connected");
 
     await expect(defaultIo.canConnectToDatabase("postgresql://nowhere:5432/plant_ai")).resolves.toBe(false);
+  });
+});
+
+describe("fresh clone (no node_modules)", () => {
+  let tmpDir;
+
+  beforeEach(() => {
+    tmpDir = mkdtempSync(path.join(tmpdir(), "plantai-setup-fresh-"));
+  });
+
+  afterEach(() => {
+    rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it("imports setup.mjs without any installed packages, so `npm run setup` can run `npm install` first", () => {
+    // Regression: a top-level `import pg from "pg"` crashed before the install step.
+    const scriptsDir = path.join(tmpDir, "scripts");
+    mkdirSync(scriptsDir);
+    copyFileSync(new URL("./setup.mjs", import.meta.url), path.join(scriptsDir, "setup.mjs"));
+
+    const result = spawnSync(process.execPath, ["--input-type=module", "-e", 'await import("./scripts/setup.mjs");'], {
+      cwd: tmpDir,
+      encoding: "utf8",
+    });
+
+    expect(result.stderr).toBe("");
+    expect(result.status).toBe(0);
   });
 });
 
