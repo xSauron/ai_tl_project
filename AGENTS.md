@@ -29,7 +29,7 @@ Domain concepts: `auth`, `gardens` (gardens + beds), `plantings`, `crops` (catal
 | Framework | **Next.js 16** (App Router only), **React 19**, **TypeScript** (strict) | Read `node_modules/next/dist/docs/` before using a Next API. |
 | Database | **PostgreSQL** (17 in `docker-compose.yml`) | |
 | ORM | **MikroORM 7** (`@mikro-orm/postgresql`, `defineEntity`) | Migrations via `@mikro-orm/migrations`; pooling via `pool`. Only `db` imports `@mikro-orm/*`. |
-| Dependency injection | **Awilix** | `InjectionMode.PROXY`, `strict: true`, explicit registration (no `loadModules`). Stays in place: scoped `EntityManager`, mock/real adapter swaps. |
+| Dependency injection | **Awilix** | `InjectionMode.PROXY`, `strict: true`, explicit registration (no `loadModules`; root `package.json` `overrides` swaps awilix's `fast-glob` for the throwing `tools/fast-glob-disabled`, which keeps the unpatched `braces` advisory out of production deps). Stays in place: scoped `EntityManager`, mock/real adapter swaps. |
 | Validation | **Zod** | Shared client/server schemas in `core/src/validators/`. |
 | Logging | **pino** | With redaction (see Security). |
 | Public pages | **Tailwind CSS v4** | `(marketing)` only. No shadcn/ui there. |
