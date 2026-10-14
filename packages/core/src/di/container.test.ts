@@ -59,3 +59,13 @@ describe("createRequestScope", () => {
     expect(first.cradle.gardenService).not.toBe(second.cradle.gardenService);
   });
 });
+
+describe("awilix module globbing", () => {
+  // Root package.json overrides awilix's fast-glob with tools/fast-glob-disabled (#6).
+  it("is disabled, so dependencies must be registered explicitly", async () => {
+    const { createContainer, listModules } = await import("awilix");
+
+    expect(() => listModules("*.ts")).toThrow("awilix loadModules is disabled");
+    expect(() => createContainer().loadModules(["*.ts"])).toThrow("awilix loadModules is disabled");
+  });
+});

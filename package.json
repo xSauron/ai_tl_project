@@ -34,5 +34,10 @@
     "testcontainers": "^12.2.1",
     "vitest": "^5.0.4"
   },
+  "overrides": {
+    "awilix": {
+      "fast-glob": "file:../../tools/fast-glob-disabled"
+    }
+  },
   "type": "module"
 }
