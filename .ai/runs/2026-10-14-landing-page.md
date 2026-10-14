@@ -36,7 +36,7 @@ The page stays static and DB-free.
 
 ## Risks
 
-- **Integration tests can't run in this sandbox** (no Docker, per `.ai/lessons.md`). Review them carefully; CI's `integration` job is the proof.
+- **Integration tests:** `.ai/lessons.md` said they couldn't run in this sandbox. They now run via the `INTEGRATION_DATABASE_ADMIN_URL` fallback; see Results.
 - **The sample bed uses emoji.** Their rendering varies by platform, but they're decorative only (`aria-hidden`).
 
 ## Progress
@@ -45,6 +45,18 @@ The page stays static and DB-free.
 
 ### Phase 1: Landing page
 
-- [ ] 1.1 Rewrite page.tsx and its unit test
-- [ ] 1.2 Update the home-page integration test
-- [ ] 1.3 Full validation gate
+- [x] 1.1 Rewrite page.tsx and its unit test — 0c13dcb
+- [x] 1.2 Update the home-page integration test — 883eb2c
+- [x] 1.3 Full validation gate — 883eb2c
+
+## Decisions
+
+- **CTA colour:** `bg-leaf-700` (hover `leaf-900`) instead of the spec's `leaf-600`. White text on `leaf-600` is below the spec's own 4.5 : 1 contrast floor. The spec on PR #9 is updated to match.
+- **Sample bed cells:** each carries a `title` with the crop name, so the `crop` field isn't dead data. The cells stay `aria-hidden`.
+
+## Results
+
+- **Static checks:** `npm run typecheck`, `npm run lint` and `npm test` pass (110 tests, 100 % statements/branches/functions/lines).
+- **Build:** `npm run build` passes (run as `env -u NODE_ENV`, per the existing lesson), with `/` listed as static (○).
+- **Audit:** `npm audit --omit=dev` reports 0 vulnerabilities.
+- **Integration:** `npm run test:integration` passes, 3 files and 7 tests. It ran locally against a throwaway database via `INTEGRATION_DATABASE_ADMIN_URL=$DATABASE_URL`, after `agent-browser install --with-deps` added Chrome's missing system libraries. This includes `/api/health`.
