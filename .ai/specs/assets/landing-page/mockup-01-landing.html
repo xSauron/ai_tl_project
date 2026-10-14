@@ -1,0 +1,45 @@
+<!doctype html>
+<!-- Illustrative static mockup for .ai/specs/2026-10-14-landing-page.md — not app code. -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plant.AI — landing mockup</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:#fbf8f3;color:#3a2f24}
+.wrap{max-width:1024px;margin:0 auto;padding:24px}
+header{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:600;font-size:20px;color:#1f4a2a}.admin{font-size:14px;color:#2f7a3e;text-decoration:none}
+.hero{display:grid;gap:40px;margin-top:56px;align-items:center}
+@media(min-width:768px){.hero{grid-template-columns:1.2fr 1fr}}
+h1{font-size:40px;line-height:1.1;margin:0;color:#1f4a2a;letter-spacing:-.02em}
+.pitch{font-size:18px;opacity:.8;margin:20px 0 28px}
+.cta{display:inline-block;background:#3c9a4e;color:#fff;padding:12px 24px;border-radius:999px;font-weight:600;text-decoration:none}
+.bed{max-width:320px;width:100%;margin:0 auto;padding:10px;background:#8a5a33;border-radius:14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.cell{aspect-ratio:1;background:#5b3b22;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#f3e9dc;font-size:12px}
+.cell span{font-size:24px}
+.cap{text-align:center;font-size:13px;opacity:.7;margin-top:8px}
+.features{display:grid;gap:16px;margin-top:64px}
+@media(min-width:640px){.features{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.features{grid-template-columns:repeat(4,1fr)}}
+article{background:#fff;border:1px solid #d9f2dc;border-radius:16px;padding:20px}
+article h2{font-size:16px;margin:0 0 8px;color:#1f4a2a}article p{font-size:14px;margin:0;opacity:.75}
+footer{margin-top:72px;padding:24px 0;border-top:1px solid #d9f2dc;font-size:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style></head><body><div class="wrap">
+<header><span class="logo">🌱 Plant.AI</span><a class="admin" href="#">Admin →</a></header>
+<section class="hero"><div>
+<h1>Plan your vegetable garden, one square foot at a time.</h1>
+<p class="pitch">Lay out raised beds on a simple grid, see which crops are happy neighbours, and know when to sow from your own frost dates — with AI suggestions you can accept or ignore.</p>
+<a class="cta" href="#">Plan your garden</a></div>
+<figure style="margin:0"><div class="bed"><div class="grid">
+<div class="cell"><span>🍅</span>×1</div><div class="cell"><span>🍅</span>×1</div><div class="cell"><span>🥬</span>×4</div><div class="cell"><span>🥬</span>×4</div>
+<div class="cell"><span>🫑</span>×1</div><div class="cell"><span>🧅</span>×9</div><div class="cell"><span>🧅</span>×9</div><div class="cell"><span>🥕</span>×16</div>
+<div class="cell"><span>🌿</span>×4</div><div class="cell"><span>🫘</span>×9</div><div class="cell"><span>🫘</span>×9</div><div class="cell"><span>🥕</span>×16</div>
+<div class="cell"><span>🥒</span>×2</div><div class="cell"><span>🥒</span>×2</div><div class="cell"><span>🌼</span>×4</div><div class="cell"><span>🥗</span>×4</div>
+</div></div><figcaption class="cap">Example bed — 4 × 4 ft</figcaption></figure></section>
+<section class="features">
+<article><h2>Square-foot bed planner</h2><p>Draw beds in feet and drop crops onto the grid. Spacing tells you how many plants fit in each square.</p></article>
+<article><h2>Companion planting hints</h2><p>Get a heads-up when neighbouring crops tend to compete, based on sourced catalog data.</p></article>
+<article><h2>Planting calendar</h2><p>Sowing and transplant windows worked out from your last and first frost dates.</p></article>
+<article><h2>AI layout suggestions</h2><p>Ask for a bed layout. You review the proposal and apply it only if you like it.</p></article>
+</section>
+<footer><span class="logo" style="font-size:16px">🌱 Plant.AI</span><span>A square-foot vegetable garden planner.</span></footer>
+</div></body></html>
