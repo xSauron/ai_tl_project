@@ -41,6 +41,8 @@ The page stays static and DB-free.
 
 ## Progress
 
+PR: #10
+
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles.
 
 ### Phase 1: Landing page
@@ -60,3 +62,5 @@ The page stays static and DB-free.
 - **Build:** `npm run build` passes (run as `env -u NODE_ENV`, per the existing lesson), with `/` listed as static (○).
 - **Audit:** `npm audit --omit=dev` reports 0 vulnerabilities.
 - **Integration:** `npm run test:integration` passes, 3 files and 7 tests. It ran locally against a throwaway database via `INTEGRATION_DATABASE_ADMIN_URL=$DATABASE_URL`, after `agent-browser install --with-deps` added Chrome's missing system libraries. This includes `/api/health`.
+- **Review** (`om-auto-review-pr`): approve. One minor finding: the feature card titles were `<h2>` beside the hidden Features `<h2>`. Fixed in 461b396 (now `<h3>`); the spec on #9 is updated to match. The gate and integration suite were re-run green.
+- **CI:** all four jobs pass on 461b396.
