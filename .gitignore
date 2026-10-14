@@ -51,3 +51,8 @@ test-results/
 # (the INTEGRATION_DATABASE_ADMIN_URL fallback names each run's database
 # uniquely, which would otherwise litter this folder with one snapshot per run)
 packages/core/src/migrations/.snapshot-*_it_*.json
+
+# agent pipeline (om-*): generated QA run state, never source
+.ai/qa/artifacts_*/
+.ai/qa/test-env.json
+.ai/qa/test-env.env
