@@ -64,7 +64,7 @@ Rewrite `page.tsx` in place as one Server Component with four sections. The cont
 
 - **Mobile-first:** base styles target ~375 px with `px-6`. No fixed widths, and no horizontal scrolling at 320–375 px. Breakpoints `sm`/`md`/`lg` only add columns.
 - **Hierarchy:** one `<h1>` (hero), feature titles are `<h2>`, and the features section has a visually hidden `<h2>Features</h2>` for screen readers.
-- **CTA:** a pill-shaped link (`rounded-full bg-leaf-600 px-6 py-3 text-white hover:bg-leaf-700`) with a visible `focus-visible` ring, a ≥ 44 px touch target and a contrast ratio of at least 4.5 : 1 against its background.
+- **CTA:** a pill-shaped link (`rounded-full bg-leaf-700 px-6 py-3 text-white hover:bg-leaf-900`; white on `leaf-600` is only 4.0 : 1, on `leaf-700` 6.2 : 1) with a visible `focus-visible` ring, a ≥ 44 px touch target and a contrast ratio of at least 4.5 : 1 against its background.
 - **Contrast and touch targets:** ratios and the 44 px target aren't checked by unit tests. They are verified at 320–375 px during UI QA (`om-auto-qa-pr` screenshots).
 - **Prototype:** `.ai/specs/assets/landing-page/mockup-01-landing.html`. Renders: `mockup-01-landing.png` (desktop) and `mockup-02-landing-mobile.png` (375 px). The current page is in `current-01-landing.png` / `current-02-landing-mobile.png` in the same folder.
 
