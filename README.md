@@ -6,7 +6,17 @@ Plant.AI is a garden-planning web app, in the spirit of [planter.garden](https:/
 
 ## Quick start
 
-Requirements: Node.js ≥ 22.18, npm, Docker (for PostgreSQL).
+Requirements: Node.js ≥ 22.18, npm, and either Docker (for PostgreSQL) or an existing PostgreSQL reachable at `DATABASE_URL`.
+
+```bash
+npm run setup                   # installer: runs every step below, skipping what's already done
+npm run dev                     # http://localhost:3000
+```
+
+`npm run setup` is idempotent — re-run it any time; it skips steps that are already satisfied (dependencies installed, `.env` present). For the database, it first checks whether `DATABASE_URL` already points at a reachable PostgreSQL and uses it as-is; only when nothing answers there does it fall back to starting `docker compose`'s `db` service and waiting for it to become healthy. Either way it finishes by applying pending migrations.
+
+<details>
+<summary>Manual steps (what the installer automates)</summary>
 
 ```bash
 npm install
@@ -15,6 +25,8 @@ docker compose up -d db         # PostgreSQL 17 on localhost:5432
 npm run db:migrate              # apply migrations
 npm run dev                     # http://localhost:3000
 ```
+
+</details>
 
 - Public site: <http://localhost:3000>
 - Admin: <http://localhost:3000/admin> (example CRUD: *Gardens*)
@@ -114,6 +126,7 @@ Request ─► Server Component / Server Action / Route Handler
 
 | Command | Description |
 | --- | --- |
+| `npm run setup` | Idempotent local installer — runs Quick start's steps, skipping what's already done |
 | `npm run dev` | Start the Next.js dev server |
 | `npm run build` / `npm start` | Production build / start |
 | `npm run typecheck` | Type-check all packages |
