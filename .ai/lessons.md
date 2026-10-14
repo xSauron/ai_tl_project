@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-14 — Nested `file:` npm overrides resolve relative to the dependent package
+- **Context:** #6 needed awilix's `fast-glob` replaced by a local stub; `"awilix": { "fast-glob": "file:./tools/x" }` produced a broken symlink inside `node_modules/awilix`.
+- **Lesson:** npm 11 resolves a nested override's `file:` spec relative to the dependent (`node_modules/awilix`), not the root, and `npm ls` then flags the entry "invalid" either way. After changing an override, also delete the dependent's `package-lock.json` entry so npm re-resolves it; otherwise the old resolution is kept silently.
+- **Action:** Write such paths relative to the dependent (`file:../../tools/x`), check the symlink and run a clean `npm ci`. When no upstream fix exists for an advisory, check every link in the chain against `npm view <pkg> versions` before proposing an override.
+
 ### 2026-10-13 — `relation "gardens" does not exist`: migrations never ran, not a code bug
 - **Context:** `/admin/gardens` threw `relation "gardens" does not exist` even though the entity, migration, and `withRequestScope` code were all correct.
 - **Lesson:** In this cloud sandbox, Docker isn't available (`docker: command not found`), so `docker-compose.yml`'s `plant_ai` Postgres never starts. The sandbox instead injects an ambient `DATABASE_URL` (pointing at a shared `workspace-postgres` instance, db name `open-mercato`) into every process's environment — including `next dev`. Since there's no repo-root `.env`/`.env.local`, `env.ts` picks up that ambient value, and `process.loadEnvFile` never overrides an already-set env var anyway (`next.config.ts` and `mikro-orm.config.ts` both say "existing env vars win"). That database was simply never migrated.
