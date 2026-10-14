@@ -19,7 +19,7 @@ describe("HomePage", () => {
       "Planting calendar",
       "AI layout suggestions",
     ]) {
-      expect(html).toContain(`>${title}</h2>`);
+      expect(html).toContain(`>${title}</h3>`);
     }
   });
 

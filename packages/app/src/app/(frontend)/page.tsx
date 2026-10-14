@@ -107,7 +107,7 @@ export default function HomePage() {
                 key={feature.title}
                 className="rounded-2xl border border-leaf-100 bg-white p-5 shadow-sm"
               >
-                <h2 className="font-semibold text-leaf-900">{feature.title}</h2>
+                <h3 className="font-semibold text-leaf-900">{feature.title}</h3>
                 <p className="mt-2 text-sm text-soil-900/70">{feature.body}</p>
               </article>
             ))}
