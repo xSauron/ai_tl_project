@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-14 — Tracker descriptor helpers: extract the right block, and `jq` isn't installed
+- **Context:** While the `om-*` pipeline ran, an `awk`/`sed` that took "the first bash block" of `.ai/trackers/github.md` grabbed the `gh` upgrade snippet (`sudo apt update && apt install --only-upgrade gh`) and executed it, instead of the label guards. Separately, **attach-image-evidence** failed because `jq` isn't installed in this sandbox, which left a PR comment with broken image links until the files were re-uploaded.
+- **Lesson:** Never source a code block from a descriptor by position. Anchor on its heading (`## Label guards`) and check what was extracted before running it. The descriptor's `jq` steps (evidence upload, `remove_label` URI-encoding) need a substitute here.
+- **Action:** Extract guards with `awk '/^## Label guards/{f=1} f&&/^```bash$/{g=1;next} g&&/^```$/{exit} g'`, then `grep` the result for `apt|sudo|brew` before sourcing it. Build Contents-API JSON with `python3 -c 'import json,base64…'` instead of `jq --rawfile`, and confirm the raw URLs return 200 *before* posting the evidence comment.
+
 ### 2026-10-14 — Bootstrap scripts can't statically import npm packages
 - **Context:** `npm run setup` (`scripts/setup.mjs`) had a top-level `import pg from "pg"`, so on a fresh clone it crashed with `ERR_MODULE_NOT_FOUND` before its own `npm install` step. 100 % unit coverage missed it because the tests always run with `node_modules` present.
 - **Lesson:** Static ESM imports resolve before any code runs. A script that installs dependencies may only use `node:` built-ins at load time. Also, the root `node_modules/` directory's mtime doesn't track installs; `node_modules/.package-lock.json` does.
@@ -41,10 +46,10 @@ Long-term memory for AI agents working in this repository. Read this file before
 - **Lesson:** `next start` requires `npm run build` first; `tests/integration/support/app-server.ts` fails fast with a clear error if `.next/BUILD_ID` is missing, instead of falling back to `next dev` (which would test a different code path than what ships).
 - **Action:** CI's `integration` job always runs `npm run build` before `npm run test:integration`. Do the same locally before running the integration suite.
 
-### 2026-10-13 — No Docker in this sandbox
-- **Context:** `docker info` fails here, so the Testcontainers-backed integration suite can't be exercised locally in this environment.
-- **Lesson:** Unit tests, typecheck, lint and build all run without Docker and were verified locally (100 % coverage, all green). The integration suite is CI-only in this sandbox; it still needs a real pass in CI (or on a machine with Docker, or via `INTEGRATION_DATABASE_ADMIN_URL` against an existing Postgres) before trusting it beyond static review.
-- **Action:** When adding integration tests in this sandbox, review them carefully (support code, selectors, expected copy) since they can't be run here — then confirm green once CI runs.
+### 2026-10-13 — No Docker in this sandbox (updated 2026-10-14: the integration suite does run here)
+- **Context:** `docker info` fails here, so Testcontainers can't start a Postgres.
+- **Lesson:** The suite still runs locally through its documented fallback, using the sandbox's ambient Postgres. Each run creates a uniquely named throwaway database and drops it afterwards. Chrome also needs its system libraries: without them, `agent-browser` fails with `libnspr4.so: cannot open shared object file`.
+- **Action:** Run these once: `sudo -n node_modules/.bin/agent-browser install --with-deps`, then `env -u NODE_ENV npm run build`. Then run `env -u NODE_ENV INTEGRATION_DATABASE_ADMIN_URL="$DATABASE_URL" npm run test:integration`. Verified 2026-10-14: 7/7 green.
 
 ### 2026-10-13 — Next 16: `export const dynamic = "force-dynamic"` is legacy
 - **Context:** The engineering standards required DB access only in `force-dynamic` routes/pages.
