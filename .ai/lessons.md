@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-14 — Bootstrap scripts can't statically import npm packages
+- **Context:** `npm run setup` (`scripts/setup.mjs`) had a top-level `import pg from "pg"`, so on a fresh clone it crashed with `ERR_MODULE_NOT_FOUND` before its own `npm install` step. 100 % unit coverage missed it because the tests always run with `node_modules` present.
+- **Lesson:** Static ESM imports resolve before any code runs. A script that installs dependencies may only use `node:` built-ins at load time. Also, the root `node_modules/` directory's mtime doesn't track installs; `node_modules/.package-lock.json` does.
+- **Action:** Use `await import("<pkg>")` after the install step in bootstrap scripts, and keep a test that imports the script from a temp directory with no `node_modules`. Detect a stale install by comparing `package-lock.json` with `node_modules/.package-lock.json`.
+
 ### 2026-10-14 — Nested `file:` npm overrides resolve relative to the dependent package
 - **Context:** #6 needed awilix's `fast-glob` replaced by a local stub; `"awilix": { "fast-glob": "file:./tools/x" }` produced a broken symlink inside `node_modules/awilix`.
 - **Lesson:** npm 11 resolves a nested override's `file:` spec relative to the dependent (`node_modules/awilix`), not the root, and `npm ls` then flags the entry "invalid" either way. After changing an override, also delete the dependent's `package-lock.json` entry so npm re-resolves it; otherwise the old resolution is kept silently.

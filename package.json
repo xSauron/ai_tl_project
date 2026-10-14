@@ -9,6 +9,7 @@
     "node": ">=22.18"
   },
   "scripts": {
+    "setup": "node scripts/setup-cli.mjs",
     "dev": "npm run dev -w @plant-ai/app --",
     "build": "npm run build -w @plant-ai/app",
     "start": "npm run start -w @plant-ai/app --",
