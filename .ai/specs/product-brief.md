@@ -1,9 +1,9 @@
 # Plant.AI — product brief
 
 - Date: 2026-10-19
-- Mode: own; Owner: project owner; Pass: full
+- Mode: own; Owner: project owner; Pass: full; refreshed 2026-10-19 (status only — the owner did not answer the refresh questions, so no decision changed)
 - Evidence basis: one real account — the project owner, a trained gardener, describing problems in general terms with no episode, frequency or cost. Three interviews, the workshop export and a 47-response survey exist but are illustrative course material, not real people (source manifest), so everything they say about gardeners is treated as an assumption. One real benchmark (Planter, checked 2026-10-17). Scope rests on the owner's decisions D01–D04, N01, N02. Most consequential untested belief: that growers other than the owner share the problems the MVP targets (A01), and that the widened scope fits the build budget (A02).
-- Coverage: 33 claims — 21 sourced (interview 4, data 0, document 9, product 7, benchmark 1), 0 synthetic, 12 assumed; 2 entries on the collection plan
+- Coverage: 33 claims — 21 sourced (interview 4, data 0, document 9, product 7, benchmark 1), 0 synthetic, 12 assumed; 2 entries on the collection plan (A01 interviews, A04 garden layout; the catalogue-source entry is done)
 - Synthetic hypotheses outside Coverage: 0
 - Definition of Ready signed by: not yet signed — Target group has no real support beyond the owner, Now (Q02) and success/stop criteria (Q03) are proposals; catalogue source decided (D04); ready for: research, and the owner's own provisional build once Q02 and Q04 are answered
 - Sources: `.ai/specs/research/interviews/2026-10-19-owner-trained-gardener.md`, `.ai/specs/research/decisions/` (N01, N02, D01–D04), `.ai/specs/research/2026-10-17-benchmark-planter.md`, `.ai/specs/research/2026-10-18-source-manifest.md`, `.ai/specs/research/2026-10-16-miro-board-*.md`, illustrative `.ai/specs/research/2026-10-1{4,5,6,8}-{interview,workshop,survey}-*.md`, `AGENTS.md`
@@ -14,7 +14,7 @@ The owner has decided to build an MVP aimed at the most common problems of home 
 The only real problem account is the owner's own: with many plants it is easy to lose track of what to do and when, companion planting is a problem, and pruning needs care. See Problems and Target group.
 Proposed Now: square-foot beds holding all three plant kinds, a sourced catalogue, companion warnings, a frost-date calendar, pruning windows, a task list and the AI layout proposal; journal and photos later. See Scope.
 What could change this: nobody besides the owner has yet been heard (A01); the widened scope may not fit 25 hours (A02); no licensed dataset covers pruning and companion data, so the owner writes them from cited references (A03, D04); trees may not fit the grid (A04). Binding `AGENTS.md` still says "vegetable-garden planner", so D02 conflicts with project rules until `AGENTS.md` and the engineering standards are updated. What the AI feature should help with (Q06) and what "losing track" means in practice (Q07) are open.
-Next: the owner talks to real gardeners they know about their last season (collection plan); the catalogue source is decided (D04). Dates are not set.
+Next: the owner fills in the garden-layout sheet for A04 (#13), decides who the MVP is for (talk to real gardeners first for A01, or narrow the target group to the owner's own garden), and answers Q02, Q04, Q06 and Q07. The catalogue source is decided (D04). Dates are not set.
 
 ## Vision
 
@@ -107,7 +107,7 @@ For home growers with vegetables, berry bushes and fruit trees, Plant.AI is mean
 | A01 | Growers other than the owner lose track of tasks and timing, and have companion or pruning trouble `[ASSUMPTION]` owner account + illustrative material | high | one real account (owner); survey and interviews illustrative | Now targets the wrong problem; D01 revisited | ask a few real gardeners the owner knows about their last season, without showing the app. Supports D01 if they describe, unprompted, missed or mistimed tasks, or companion or pruning trouble; revisit D01 if they describe other problems. Tests only that the problem exists, not whether they would use a task list; people the owner knows may share the owner's habits | project owner | unknown | untested |
 | A02 | Vegetables, bushes, trees, pruning windows, calendar, companions and the AI proposal fit the 25-hour MVP `[ASSUMPTION]` owner goals board | high | owner's board said 25 h fits only with photo diagnosis and rotation deferred, before D02 widened scope | build overruns; cut Now | estimate the Now items during spec writing / backlog dry run and compare with 25 h | project owner | before implementation planning | untested |
 | A03 | A licensed source exists for timing, companion relations and per-species pruning windows of vegetables, bushes and trees `[ASSUMPTION]` no material | high | 2026-10-19 source search (`research/2026-10-19-data-request-catalogue-source.md`): Wikidata (CC0) and Trefle (CC-BY-4.0) cover taxonomy and some timing; no candidate with a clean licence covers companion relations or pruning windows | catalogue or pruning tasks cannot ship under R03 | catalogue source search (Q01) | project owner | before catalogue seed work | partly tested: no open source for pruning or companions; owner-curated cited entries decided (D04) |
-| A04 | A square-foot grid represents bushes and trees well enough for planning `[ASSUMPTION]` no material | high | none; trees spread and shade beyond their cells | R01 or N01 revisited for perennials | lay out the owner's own garden, including a tree and a blueberry, on the grid | project owner | unknown | untested |
+| A04 | A square-foot grid represents bushes and trees well enough for planning `[ASSUMPTION]` no material | high | none; trees spread and shade beyond their cells | R01 or N01 revisited for perennials | lay out the owner's own garden, including a tree and a blueberry, on the grid, using `research/templates/garden-layout.md` (#13) | project owner | before implementation planning | untested; sheet ready, owner's layout not yet supplied |
 
 ## Kill criteria
 
@@ -122,17 +122,17 @@ None; no synthetic walkthrough has been run.
 | Id | Question | Blocking | Who can answer | Status |
 |---|---|---|---|---|
 | Q01 | Where does the plant catalogue (vegetables, bushes, trees, companions, pruning windows) come from, under what licence, and who checks it? | no — answered by D04 | project owner | answered (D04) |
-| Q02 | Is the proposed Now list (Scope) confirmed, with journal and photos deferred? | yes — implementation planning | project owner | open |
+| Q02 | Is the proposed Now list (Scope) confirmed, with journal and photos deferred? | yes — implementation planning | project owner | open — asked 2026-10-19, not answered |
 | Q03 | Is "three real gardeners open it more than once in spring 2027" the success check, and what result means stop or revise? | no — needed before the spring 2027 test | project owner | open |
-| Q04 | Is the 25-hour build budget still the constraint after D02? | yes — implementation planning (A02) | project owner | open |
+| Q04 | Is the 25-hour build budget still the constraint after D02? | yes — implementation planning (A02) | project owner | open — asked 2026-10-19, not answered |
 | Q05 | Are the Miro boards and the 25-hour limit the owner's real positions, or part of the course exercise? | no — affects how Goals and A02 are sourced | project owner | open |
 | Q06 | Which of the owner's problems should the one AI feature address (Now proposes the layout proposal, which none of them names)? | yes — the AI part of Now | project owner | open |
-| Q07 | When growers lose track, is it not knowing a task is due, not knowing whether it was done, or not knowing how to do it (for example, how to cut)? | yes — shape of the task list and pruning content | project owner, then real gardeners (A01) | open |
+| Q07 | When growers lose track, is it not knowing a task is due, not knowing whether it was done, or not knowing how to do it (for example, how to cut)? | yes — shape of the task list and pruning content | project owner, then real gardeners (A01) | open — asked 2026-10-19, not answered |
 | Q08 | Did the owner describe their own garden only, or also gardens of people they work with or advise? | no — affects how much the account supports Target group | project owner | open |
 
 ## Definition of Ready addendum (own)
 
-Problems have one real account (the owner's); Target group has no real support beyond the owner, so implementation readiness is blocked under the common Definition of Ready. D01–D04 are confirmed; Now (Q02), the AI feature's purpose (Q06), the task list's shape (Q07), the budget (Q04) and success/stop criteria (Q03) are proposals. D02 conflicts with binding `AGENTS.md` until it is updated. No assumption has been tested or explicitly accepted untested. Ready for: collecting evidence (A01), catalogue seed work under D04, and the owner's own provisional build once Q02 and Q04 are answered.
+Problems have one real account (the owner's); Target group has no real support beyond the owner, so implementation readiness is blocked under the common Definition of Ready. D01–D04 are confirmed; Now (Q02), the AI feature's purpose (Q06), the task list's shape (Q07), the budget (Q04) and success/stop criteria (Q03) are proposals. D02 conflicts with binding `AGENTS.md` until it is updated. No assumption has been tested or explicitly accepted untested. Ready for: collecting evidence (A01, A04), catalogue seed work under D04, and the owner's own provisional build once Q02 and Q04 are answered. The 2026-10-19 refresh asked who the MVP is for, the budget (Q04) and the last time the owner lost track of a task (Q07); none was answered, so nothing here changed.
 
 ## Collection plan
 
@@ -152,3 +152,11 @@ Problems have one real account (the owner's); Target group has no real support b
 - Owner and by when: project owner; before catalogue seed work
 - Template: `.ai/specs/research/templates/data-request.md`
 - Status: done 2026-10-19 — `research/2026-10-19-data-request-catalogue-source.md`; decided in D04 (owner checks pruning alone)
+
+### Does a square-foot grid represent the owner's fruit tree and blueberry well enough for planning?
+
+- What decision or work needs it: A04; whether R01 and N01 hold for bushes and trees before the grid editor is specified
+- Who can answer it: project owner (own garden)
+- How: fill in the sheet with the real beds, the tree and the blueberry, recording the seven listed cases; a sketch or photo is enough for an agent to transcribe
+- Owner and by when: project owner; before implementation planning
+- Template: `.ai/specs/research/templates/garden-layout.md` (issue #13)
