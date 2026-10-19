@@ -2,19 +2,19 @@
 
 - Date: 2026-10-19
 - Mode: own; Owner: project owner; Pass: full
-- Evidence basis: one real account — the project owner, a trained gardener, describing problems in general terms with no episode, frequency or cost. Three interviews, the workshop export and a 47-response survey exist but are illustrative course material, not real people (source manifest), so everything they say about gardeners is treated as an assumption. One real benchmark (Planter, checked 2026-10-17). Scope rests on the owner's decisions D01–D03, N01, N02. Most consequential untested belief: that growers other than the owner share the problems the MVP targets (A01), and that the widened scope fits the build budget (A02).
+- Evidence basis: one real account — the project owner, a trained gardener, describing problems in general terms with no episode, frequency or cost. Three interviews, the workshop export and a 47-response survey exist but are illustrative course material, not real people (source manifest), so everything they say about gardeners is treated as an assumption. One real benchmark (Planter, checked 2026-10-17). Scope rests on the owner's decisions D01–D04, N01, N02. Most consequential untested belief: that growers other than the owner share the problems the MVP targets (A01), and that the widened scope fits the build budget (A02).
 - Coverage: 33 claims — 21 sourced (interview 4, data 0, document 9, product 7, benchmark 1), 0 synthetic, 12 assumed; 2 entries on the collection plan
 - Synthetic hypotheses outside Coverage: 0
-- Definition of Ready signed by: not yet signed — Target group has no real support beyond the owner, Now (Q02) and success/stop criteria (Q03) are proposals, catalogue source open (Q01); ready for: research, and the owner's own provisional build once Q02 and Q04 are answered
-- Sources: `.ai/specs/research/interviews/2026-10-19-owner-trained-gardener.md`, `.ai/specs/research/decisions/` (N01, N02, D01–D03), `.ai/specs/research/2026-10-17-benchmark-planter.md`, `.ai/specs/research/2026-10-18-source-manifest.md`, `.ai/specs/research/2026-10-16-miro-board-*.md`, illustrative `.ai/specs/research/2026-10-1{4,5,6,8}-{interview,workshop,survey}-*.md`, `AGENTS.md`
+- Definition of Ready signed by: not yet signed — Target group has no real support beyond the owner, Now (Q02) and success/stop criteria (Q03) are proposals; catalogue source decided (D04); ready for: research, and the owner's own provisional build once Q02 and Q04 are answered
+- Sources: `.ai/specs/research/interviews/2026-10-19-owner-trained-gardener.md`, `.ai/specs/research/decisions/` (N01, N02, D01–D04), `.ai/specs/research/2026-10-17-benchmark-planter.md`, `.ai/specs/research/2026-10-18-source-manifest.md`, `.ai/specs/research/2026-10-16-miro-board-*.md`, illustrative `.ai/specs/research/2026-10-1{4,5,6,8}-{interview,workshop,survey}-*.md`, `AGENTS.md`
 
 ## Decision summary
 
 The owner has decided to build an MVP aimed at the most common problems of home growers (D01), now covering vegetables, berry bushes and fruit trees with pruning tasks (D02). Which items go into Now is still a proposal (Q02).
 The only real problem account is the owner's own: with many plants it is easy to lose track of what to do and when, companion planting is a problem, and pruning needs care. See Problems and Target group.
 Proposed Now: square-foot beds holding all three plant kinds, a sourced catalogue, companion warnings, a frost-date calendar, pruning windows, a task list and the AI layout proposal; journal and photos later. See Scope.
-What could change this: nobody besides the owner has yet been heard (A01); the widened scope may not fit 25 hours (A02); no licensed source for pruning and companion data may exist (A03, Q01); trees may not fit the grid (A04). Binding `AGENTS.md` still says "vegetable-garden planner", so D02 conflicts with project rules until `AGENTS.md` and the engineering standards are updated. What the AI feature should help with (Q06) and what "losing track" means in practice (Q07) are open.
-Next: the owner talks to real gardeners they know about their last season (collection plan) and picks a catalogue source (Q01). Dates are not set.
+What could change this: nobody besides the owner has yet been heard (A01); the widened scope may not fit 25 hours (A02); no licensed dataset covers pruning and companion data, so the owner writes them from cited references (A03, D04); trees may not fit the grid (A04). Binding `AGENTS.md` still says "vegetable-garden planner", so D02 conflicts with project rules until `AGENTS.md` and the engineering standards are updated. What the AI feature should help with (Q06) and what "losing track" means in practice (Q07) are open.
+Next: the owner talks to real gardeners they know about their last season (collection plan); the catalogue source is decided (D04). Dates are not set.
 
 ## Vision
 
@@ -97,7 +97,8 @@ For home growers with vegetables, berry bushes and fruit trees, Plant.AI is mean
 |---|---|---|---|---|---|---|---|---|---|
 | D01 | 2026-10-19 | MVP aims at the most common home-grower problems | owner's stated aim; which problems are most common is A01 | project owner | active | when real growers are heard | superseding record by project owner | `[DOCUMENT]` decisions/D01-mvp-targets-common-problems.md | none |
 | D02 | 2026-10-19 | MVP covers vegetables, berry bushes and fruit trees, including pruning tasks | owner: "hard to focus only on vegetable"; agent recommended vegetables only (budget, catalogue source, pruning risk) and was overruled | project owner | active | if A02 or A03 fails | superseding record by project owner; AGENTS.md "vegetable-garden planner" and the engineering standards must change in the first implementing PR | `[DOCUMENT]` decisions/D02-scope-includes-bushes-trees-pruning.md | none |
-| D03 | 2026-10-19 | catalogue source chosen in a separate step | keeps discovery on scope; agent recommendation accepted | project owner | active | before catalogue seed work | superseding record by project owner | `[DOCUMENT]` decisions/D03-catalogue-source-deferred.md | none |
+| D03 | 2026-10-19 | catalogue source chosen in a separate step | keeps discovery on scope; agent recommendation accepted | project owner | superseded by D04 | before catalogue seed work | superseding record by project owner | `[DOCUMENT]` decisions/D03-catalogue-source-deferred.md | none |
+| D04 | 2026-10-19 | catalogue is owner-curated and cited: Wikidata (CC0) for identity, Trefle (CC-BY-4.0) for spacing and days-to-harvest, owner-written frost offsets, companions and pruning; owner checks pruning alone (accepted risk) | no cleanly licensed dataset covers companions or pruning (data-request note); agent proposal accepted in full | project owner | active | if a licensed companion/pruning dataset appears or a pruning entry proves wrong | superseding record by project owner | `[DOCUMENT]` decisions/D04-catalogue-source-owner-curated.md | D03 |
 
 ## Riskiest assumptions
 
@@ -105,7 +106,7 @@ For home growers with vegetables, berry bushes and fruit trees, Plant.AI is mean
 |---|---|---|---|---|---|---|---|---|
 | A01 | Growers other than the owner lose track of tasks and timing, and have companion or pruning trouble `[ASSUMPTION]` owner account + illustrative material | high | one real account (owner); survey and interviews illustrative | Now targets the wrong problem; D01 revisited | ask a few real gardeners the owner knows about their last season, without showing the app. Supports D01 if they describe, unprompted, missed or mistimed tasks, or companion or pruning trouble; revisit D01 if they describe other problems. Tests only that the problem exists, not whether they would use a task list; people the owner knows may share the owner's habits | project owner | unknown | untested |
 | A02 | Vegetables, bushes, trees, pruning windows, calendar, companions and the AI proposal fit the 25-hour MVP `[ASSUMPTION]` owner goals board | high | owner's board said 25 h fits only with photo diagnosis and rotation deferred, before D02 widened scope | build overruns; cut Now | estimate the Now items during spec writing / backlog dry run and compare with 25 h | project owner | before implementation planning | untested |
-| A03 | A licensed source exists for timing, companion relations and per-species pruning windows of vegetables, bushes and trees `[ASSUMPTION]` no material | high | 2026-10-19 source search (`research/2026-10-19-data-request-catalogue-source.md`): Wikidata (CC0) and Trefle (CC-BY-4.0) cover taxonomy and some timing; no candidate with a clean licence covers companion relations or pruning windows | catalogue or pruning tasks cannot ship under R03 | catalogue source search (Q01) | project owner | before catalogue seed work | partly tested: no open source for pruning or companions; owner-curated cited entries proposed, owner decision pending |
+| A03 | A licensed source exists for timing, companion relations and per-species pruning windows of vegetables, bushes and trees `[ASSUMPTION]` no material | high | 2026-10-19 source search (`research/2026-10-19-data-request-catalogue-source.md`): Wikidata (CC0) and Trefle (CC-BY-4.0) cover taxonomy and some timing; no candidate with a clean licence covers companion relations or pruning windows | catalogue or pruning tasks cannot ship under R03 | catalogue source search (Q01) | project owner | before catalogue seed work | partly tested: no open source for pruning or companions; owner-curated cited entries decided (D04) |
 | A04 | A square-foot grid represents bushes and trees well enough for planning `[ASSUMPTION]` no material | high | none; trees spread and shade beyond their cells | R01 or N01 revisited for perennials | lay out the owner's own garden, including a tree and a blueberry, on the grid | project owner | unknown | untested |
 
 ## Kill criteria
@@ -120,7 +121,7 @@ None; no synthetic walkthrough has been run.
 
 | Id | Question | Blocking | Who can answer | Status |
 |---|---|---|---|---|
-| Q01 | Where does the plant catalogue (vegetables, bushes, trees, companions, pruning windows) come from, under what licence, and who checks it? | yes — catalogue seed data and pruning tasks | project owner | open |
+| Q01 | Where does the plant catalogue (vegetables, bushes, trees, companions, pruning windows) come from, under what licence, and who checks it? | no — answered by D04 | project owner | answered (D04) |
 | Q02 | Is the proposed Now list (Scope) confirmed, with journal and photos deferred? | yes — implementation planning | project owner | open |
 | Q03 | Is "three real gardeners open it more than once in spring 2027" the success check, and what result means stop or revise? | no — needed before the spring 2027 test | project owner | open |
 | Q04 | Is the 25-hour build budget still the constraint after D02? | yes — implementation planning (A02) | project owner | open |
@@ -131,7 +132,7 @@ None; no synthetic walkthrough has been run.
 
 ## Definition of Ready addendum (own)
 
-Problems have one real account (the owner's); Target group has no real support beyond the owner, so implementation readiness is blocked under the common Definition of Ready. D01–D03 are confirmed; Now (Q02), the AI feature's purpose (Q06), the task list's shape (Q07), the budget (Q04) and success/stop criteria (Q03) are proposals. D02 conflicts with binding `AGENTS.md` until it is updated. No assumption has been tested or explicitly accepted untested. Ready for: collecting evidence (A01), choosing a catalogue source (Q01), and the owner's own provisional build once Q02 and Q04 are answered.
+Problems have one real account (the owner's); Target group has no real support beyond the owner, so implementation readiness is blocked under the common Definition of Ready. D01–D04 are confirmed; Now (Q02), the AI feature's purpose (Q06), the task list's shape (Q07), the budget (Q04) and success/stop criteria (Q03) are proposals. D02 conflicts with binding `AGENTS.md` until it is updated. No assumption has been tested or explicitly accepted untested. Ready for: collecting evidence (A01), catalogue seed work under D04, and the owner's own provisional build once Q02 and Q04 are answered.
 
 ## Collection plan
 
@@ -150,3 +151,4 @@ Problems have one real account (the owner's); Target group has no real support b
 - How: search candidate public or licensed datasets and record licence and coverage
 - Owner and by when: project owner; before catalogue seed work
 - Template: `.ai/specs/research/templates/data-request.md`
+- Status: done 2026-10-19 — `research/2026-10-19-data-request-catalogue-source.md`; decided in D04 (owner checks pruning alone)

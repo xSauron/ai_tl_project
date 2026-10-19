@@ -53,8 +53,8 @@ The owner curates a small catalogue and cites the source of every fact. Open dat
 
 **Consequence for scope (A02, A03):** pruning and companion data become authoring work for the owner, not an import. Its cost should be estimated against the 25-hour budget (Q04). If it does not fit, this supports cutting pruning windows from Now. That is the owner's call under D02.
 
-## Still open for the owner
+## Outcome
 
-- Choose a source, or accept the proposal above, and record it as a decision under `research/decisions/` (D04 or next free id). This is the decision the issue's last acceptance criterion asks for. The agent did not write it, because decisions are the owner's.
-- Confirm the availability and licence status of the PIORiN/IO-PIB methodologies (#9).
-- Name the horticulture checker for pruning entries.
+The owner accepted the proposal above in full on 2026-10-19 and will check pruning entries alone, as an accepted risk. Recorded as `decisions/D04-catalogue-source-owner-curated.md`, which supersedes D03.
+
+Still open: confirm the availability and licence status of the PIORiN/IO-PIB methodologies (#9) before citing them.
