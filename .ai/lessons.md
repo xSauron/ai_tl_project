@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-19 — Research tasks that need the owner's real-world data: ship the sheet, not the data
+- **Context:** `om-auto-fix-issue 13` was told to continue autonomously, but the owner had not posted their garden layout. The task tests A04.
+- **Lesson:** Inventing the data would fake the evidence the task exists to collect. What an agent can do is turn the decision rules into a fill-in sheet with the cases to check.
+- **Action:** Ship a template under `research/templates/` with `Refs #N`, leave the issue open, and say plainly in the report that the owner's input is still missing. Never close the issue on a template.
+
 ### 2026-10-19 — Two agents opened duplicate PRs for the same uncommitted material
 - **Context:** Discovery material for #11–#13 existed only as uncommitted files in `/workspace`. Two separate runs each shipped it: PR #15 (`docs/issue-11-discovery-material`) and PR #14 (`docs/issue-12-discovery-research`), which differed only in run-log wording, one lesson and the D04 decision.
 - **Lesson:** Uncommitted files in the primary checkout are invisible to other runs' dedupe, which searches only issues and PRs.
