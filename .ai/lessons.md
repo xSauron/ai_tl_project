@@ -21,6 +21,16 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-19 — Two agents opened duplicate PRs for the same uncommitted material
+- **Context:** Discovery material for #11–#13 existed only as uncommitted files in `/workspace`. Two separate runs each shipped it: PR #15 (`docs/issue-11-discovery-material`) and PR #14 (`docs/issue-12-discovery-research`), which differed only in run-log wording, one lesson and the D04 decision.
+- **Lesson:** Uncommitted files in the primary checkout are invisible to other runs' dedupe, which searches only issues and PRs.
+- **Action:** Before opening a PR, run `gh pr list --search "<issue number>"` and check for open PRs that reference the same issues. Extend an existing PR rather than opening another one.
+
+### 2026-10-19 — `git push` fails with "SSL CA cert" in cezar worktrees; `gh pr edit --add-label` silently no-ops
+- **Context:** Opening the docs PR for #11. `git fetch`/`git push` failed with `Problem with the SSL CA cert`, and `gh pr edit --add-label` printed a Projects-classic GraphQL error without applying any labels.
+- **Lesson:** The ambient `GIT_SSL_CAINFO` points at a file that does not exist, and git has no stored credentials. `gh` itself works.
+- **Action:** Push with `GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt git -c credential.helper='!gh auth git-credential' push …`, and never disable TLS verification. Apply labels through REST (`gh api -X POST repos/<o>/<r>/issues/<n>/labels -f 'labels[]=…'`) and read them back to check.
+
 ### 2026-10-19 — Web research in this sandbox: WebSearch/WebFetch denied, `curl`/`gh api` work
 - **Context:** Researching catalogue data sources for #12. The session's permission mode denied `WebSearch` and `WebFetch`.
 - **Lesson:** Outbound HTTPS works with `curl` and `gh api`, so licence pages can be read directly. `piorin.gov.pl` fails TLS verification from here. Most open plant datasets either lack a clean licence (PFAF, Permapeople) or are another gardening app's data (Growstuff, OpenFarm).
