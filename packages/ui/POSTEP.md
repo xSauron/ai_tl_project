@@ -2,6 +2,15 @@
 
 Read this file first in a new session and continue from "Next step". Stages run 0 → 5; stop after each one and wait for the owner's "dalej" before continuing.
 
+## How to resume (new session / new chat)
+
+Everything below is **committed** on `main` (local commit `84a51da`, not pushed anywhere). To continue in a fresh session:
+
+1. Open this repo and paste: *"Przeczytaj packages/ui/POSTEP.md i kontynuuj budowę design systemu od Etapu 2."* (or just "dalej" if the original task instructions are still in context).
+2. The agent should read this file, `AGENTS.md`'s design-system task context isn't needed again — this file plus `lekcja-06/tokeny.md` and `lekcja-06/referencje.md` have every decision made so far.
+3. Nothing is half-written mid-stage: Stage 0 and Stage 1 are both finished and committed, so Stage 2 starts clean (no uncommitted state to recover).
+4. Quick sanity check before continuing: `npm test` (expect 100% coverage, ~132 tests) and `node scripts/check-design-tokens-cli.mjs` (expect exactly 7 pre-existing findings in `badge.tsx`/`button.tsx`/`input.tsx`/`table.tsx` — that's Stage 2's job to fix, not a regression).
+
 ## Stages
 
 - [x] Stage 0 — Inventory and plan
