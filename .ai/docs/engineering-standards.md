@@ -15,6 +15,8 @@ Status: active (draft — product scope assumptions in §0 to be confirmed)
 > - The ORM must not be cached on `globalThis` (Next.js module layers each have their own entity classes) —
 >   see `.ai/lessons/2026-10-13-mikroorm-next-layers.md`. This applies unchanged once the ORM moves to `db`.
 
+> **2026-10-20 rules alignment (D02, D08, D09, D10/R07, D14/R09):** scope is vegetables, berry bushes and fruit trees; the MVP AI feature is garden Q&A (layout proposal is Later); journal, photos and spraying advice are Later; a planting may have no bed; stored `operations` are a concept. `AGENTS.md` is authoritative where this document's §0 still mentions the older scope.
+
 Adapted from the DevMentor engineering standards (2026-09-01) for a different product:
 **Plant.AI**, a vegetable-garden planner with AI assistance, using Planter
 (planter.garden) as a functional/UX benchmark — not copying its branding, content,

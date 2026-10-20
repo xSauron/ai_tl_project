@@ -10,13 +10,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # Plant.AI — Project Rules
 
-Plant.AI is a single-persona, mobile-first **vegetable-garden planner with AI assistance**. Planter (planter.garden) is a functional/UX benchmark only: never copy its branding, content, data or code. Users lay out gardens and beds on a **square-foot grid**, place plantings from a **crop catalog**, see **companion conflicts**, get a **planting calendar** from their frost dates, keep a **journal** with photos, and use **AI** for layout suggestions and garden Q&A.
+Plant.AI is a single-persona, mobile-first **garden planner (vegetables, berry bushes and fruit trees) with AI assistance**. Planter (planter.garden) is a functional/UX benchmark only: never copy its branding, content, data or code. Users lay out gardens and beds on a **square-foot grid**, place plantings from a **crop catalog**, see **companion conflicts**, get a **planting calendar** from their frost dates, keep a list of **operations** (planned or done), and use **AI** to answer questions about their garden. The journal with photos, spraying advice and the AI layout proposal are Later (D09, D08).
 
 These rules are **binding** for every coding agent. Full standards with rationale: [`.ai/docs/engineering-standards.md`](.ai/docs/engineering-standards.md). If a change must break a rule, update this file and the standards doc in the same PR and say why. When two principles conflict, pick the one that keeps the change **smaller and more explicit**.
 
 ## Product scope (MVP)
 
-Domain concepts: `auth`, `gardens` (gardens + beds), `plantings`, `crops` (catalog, varieties, companion relations), `calendar`, `journal`, `photos`, `assistant`.
+Domain concepts: `auth`, `gardens` (gardens + beds), `plantings`, `crops` (catalog, companion relations, pruning and sowing timing), `calendar`, `operations`, `assistant`. `journal` and `photos` are Later (D09): do not build or scaffold them, nor `upload.ts`/`apiUpload`, before they are specced.
 
 **Out of scope, do not build or scaffold "for later":** sharing/collaborative gardens, social features, marketplace/seed shop, payments, RBAC beyond a single `user` role, multi-tenancy, background queues/workers, native apps, weather/IoT integrations, freeform (non-grid) garden drawing.
 
@@ -54,7 +54,7 @@ packages/
 
 ### Domain concept convention
 
-Domain code is not organized into `modules/`. Each concept (`auth`, `gardens`, `plantings`, `crops`, `calendar`, `journal`, `photos`, `assistant`) is a same-named sub-folder repeated across the layers that need it:
+Domain code is not organized into `modules/`. Each concept (`auth`, `gardens`, `plantings`, `crops`, `calendar`, `operations`, `assistant`) is a same-named sub-folder repeated across the layers that need it:
 
 - `packages/db/src/entities/<concept>/<name>.entity.ts` (+ `db/src/seeds/` for catalog data)
 - `packages/core/src/services/<concept>/`: `<name>.service.ts` plus pure rule modules (`grid-rules.ts`, `companions.ts`, `sowing-windows.ts`)
@@ -67,8 +67,9 @@ Event IDs follow `concept.entity.action`, past tense (e.g. `plantings.planting.p
 
 ### Domain invariants
 
-- Beds are square-foot grids (`rows × cols`); a `Planting` occupies a cell rectangle (`row`, `col`, `rowSpan`, `colSpan`) and stores `plantsPerCell` derived from crop spacing. Placement validity (bounds, overlap, footprint, spacing) is decided only by the pure functions in `services/plantings/grid-rules.ts`. `PlantingService` calls them and persists, checking overlap inside a transaction. Document the chosen occupancy model in the entity file.
+- A `Planting` belongs to a garden and may have no bed (R07, D10): an unplaced planting has no cells, no grid check and no companion neighbours. Beds are square-foot grids (`rows × cols`); a placed `Planting` occupies a cell rectangle (`row`, `col`, `rowSpan`, `colSpan`) and stores `plantsPerCell` derived from crop spacing. Placement validity (bounds, overlap, footprint, spacing) is decided only by the pure functions in `services/plantings/grid-rules.ts`. `PlantingService` calls them and persists, checking overlap inside a transaction. Document the chosen occupancy model in the entity file.
 - Companion/combative relations come from catalog data (`crop_companions`: `cropId`, `otherCropId`, `relation`, `source`). Conflicts are computed server-side by a pure function `(plantings, relations) → conflicts` and returned with the bed. Never hard-code crop relationships in the UI.
+- An `Operation` (spraying, pruning, sowing… planned or done, D14, R09) is stored user data owned through the garden; one operation links to many plantings of that garden. It has a type from a fixed list, a date-only date and an `isDone` flag, and no notes, photo or assignee. Derived tasks are never stored (R05) and are not operations.
 - Calendar windows are derived from crop timing + the user's frost dates by pure functions in `services/calendar/`, never stored. Persist only user decisions (overrides). Calendar dates are date-only values (`YYYY-MM-DD`); only timestamps are `timestamptz`.
 - The catalog is reference data from versioned seed files. Users can't edit it in MVP, and every fact has a `source`. Never scrape or copy another app's dataset.
 - Beds use optimistic locking (`version`). A stale write → `ConflictError` (409) and the client reloads. Never silently let the last write win on a layout.
@@ -79,7 +80,7 @@ Event IDs follow `concept.entity.action`, past tense (e.g. `plantings.planting.p
 - External systems only through ports in `core`: `AiGateway`, `ImageStorage`, `FrostDateProvider`. Vendor SDKs only inside `adapters/`. MVP adapters: `MockAiGateway` (deterministic), `LocalDiskImageStorage`, `StaticFrostDateProvider`. Users can always override frost dates manually.
 - Tests and CI always use mock/static/local adapters, never a real AI provider or network call.
 - Prompts are versioned in `core/src/ai/prompts/<name>.vN.ts`. AI output is parsed with Zod (`core/src/ai/schemas/`) **and** validated against domain rules (crop IDs exist, every planting passes `grid-rules.ts`). Invalid output → one retry, then `AiUnavailableError`. Results store `model` + `promptVersion`.
-- AI proposes, the user applies: AI never writes plantings directly. A layout is a *proposal* with an ID, applied at most once via an explicit "apply" request through `PlantingService`, like a manual edit.
+- (Layout proposal is Later, D08; the rule stays for when it is built.) AI proposes, the user applies: AI never writes plantings directly. A layout is a *proposal* with an ID, applied at most once via an explicit "apply" request through `PlantingService`, like a manual edit.
 - AI calls are synchronous with a hard timeout (named constant, e.g. 30 s). No `assistant/` folder before the first AI feature.
 
 ### Reusable API & UI layer
@@ -108,7 +109,7 @@ New reusable components go here:
 ### Pages & routing (`packages/app/src/app`)
 
 - `(marketing)/`: landing + public crop catalog. Own root layout, plain Tailwind with `@theme` tokens.
-- `(auth)/` (login, register) and `(app)/` (gardens, beds, calendar, journal, assistant, settings): shadcn/ui theme from `@plantai/ui`. They don't share a root layout with `(marketing)`, so the two design systems never mix. There is no top-level `app/layout.tsx`.
+- `(auth)/` (login, register) and `(app)/` (gardens, beds, calendar, operations, assistant, settings): shadcn/ui theme from `@plantai/ui`. They don't share a root layout with `(marketing)`, so the two design systems never mix. There is no top-level `app/layout.tsx`.
 - `api/<concept>/...`: one `route.ts` per resource. `api/health` must keep working (it runs a real `select 1`).
 - Pages default-export `<Segment>Page`.
 - Server code resolves services via `withScope` (one Awilix request scope with a forked `EntityManager` per request).
@@ -153,7 +154,7 @@ New reusable components go here:
 - Cookies: `httpOnly`, `secure` in production, `sameSite=lax`, scoped `path`. Never store a JWT in `localStorage`.
 - CSRF: state-changing routes require the custom header that `apiCall`/`apiUpload` always set.
 - Rate limiting: login/register and **every AI endpoint** (per-user daily quota + per-minute limit) → 429.
-- Ownership on every record (gardens, beds, plantings, journal, photos, AI conversations), resolving bed/planting ownership through the garden and never trusting a client-sent `gardenId`. Fail closed.
+- Ownership on every record (gardens, beds, plantings, operations, AI conversations), resolving bed/planting ownership through the garden and never trusting a client-sent `gardenId`. Fail closed.
 - Uploads: size limit before buffering (e.g. 8 MB), allow-list `jpeg/png/webp` by magic bytes, re-encode, **strip EXIF**, random UUID keys, no client filenames in paths. Photos are served only via an authenticated, ownership-checked route.
 - Location minimization: store frost dates + coarse region only. Send the AI only climate zone/frost dates.
 - AI: user text goes to the model delimited as data, never merged into instructions. The model sees only the current garden's data. Output is untrusted: never rendered as HTML, never written without explicit "apply". Answers are labeled as suggestions, and safety facts (e.g. toxicity) come from the catalog.

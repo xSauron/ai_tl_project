@@ -1,0 +1,12 @@
+# D12 — The MVP task list shows what needs doing; the gardener can add tasks; AI may support it
+- Date, owner: 2026-10-20, project owner. Written chat, Polish: "Lista zadań tego co trzeba zrobić, może być wspierana przez ai albo zlecana przez ogrodnika" (a list of the tasks that need doing; it may be supported by AI or assigned by the gardener). Answer to Q07, asked as a decision with three options (what is due and when / mark done / how to do it). The agent recommended "what is due and when".
+- Context and the options weighed: Q07 asked what the task list must do. The owner's earlier words were about timing ("pilnowanie kiedy…"). Marking done came only from the synthetic walkthrough (H06). "How" is covered by the AI answer (D07 #3, D08).
+- Decision and why: the task list shows what needs to be done. The owner's words don't mention derived tasks; those come from Now item 1 (D07, R05). The agent added them, plus tasks the gardener adds (the agent's reading of "zlecana przez ogrodnika"). AI support is allowed. Its form is not decided beyond D08 (answers about the user's own garden) and N02 (AI never writes to the plan without the user applying it). Marking a task done was not chosen.
+- Consequences, and what would make us revisit it:
+  - Tasks the gardener adds are user data, so they persist (R08). Derived tasks are still computed, never stored (R05).
+  - An AI-suggested task, if built, is a proposal the user applies (N02, R02). It sits inside the one AI feature (D08), so it is cut with it first (D07).
+  - Revisit after the owner's own test (D13) if completed tasks need recording.
+- Open: Q12 (does "zlecana" mean tasks the gardener writes for themselves, or tasks handed to someone else?) and Q13 (are AI-suggested tasks in MVP?), both raised by the independent review on 2026-10-20.
+- Status: active
+- Note (2026-10-20): Q12 and the stored-task shape were answered by D14, which supersedes this record's gardener-added tasks reading and "marking done not chosen". Q13 is recorded as delegated to the agent (proposal: Later).
+- Note (2026-10-20): Q16 confirmed by the owner. Planned and done work share one list, with no notes or photos (see D14).

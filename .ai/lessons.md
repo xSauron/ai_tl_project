@@ -21,6 +21,31 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-20 — Solo project: don't keep routing to research the owner can't collect
+- **Context:** the brief, `om-backlog` and `om-discover` kept pointing at interviews with other gardeners (D05). The agent even built an interview kit, until the owner said a one-person course project can't run them ("coś się zapętliło").
+- **Lesson:** when the only reachable informant is the builder, every readiness stop that asks for outside evidence repeats itself. The way out was an owner decision already on file, D05's alternative (b): narrow the target group to what the owner knows first-hand and accept A01 untested (D11).
+- **Action:** at a readiness stop, first ask whether the requested material can actually be collected. If not, put the narrow-and-accept-risk decision in front of the owner instead of preparing more collection tools.
+
+### 2026-10-20 — A new decision row in the brief leaves filed research issues citing a superseded rule
+- **Context:** `om-backlog` re-run on the brief. D10 added R07 (superseding R01) after E01 was refreshed, so #11 and #13 still cited R01 as current. `SDLC.md` has no Definition of Ready, yet the brief's own addendum and the active D05 still block an implementation tree.
+- **Lesson:** Every new `D`/`R` row in the brief can make a filed issue's *Decisions in play* stale. A missing DoR in `SDLC.md` skips only the formal check; active owner decisions (D05) and `[ASSUMPTION]`-only Target group still stop the run.
+- **Action:** When re-running `om-backlog`, compare each open issue's *Decisions in play* with the brief's Decisions and Business rules tables, and mark superseded rows instead of deleting them.
+
+### 2026-10-20 — Grid concurrency design: lock the child row too, and mind FK action and lock joins
+- **Context:** spec review of `2026-10-20-garden-grid.md`. The first draft locked only the bed (aggregate root) and used `ON DELETE RESTRICT` on `plantings.bed_id`.
+- **Lesson:** locking the root misses writes that touch no common root (the same unplaced planting placed into two beds at once). Postgres checks `RESTRICT` immediately, so it can break a parent cascade (garden → beds + plantings). `NO ACTION` defers the check to the end of the statement. `SELECT … FOR UPDATE` with an ownership join also locks the joined parent rows.
+- **Action:** lock the roots in id order, then the child row, then re-check the child's parent. Use `NO ACTION` where a service-level path (unplace before delete) sits beside a DB cascade. Check ownership first, then lock by id with no join.
+
+### 2026-10-20 — One "okej" to several proposals is not yet a decision per proposal
+- **Context:** second `om-discover` session. The owner answered three separate scope proposals (Now order, AI feature, Later list) with a single "okej". The agent drafted decision records that already said "confirmed at sign-off", and the skeptic flagged this.
+- **Lesson:** A blanket yes can be read as confirmation only after the agent states the exact mapping (here 1a, 2b, 3a) and the owner confirms it. Until then the records are drafts.
+- **Action:** Keep decision drafts outside the repo marked pending. At sign-off, list each choice by its letter, and write the records only after the owner confirms.
+
+### 2026-10-20 — Product brief missed a committed synthetic walkthrough; delegation is not a decision
+- **Context:** `om-discover --refresh`. The brief said "no synthetic walkthrough has been run", although `research/walkthroughs/2026-10-19-plan-a-bed-for-spring-mvp-session-001/` had landed in #14. Later the owner answered scope questions with "zrob jak uwazasz" (do as you think).
+- **Lesson:** A brief can fall out of sync with research that lands in the same PR. An answer like "do as you think" delegates the choice but doesn't confirm a specific option. Moving a feature out of Now can also change scope that `AGENTS.md` makes binding.
+- **Action:** On refresh, list `research/walkthroughs/` and `decisions/` and compare them with the brief. Record delegated choices as agent proposals and say they were delegated. Don't drop anything `AGENTS.md` scopes into the MVP without explicit owner confirmation.
+
 ### 2026-10-19 — Research tasks that need the owner's real-world data: ship the sheet, not the data
 - **Context:** `om-auto-fix-issue 13` was told to continue autonomously, but the owner had not posted their garden layout. The task tests A04.
 - **Lesson:** Inventing the data would fake the evidence the task exists to collect. What an agent can do is turn the decision rules into a fill-in sheet with the cases to check.
