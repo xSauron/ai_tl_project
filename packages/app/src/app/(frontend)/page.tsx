@@ -118,6 +118,9 @@ export default function HomePage() {
       <footer className="mt-16 flex flex-wrap items-center justify-between gap-2 border-t border-leaf-100 pt-6 text-sm">
         <span className="font-semibold text-leaf-900">🌱 Plant.AI</span>
         <span className="text-soil-900/80">A square-foot vegetable garden planner.</span>
+        <Link href="/design-system/index.html" className="font-medium text-leaf-700 hover:text-leaf-900">
+          Design system →
+        </Link>
       </footer>
     </div>
   );

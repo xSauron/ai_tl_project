@@ -1,0 +1,27 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks"
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+## Proposal flag
+
+`lekcja-06/referencje.md`'s own gap list (Luki) marks this entire area **unconfirmed** ("Ruch i reakcja: brak referencji. Propozycja do oceny…"). Nothing on this page is approved; it's written so Stage 2 has something concrete to build against and revise.
+
+## Rule (proposed)
+
+Motion is feedback **after an action**, never decoration. No background animation, no ornamental page-transition. Concretely:
+
+- A button press, a toggle flip, a dialog opening/closing animate — they're direct responses to what the user just did.
+- Nothing animates on page load, scroll, or idle.
+- This also keeps the bed-grid screen calm under R01's "dense" density call (Stage 0) — motion doesn't compete with the information already on screen.
+
+**Durations** (Tailwind defaults, not new tokens — nothing here justifies a custom scale yet): `duration-150` for micro-interactions (press, toggle, focus ring), `duration-200` for larger surfaces (dialog, sheet, popover).
+
+## Keyboard shortcuts (grounded — not a proposal)
+
+`Cmd/Ctrl+Enter` submits a form, `Escape` cancels it — `AGENTS.md`, `CrudForm.tsx` contract. Not motion exactly, but the same "respond to what the user just did, don't make them wait" principle, and it's an actual decision rather than a gap.
+
+## Reduced motion
+
+WCAG 2.3.3 (Animation from Interactions): every transition above respects `prefers-reduced-motion: reduce` via Tailwind's `motion-reduce:` variant (e.g. `transition-transform motion-reduce:transition-none`) — built per-component from Stage 2 onward, not a separate token.

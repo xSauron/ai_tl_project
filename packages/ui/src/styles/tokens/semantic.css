@@ -1,0 +1,70 @@
+/**
+ * Semantic color tokens — layer 2 of 3 (raw → semantic → component).
+ *
+ * Named by purpose, never by appearance (no "-blue-" or "-green-" here —
+ * that's the raw layer). Each pair below follows the existing shadcn
+ * convention already in `globals.css` (`--primary` / `--primary-foreground`):
+ * the first name is the surface/background, "-foreground" is the text that
+ * sits on it. Contrast is measured for exactly these pairs — see the
+ * Foundations → Color story for the live, re-measured table.
+ *
+ * The pre-existing shadcn tokens (--background, --foreground, --primary,
+ * --secondary, --muted, --accent, --destructive, --border, --input, --ring)
+ * are already purpose-named (not "-gray-900"), so they are left as the
+ * semantic layer too — this file only adds what Plant.AI decided on top.
+ * Flag: that neutral scale is still shadcn's default "neutral" base color
+ * (components.json), not a Plant.AI color decision — no reference material
+ * picks a specific gray/warmth yet.
+ */
+
+:root {
+  /*
+   * Calendar phase colors (R02.2, "przyjęte"): sow / plant-out / prune get
+   * their own color so they read apart on the calendar bar (R02.1) and the
+   * task/operation badges, without relying on text alone.
+   * Contrast (light): sow 7.56 : 1, plant-out 7.00 : 1, prune 5.11 : 1 — all
+   * pass WCAG AA (4.5 : 1 text). See lekcja-06/tokeny.md for the worked
+   * numbers, including the prune fix.
+   *
+   * R02.2 names a fourth phase ("zbiór" / harvest) that this product's
+   * `GET /api/gardens/[id]/tasks` doesn't derive (task-list spec: only
+   * sow | plant-out | prune windows exist — no harvest timing column in the
+   * catalogue). No harvest token exists until that's decided; flagged in
+   * POSTEP.md, not silently dropped.
+   */
+  --phase-sow: var(--raw-blue-50);
+  --phase-sow-foreground: var(--raw-blue-900);
+  --phase-plant-out: var(--raw-green-50);
+  --phase-plant-out-foreground: var(--raw-green-900);
+  --phase-prune: var(--raw-orange-50);
+  --phase-prune-foreground: var(--raw-orange-900);
+}
+
+.dark {
+  /*
+   * Same roles, dark surfaces: deep-tinted background + light saturated
+   * text (the light theme's pale-bg/dark-text pattern inverted, not just
+   * dimmed) — a flat opacity drop on the light values would wreck the
+   * contrast ratios recomputed below.
+   * Contrast (dark): sow 8.24 : 1, plant-out 11.03 : 1, prune 9.66 : 1.
+   */
+  --phase-sow: var(--raw-blue-950);
+  --phase-sow-foreground: var(--raw-blue-300);
+  --phase-plant-out: var(--raw-green-950);
+  --phase-plant-out-foreground: var(--raw-green-300);
+  --phase-prune: var(--raw-orange-950);
+  --phase-prune-foreground: var(--raw-orange-300);
+}
+
+:root {
+  /*
+   * Grid cell radius (component layer, not semantic — kept here only
+   * because Tailwind's `--radius-*` namespace lives beside `--color-*` in
+   * the same `@theme inline` block in globals.css). Source: R01.1
+   * ("przyjęte") — the bed grid is squared paper, one cell = one unit, so
+   * its cells don't take the app's default rounded-card radius (`--radius`,
+   * 0.625rem). Proposal: built with `BedGrid` in Stage 3, re-checked
+   * visually then; not a color, so it doesn't vary by theme.
+   */
+  --grid-cell-radius: 0px;
+}

@@ -1,0 +1,20 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks"
+
+<Meta title="Foundations/Themes" />
+
+# Themes
+
+Light and dark, both in scope (approved in Stage 0 — `packages/ui/POSTEP.md`; the `.dark` class already existed in `globals.css` as shadcn's default scaffold, but shipping it was an open question until then).
+
+## How switching works
+
+The theme is a class (`.dark`) on **`document.documentElement`** — not on a wrapper around the story or the page content. This matters because Radix renders dialogs, menus and popovers in a portal attached to `<body>`, outside whatever element a story wraps: a class on the story root would leave those surfaces stuck on the wrong theme.
+
+- **In this Storybook:** the "Theme" toolbar item (top of the window) toggles it — see `.storybook/preview.tsx`'s decorator.
+- **In the app:** not wired yet — no product UI exists to carry a theme switch (Stage 2 builds the first real `Switch`/`Button` toggle; this page documents the mechanism it has to use, not a shipped control).
+- **In tests:** `design-system:test` (package.json, Stage 1 step 1) runs every story twice, once per `VITE_STORYBOOK_THEME` value, so a token that only breaks in dark mode still fails CI.
+
+## What's decided vs. not
+
+- **Decided:** both themes exist; the mechanism above; the three calendar-phase color pairs have real dark values (Color page), re-measured, not just "light values with opacity dropped".
+- **Not decided:** which theme is the default for a first-time visitor, and whether the choice should follow the OS (`prefers-color-scheme`) or be a manual, remembered pick. No reference material or brief decision covers this — flagged, defaults to `light` in Storybook's `initialGlobals` for now (an arbitrary starting point, not a product decision).

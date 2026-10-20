@@ -1,0 +1,49 @@
+/**
+ * Typography scale — proposal, pending owner approval.
+ *
+ * Grounded: the font is Geist, already self-hosted by the app via
+ * `next/font/google` in its own layouts (unchanged here — rule 11); no new
+ * typeface is introduced. The ~65-character line length for continuous text
+ * is the design-system brief's own instruction (Stage 1 step 5), also
+ * WCAG 1.4.8.
+ *
+ * NOT grounded, flagged: the specific sizes below. `lekcja-06/referencje.md`
+ * only says, unconfirmed (R01.5 "nieczytelne pismo", R02.4 "drobny druk" —
+ * both "propozycja" status, not approved): avoid handwriting-style display
+ * and dense tiny print. No reference material fixes a px value for any
+ * role. These sizes are this file's own proposal, kept away from anything
+ * under 13px given the sun/phone context (Stage 0: 44 px touch target
+ * approved; the contrast threshold stays WCAG AA, not raised — same
+ * decision doesn't cover type size).
+ *
+ * Typography doesn't vary by theme, so — unlike the color tokens in
+ * semantic.css — these go straight into `@theme`: both the CSS variable and
+ * the Tailwind utility (`text-page-heading`, …) in one step.
+ */
+
+@theme {
+  /* Each role pairs with a Tailwind font-weight utility — Tailwind has no
+     mechanism to bundle weight into a `--text-*` theme key, so the pairing
+     below is a usage rule (Stage 2 applies it), not a second token:
+     page-heading → font-bold (700); section-heading / label → font-semibold
+     (600); body / metadata → font-normal (400). */
+  --text-page-heading: 1.75rem; /* 28px */
+  --text-page-heading--line-height: 1.2;
+
+  --text-section-heading: 1.25rem; /* 20px */
+  --text-section-heading--line-height: 1.3;
+
+  --text-body: 1rem; /* 16px */
+  --text-body--line-height: 1.5;
+
+  --text-label: 0.875rem; /* 14px */
+  --text-label--line-height: 1.3;
+
+  --text-metadata: 0.8125rem; /* 13px — smallest role, never smaller */
+  --text-metadata--line-height: 1.4;
+}
+
+:root {
+  /* Longest comfortable line for continuous text (brief's own instruction + WCAG 1.4.8). Not a Tailwind theme key (no utility namespace fits); used as `max-width: var(--measure-prose)`. */
+  --measure-prose: 65ch;
+}

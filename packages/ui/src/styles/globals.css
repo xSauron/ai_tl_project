@@ -3,6 +3,10 @@
  * Imported by the admin layout in @plant-ai/app — never by public frontend pages.
  */
 @import "tw-animate-css";
+@import "./tokens/raw.css";
+@import "./tokens/semantic.css";
+@import "./tokens/spacing.css";
+@import "./tokens/typography.css";
 
 /* Let Tailwind scan this package's components for class names. */
 @source "../components";
@@ -46,6 +50,22 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* Calendar phase colors (R02.2) — see styles/tokens/semantic.css */
+  --color-phase-sow: var(--phase-sow);
+  --color-phase-sow-foreground: var(--phase-sow-foreground);
+  --color-phase-plant-out: var(--phase-plant-out);
+  --color-phase-plant-out-foreground: var(--phase-plant-out-foreground);
+  --color-phase-prune: var(--phase-prune);
+  --color-phase-prune-foreground: var(--phase-prune-foreground);
+
+  /* Grid cell shape (R01.1, component token) — see styles/tokens/semantic.css */
+  --radius-grid-cell: var(--grid-cell-radius);
+
+  /* Spacing and typography tokens register themselves directly via
+     `@theme` in tokens/spacing.css and tokens/typography.css — they don't
+     vary by theme, so they don't need the `@theme inline` indirection this
+     block uses for colors. */
 }
 
 :root {

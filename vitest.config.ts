@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
+import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
 const fromRoot = (...segments: string[]) => path.resolve(import.meta.dirname, ...segments);
@@ -50,6 +52,26 @@ export default defineConfig({
           include: ["*.test.mjs"],
         },
       },
+      {
+        // Design system (packages/ui): runs every Storybook story as a real
+        // Vitest test (a11y included, `a11y.test: 'error'` in preview.tsx) in
+        // a headless Chromium via Playwright. See `@storybook/addon-vitest`.
+        extends: true,
+        plugins: [
+          storybookTest({
+            configDir: fromRoot("packages/ui/.storybook"),
+          }),
+        ],
+        test: {
+          name: "storybook",
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright({}),
+            instances: [{ browser: "chromium" }],
+          },
+        },
+      },
     ],
     coverage: {
       provider: "v8",
@@ -64,6 +86,8 @@ export default defineConfig({
         "packages/core/src/migrations/**",
         // Thin CLI wiring (calls main() and exits); exercised by running `npm run setup`.
         "scripts/setup-cli.mjs",
+        // Thin CLI wiring (calls main() and exits); exercised by running `npm run design-system:check-tokens`.
+        "scripts/check-design-tokens-cli.mjs",
       ],
       thresholds: {
         statements: 100,

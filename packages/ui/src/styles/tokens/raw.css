@@ -1,0 +1,42 @@
+/**
+ * Raw color palette — layer 1 of 3 (raw → semantic → component).
+ *
+ * These are the only hex/rgb/hsl/oklch literals allowed in the codebase
+ * (see AGENTS.md rule 3 for the design system: no color literals outside
+ * this file). Nothing outside `styles/tokens/` imports this file directly —
+ * `semantic.css` is the only consumer, and components use semantic or
+ * component tokens, never these.
+ *
+ * Named by appearance on purpose (this is the raw layer): hue + step.
+ * Hex, not oklch — these values are lifted verbatim from
+ * `lekcja-06/ekran-bez-ds.html` (the ad-hoc "before" screen) and
+ * `lekcja-06/tokeny.md`, whose contrast ratios were checked against these
+ * exact hex values. Converting them to oklch by hand risks drifting off
+ * the checked ratio; Tailwind v4 accepts any valid CSS color here.
+ *
+ * Scale: 50/300 = pale/light steps (light-theme surface, dark-theme text).
+ * 900/950 = dark/deep steps (light-theme text, dark-theme surface).
+ */
+
+:root {
+  /* Blue — calendar phase "sow" (R02.2). Source: lekcja-06/ekran-bez-ds.html .sow */
+  --raw-blue-50: #e3f2fd;
+  --raw-blue-300: #93c5fd;
+  --raw-blue-900: #0d47a1;
+  --raw-blue-950: #0d2847;
+
+  /* Green — calendar phase "plant-out" (R02.2). Source: ekran-bez-ds.html .plant */
+  --raw-green-50: #e8f5e9;
+  --raw-green-300: #86efac;
+  --raw-green-900: #1b5e20;
+  --raw-green-950: #0d2a12;
+
+  /* Orange — calendar phase "prune" (R02.2). Source: ekran-bez-ds.html .prune,
+     with the text step darkened from the mockup's #e65100 to #bf360c: the
+     original failed text contrast on its own pale background (3.46 : 1,
+     see lekcja-06/tokeny.md) and is not reused here. */
+  --raw-orange-50: #fff3e0;
+  --raw-orange-300: #fdba74;
+  --raw-orange-900: #bf360c;
+  --raw-orange-950: #3a1507;
+}

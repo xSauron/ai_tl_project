@@ -1,0 +1,48 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks"
+
+import { FrameViewport } from "../../.storybook/docs-blocks/FrameViewport"
+import { SpaceSample } from "../../.storybook/docs-blocks/SpaceSample"
+
+<Meta title="Foundations/Spacing & layout" />
+
+# Spacing & layout
+
+## Spacing
+
+One scale, four relations — reach for the matching semantic token before an intermediate raw step; a component with a genuinely different need gets its own component token when it's built (Stage 3), not a fifth general-purpose relation.
+
+**Proposal flag:** the scale (4/8/12/16/24/32/48) is the design-system brief's own example. The *density split* it encodes — bed screen dense, calendar/list screens sparse, "R01 wins when in doubt" — was approved in Stage 0 (`packages/ui/POSTEP.md`). Mapping that approved decision onto these four exact numbers is this page's own proposal.
+
+<Unstyled>
+  <SpaceSample token="--spacing-in-group" label="In a group — icon + label, badge + text (dense; also the bed grid screen)" />
+  <SpaceSample token="--spacing-between-groups" label="Between groups — list rows, form fields, calendar entries" />
+  <SpaceSample token="--spacing-panel" label="Inside a panel — padding inside a card / bed / dialog" />
+  <SpaceSample token="--spacing-section" label="Between sections — major vertical rhythm (sparse; calendar and lists: one label, details on tap)" />
+</Unstyled>
+
+## Layout widths
+
+Mobile-first (R01.1, N01: the grid and the whole app are built phone-first). Checked at the three widths the design-system brief names: 320, 768 and 1440 px.
+
+<Unstyled>
+  <FrameViewport width={320} label="Smallest supported phone">
+    <div className="p-panel" style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-between-groups)" }}>
+      <p className="text-page-heading font-bold" style={{ margin: 0 }}>Ogród przy domu</p>
+      <p className="text-body" style={{ margin: 0 }}>Ostatni przymrozek wiosenny: 15 maja</p>
+    </div>
+  </FrameViewport>
+  <FrameViewport width={768} label="Tablet / small desktop">
+    <div className="p-panel" style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-between-groups)" }}>
+      <p className="text-page-heading font-bold" style={{ margin: 0 }}>Ogród przy domu</p>
+      <p className="text-body" style={{ margin: 0 }}>Ostatni przymrozek wiosenny: 15 maja</p>
+    </div>
+  </FrameViewport>
+  <FrameViewport width={1440} label="Desktop">
+    <div className="p-panel" style={{ display: "flex", flexDirection: "column", gap: "var(--spacing-between-groups)" }}>
+      <p className="text-page-heading font-bold" style={{ margin: 0 }}>Ogród przy domu</p>
+      <p className="text-body" style={{ margin: 0 }}>Ostatni przymrozek wiosenny: 15 maja</p>
+    </div>
+  </FrameViewport>
+</Unstyled>
+
+**Max content width:** continuous text stays at `var(--measure-prose)` (Typography page); panels and the app shell itself have no fixed max-width decision yet — flagged, no reference material covers it, and `AppShell` isn't built until Stage 2.

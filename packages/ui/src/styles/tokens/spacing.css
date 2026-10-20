@@ -1,0 +1,39 @@
+/**
+ * Spacing scale — raw (layer 1) + semantic (layer 2, registered straight
+ * into `@theme`: spacing doesn't vary by theme, unlike the color tokens in
+ * semantic.css, so it needs no `@theme inline` indirection).
+ *
+ * Proposal, pending owner approval (no reference material fixes exact
+ * numbers): the scale itself — 4/8/12/16/24/32/48 — is the example scale
+ * from the design-system brief. The density split it rests on (bed screen
+ * dense, calendar/list screens sparse; "R01 wins when in doubt") was
+ * approved in Stage 0 (see packages/ui/POSTEP.md). Mapping that decision
+ * onto these four concrete tokens is this file's own proposal.
+ *
+ * Four relations only, as the brief asks — reach for one of these first;
+ * a component with a genuinely different need (e.g. the bed grid's own
+ * cell gap, deliberately tighter than "in group") gets its own component
+ * token when it's built (Stage 3), not a fifth general-purpose relation.
+ */
+
+:root {
+  /* Raw scale (steps, not relations) — not a Tailwind theme key on its own. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+}
+
+@theme {
+  /* In a group: inline related items (icon + label, badge + text). Dense side of the scale — used on the bed grid screen too. */
+  --spacing-in-group: var(--space-2);
+  /* Between groups: list rows, form fields, calendar entries. */
+  --spacing-between-groups: var(--space-4);
+  /* Inside a panel: padding inside a card/bed/dialog. */
+  --spacing-panel: var(--space-5);
+  /* Between sections: major vertical rhythm between page sections. Sparse side of the scale — calendar and lists read as "one label, details on tap" (Stage 0 density decision). */
+  --spacing-section: var(--space-7);
+}

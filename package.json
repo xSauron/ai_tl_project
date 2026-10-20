@@ -21,17 +21,24 @@
     "ui:add": "npm run ui:add -w @plant-ai/ui --",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
-    "test:integration": "vitest run --config vitest.integration.config.ts"
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "design-system:build": "storybook build --config-dir packages/ui/.storybook -o packages/app/public/design-system",
+    "design-system:test": "VITE_STORYBOOK_THEME=light vitest run --project storybook && VITE_STORYBOOK_THEME=dark vitest run --project storybook",
+    "design-system:check-tokens": "node scripts/check-design-tokens-cli.mjs"
   },
   "devDependencies": {
+    "@storybook/addon-vitest": "^10.6.3",
     "@testcontainers/postgresql": "^12.2.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@types/pg": "^8.23.1",
+    "@vitest/browser-playwright": "^5.0.4",
     "@vitest/coverage-v8": "^5.0.4",
     "agent-browser": "^0.39.1",
     "jsdom": "^30.1.2",
     "pg": "^8.23.1",
+    "playwright": "latest",
+    "storybook": "^10.6.3",
     "testcontainers": "^12.2.1",
     "vitest": "^5.0.4"
   },

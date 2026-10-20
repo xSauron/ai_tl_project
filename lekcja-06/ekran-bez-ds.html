@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plant.AI — Zadania i operacje</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f4; color: #1f2a1f; }
+  header { background: #2e7d32; color: #fff; padding: 16px; }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: .9; }
+  main { max-width: 720px; margin: 0 auto; padding: 16px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tabs button { flex: 1; padding: 10px; border: 1px solid #2e7d32; background: #fff; color: #2e7d32; border-radius: 6px; font-size: 15px; cursor: pointer; }
+  .tabs button.active { background: #2e7d32; color: #fff; }
+  section { display: none; }
+  section.active { display: block; }
+  h2 { font-size: 16px; margin: 20px 0 8px; }
+  .card { background: #fff; border: 1px solid #dde5dd; border-radius: 8px; padding: 12px; margin-bottom: 8px; }
+  .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .title { font-weight: 600; }
+  .meta { font-size: 13px; color: #5a6b5a; margin-top: 4px; }
+  .badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .sow { background: #e3f2fd; color: #0d47a1; }
+  .plant { background: #e8f5e9; color: #1b5e20; }
+  .prune { background: #fff3e0; color: #e65100; }
+  .planned { background: #fff8e1; color: #8d6e00; }
+  .done { background: #e0e0e0; color: #424242; }
+  .hint { font-size: 13px; background: #fffde7; border: 1px solid #f0e68c; border-radius: 6px; padding: 8px; margin-bottom: 12px; }
+  .source { font-size: 12px; color: #6b7c6b; margin-top: 6px; }
+  .btn { background: #2e7d32; color: #fff; border: 0; border-radius: 6px; padding: 10px 14px; font-size: 15px; cursor: pointer; }
+  form.card label { display: block; font-size: 13px; margin: 8px 0 4px; }
+  form.card input, form.card select { width: 100%; padding: 8px; border: 1px solid #bbb; border-radius: 6px; font-size: 15px; }
+  fieldset { border: 1px solid #ddd; border-radius: 6px; margin: 8px 0; padding: 8px; }
+  fieldset label { display: flex; gap: 8px; align-items: center; margin: 4px 0; font-size: 14px; }
+  fieldset input { width: auto; }
+  .ai-note { font-size: 12px; color: #6b7c6b; margin-top: 16px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Plant.AI</h1>
+  <p>Ogród przy domu · ostatni przymrozek wiosenny: 15 maja</p>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="active" data-tab="tasks">Zadania</button>
+    <button data-tab="ops">Operacje</button>
+  </div>
+
+  <section id="tasks" class="active">
+    <div class="hint">Zadania są wyliczane z terminów w katalogu i z Twoich dat przymrozków. Nie musisz ich wpisywać.</div>
+
+    <h2>W tym tygodniu</h2>
+    <div class="card">
+      <div class="row"><span class="title">Wysiew pomidorów do doniczek</span><span class="badge sow">Wysiew</span></div>
+      <div class="meta">Okno: 1–20 marca · 12 roślin</div>
+      <div class="source">Źródło: katalog, wpis własny</div>
+    </div>
+    <div class="card">
+      <div class="row"><span class="title">Cięcie porzeczki czarnej</span><span class="badge prune">Cięcie</span></div>
+      <div class="meta">Okno: do końca marca · 4 krzewy</div>
+      <div class="source">Źródło: katalog, wpis własny</div>
+    </div>
+
+    <h2>Później</h2>
+    <div class="card">
+      <div class="row"><span class="title">Wysadzanie pomidorów na grządkę</span><span class="badge plant">Wysadzanie</span></div>
+      <div class="meta">Okno: od 16 maja (po przymrozkach) · 12 roślin</div>
+      <div class="source">Źródło: katalog, wpis własny</div>
+    </div>
+    <div class="card">
+      <div class="row"><span class="title">Cięcie śliwy</span><span class="badge prune">Cięcie</span></div>
+      <div class="meta">Okno: lipiec–sierpień · 1 drzewo</div>
+      <div class="meta">Uwaga: nie wszystkie gatunki Prunus odrastają po cięciu — sprawdź wpis w katalogu przed cięciem.</div>
+      <div class="source">Źródło: katalog, wpis własny</div>
+    </div>
+
+    <p class="ai-note">Chcesz wiedzieć, jak przyciąć daną roślinę? Zapytaj asystenta — odpowiedź to sugestia, nie zmienia planu.</p>
+  </section>
+
+  <section id="ops">
+    <div class="hint">Operacja to coś, co zapisujesz sam — zaplanowane lub już zrobione. Jedna operacja może obejmować wiele roślin.</div>
+
+    <form class="card" id="op-form">
+      <div class="title">Nowa operacja</div>
+      <label for="op-type">Rodzaj</label>
+      <select id="op-type">
+        <option>Oprysk</option>
+        <option>Cięcie</option>
+        <option>Wysiew</option>
+        <option>Wysadzanie</option>
+      </select>
+      <label for="op-date">Data</label>
+      <input id="op-date" type="date" value="2027-03-14">
+      <fieldset>
+        <legend>Rośliny</legend>
+        <label><input type="checkbox" checked> Pomidory (12)</label>
+        <label><input type="checkbox" checked> Ogórki (8)</label>
+        <label><input type="checkbox"> Porzeczka czarna (4)</label>
+        <label><input type="checkbox"> Śliwa (1)</label>
+      </fieldset>
+      <label><input type="checkbox" id="op-done" style="width:auto"> Już wykonana</label>
+      <p style="margin:12px 0 0"><button class="btn" type="submit">Dodaj operację</button></p>
+    </form>
+
+    <h2>Zaplanowane</h2>
+    <div class="card">
+      <div class="row"><span class="title">Oprysk</span><span class="badge planned">Zaplanowana</span></div>
+      <div class="meta">14 marca · 30 roślin w 3 grządkach</div>
+    </div>
+
+    <h2>Wykonane</h2>
+    <div class="card">
+      <div class="row"><span class="title">Cięcie</span><span class="badge done">Wykonana</span></div>
+      <div class="meta">2 marca · 4 rośliny</div>
+    </div>
+  </section>
+</main>
+
+<script>
+  const tabs = document.querySelectorAll('.tabs button');
+  tabs.forEach(function (b) {
+    b.addEventListener('click', function () {
+      tabs.forEach(function (x) { x.classList.toggle('active', x === b); });
+      document.querySelectorAll('section').forEach(function (s) {
+        s.classList.toggle('active', s.id === b.dataset.tab);
+      });
+    });
+  });
+  document.getElementById('op-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const done = document.getElementById('op-done').checked;
+    const card = document.createElement('div');
+    card.className = 'card';
+    const n = document.querySelectorAll('#op-form fieldset input:checked').length;
+    card.innerHTML = '<div class="row"><span class="title"></span><span class="badge ' + (done ? 'done">Wykonana' : 'planned">Zaplanowana') + '</span></div><div class="meta"></div>';
+    card.querySelector('.title').textContent = document.getElementById('op-type').value;
+    card.querySelector('.meta').textContent = document.getElementById('op-date').value + ' · grupy roślin: ' + n;
+    const headings = document.querySelectorAll('#ops h2');
+    headings[done ? 1 : 0].after(card);
+  });
+</script>
+</body>
+</html>
