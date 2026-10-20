@@ -73,3 +73,14 @@ Phase 1 — catalogue seed and read API (ships alone). Phase 2 — plant list. P
 8. Plant list page; add/remove through `apiCall`. Integration test: add crop → appears with no bed.
 9. `AGENTS.md` + standards doc update per Risks.
 All steps keep `typecheck`, `lint`, 100 % coverage and `build` green.
+
+## 📝 Acceptance coverage
+| Story criterion | Where covered |
+|---|---|
+| #25 vegetables, bushes, trees listed, every fact with source | API `GET /api/crops`, UI, seed-integrity test (steps 2, 3, 7) |
+| #25 add to garden → plant list, no bed, no cells | steps 4–6, 8 |
+| #25 owner cannot edit catalogue | no write endpoint; step 7 test |
+| #34 (seed v1) | steps 1–2; owner authoring is outside the 25 build hours (D06) |
+
+## 🧪 Review limits
+Author review against #25, #34 and D04; a fresh-context scope-cohesion review was not run. Companion data is seeded here but shown by E03 (#37).
