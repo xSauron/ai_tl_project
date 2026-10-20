@@ -8,7 +8,7 @@ The owner grows vegetables, berry bushes and fruit trees, but the app has no cat
 ## Resolved assumptions (autonomous defaults)
 | Q | Chosen answer | Rationale |
 |---|---|---|
-| Q1 Where are D07, D10–D14, R07, R09, Q15, Q16 and the `app-primitives` / `garden-grid` specs? | They are not in this repo; treat the text of #19–#27 as authoritative and cite them as "per #19". ⚠ NEEDS HUMAN CONFIRMATION | Cannot invent their content; the brief must gain these rows before implementation. |
+| Q1 Missing D07, D10–D14, R07, R09, Q16 | Resolved: the owner's uncommitted decision records, brief rows and specs `app-primitives` / `garden-grid` are now committed in this PR, so the ids are real. | Owner confirmed they were simply not committed. |
 | Q2 Split catalogue / task list? | Two specs. | The catalogue works without tasks and vice versa. |
 | Q3 Seed size | Only what the owner grows, at most 30 entries. | Each entry is hand-cited and pruning is checked by the owner alone (D04). Smallest scope. |
 | Q4 Who updates `AGENTS.md`? | The first implementing PR, listing the diff in Risks below. | D02 already requires it. |
@@ -54,7 +54,7 @@ Catalogue page: list grouped by kind, each fact with a visible source link; an "
 - Evidenced rule violation: none. Product direction call: seed size (Q3).
 
 ## 📝 Decisions in play
-D02, D04, D10 / R07, R03 — and Q1's caveat that D10 and R07 are cited per #19, not yet in the brief. Owner of all: project owner.
+D02, D04, D10 / R07, R03 — all committed in `product-brief.md` and `research/decisions/`. Owner of all: project owner.
 
 ## 📋 Phasing
 Phase 1 — catalogue seed and read API (ships alone). Phase 2 — plant list. Phase 3 — pages.

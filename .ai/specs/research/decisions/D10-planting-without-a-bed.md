@@ -1,0 +1,6 @@
+# D10 — A planting may exist without a bed
+- Date, owner: 2026-10-20, project owner. Chosen as an explicit option, "Nasadzenie bez grządki" (planting without a bed), when answering Q4 of the spec gate for #13.
+- Context and the options weighed: A04 case 1 is a tree or bush that stands outside any bed. Options: (a) keep R01 strictly: the tree gets its own bed, sized to its footprint (agent's recommendation, no rule change); (b) a garden-level planting with no bed and no cells; (c) leave it open until the #13 layout is in.
+- Decision and why: (b). A planting belongs to a garden and may optionally be placed in a bed. A placed planting still occupies a rectangle of whole cells checked by grid rules. An unplaced one has no cells, no grid check and no companion neighbours. This also gives the calendar (D07 #1) the user's plant list before any layout exists.
+- Consequences, and what would make us revisit it: R07 supersedes R01 in the product brief. `AGENTS.md` Domain invariants change in the first implementing PR (spec `2026-10-20-app-primitives.md`, step 1). N01 stands: an unplaced planting has no position at all. The decision doesn't test A04, and #13's layout is still owed. Revisit when A04's result arrives.
+- Status: active

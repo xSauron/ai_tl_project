@@ -1,0 +1,11 @@
+# D11 — Build for the owner's and their family's gardens; no interviews with other gardeners
+- Date, owner: 2026-10-20, project owner. Written chat, Polish: "nie chce przeprowadzać więcej interviews bo problem jest trochę 'hipotetyczny' tzn traktujemy go realnie ale jest robiony przez jedna osoba więc nie ma mozliwości przeprowadzić" (I don't want to run more interviews, because the problem is somewhat "hypothetical": we treat it as real, but the project is done by one person, so there is no way to run them) and "Pomińmy rozmowy z innymi tylko ze mną ewentualnie" (let's skip talks with others; with me only, if anything).
+- Context and the options weighed: D05 offered (a) talk to two or three gardeners the owner knows before implementation planning, chosen on 2026-10-20, or (b) narrow the target group to the owner's own garden and build, accepting the risk that others don't share the problem. The agent gave no recommendation then. The owner now says (a) can't be carried out in this solo course project.
+- Decision and why: (b), widened to the gardens the owner knows first-hand: their own, their mother's and grandmother's (Q08 answer). No interviews with other gardeners. The owner is the only interviewee, and their account is the problem evidence.
+- Consequences, and what would make us revisit it:
+  - Supersedes D05. Implementation planning no longer waits for external interviews. Q10 and Q11 are moot.
+  - A01 (other growers share the problem) is accepted untested. This is a decision about risk, not evidence.
+  - D01's "most common problems of home growers" stays the direction but rests on one informant describing three family gardens.
+  - The spring-2027 check "three real gardeners" (Q03) no longer fits and needs a new success check.
+  - Revisit if another grower becomes available, or if the app goes beyond the family.
+- Status: active

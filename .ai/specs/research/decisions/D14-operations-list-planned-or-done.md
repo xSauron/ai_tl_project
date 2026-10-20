@@ -1,0 +1,21 @@
+# D14 — Gardener-added operations, planned or already done, live in one list; one operation can cover many plants
+- Date, owner: 2026-10-20, project owner. Written chat, Polish:
+  - Q12: "Chodzi o to że ogrodnik dodaje zadania w przód lub te które już wykonał" (the gardener adds tasks ahead of time, or tasks they have already done).
+  - Q15: "osobna lista jakaś przechowuje operacje i na jakich roślinach były wykonane (Lepiej to zrobić że operacja 'Oprysku' była wykonana na np. 30 roślinach niz na każdej roslinie dodawać osobno)" (a separate list stores operations and which plants they were done on; better to record that one spraying operation was done on, say, 30 plants than to add it to each plant separately).
+- Context and the options weighed: D12 allowed tasks "assigned by the gardener". The independent review asked whether that meant tasks for oneself or tasks handed to someone else (Q12), and where stored tasks live (Q15). The owner answered both.
+- Decision and why:
+  - The gardener adds operations to a separate list. An operation is either planned (ahead of time) or already done. The owner said "zadania" (tasks) in Q12 and "operacje" (operations) in Q15, Putting both in one list began as the agent's reading. The owner confirmed it on 2026-10-20: "jesli dziennik to zadanie to dla mnie jest to okej" (if the journal is a task, that's fine with me).
+  - One operation record can cover many plantings.
+  - Derived tasks (D07 item 1, R05) stay computed and are not stored.
+  - Handing tasks to other people is not part of this; sharing stays out (N03).
+- Consequences, and what would make us revisit it:
+  - Supersedes D12's "marking a task done was not chosen". Recording work already done is now in MVP, as an operation the gardener adds.
+  - Whether recording an operation clears a matching derived task is left to the task-list spec.
+  - R09 supersedes R08.
+  - Any operation kind can be recorded. The owner's example is spraying. Spraying *advice* (which spray, when) stays Later (D09).
+  - The list carries no notes or photos, which keeps it apart from D09's journal (journal with notes and photos stays Later). This began as the agent's proposal; the owner confirmed it on 2026-10-20 (brief Q16).
+  - `AGENTS.md` lists no concept for stored operations and persists only overrides. The task-list spec names the concept, and the first implementing PR changes `AGENTS.md`.
+  - Adds a stored entity with a many-to-many link to plantings, which counts against the 25 hours (D06, A02).
+  - Revisit after the owner's own test (D13).
+- Supersedes: D12 in part (the gardener-added tasks reading and "marking done not chosen")
+- Status: active
