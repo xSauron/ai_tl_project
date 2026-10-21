@@ -36,4 +36,6 @@
   --spacing-panel: var(--space-5);
   /* Between sections: major vertical rhythm between page sections. Sparse side of the scale — calendar and lists read as "one label, details on tap" (Stage 0 density decision). */
   --spacing-section: var(--space-7);
+  /* Minimum touch target for base controls (44 px, approved in Stage 0). Use as `h-touch` / `size-touch`. */
+  --spacing-touch: 44px;
 }

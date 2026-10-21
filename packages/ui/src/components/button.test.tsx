@@ -41,6 +41,6 @@ describe("Button", () => {
   });
 
   it("exposes the variant class builder", () => {
-    expect(buttonVariants({ variant: "outline", size: "icon" })).toContain("size-9");
+    expect(buttonVariants({ variant: "outline", size: "icon" })).toContain("size-touch");
   });
 });

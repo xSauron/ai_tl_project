@@ -15,10 +15,10 @@ Everything below is **committed** on `main` (local commit `84a51da`, not pushed 
 
 - [x] Stage 0 — Inventory and plan
 - [x] Stage 1 — Foundations (in review)
-- [ ] Stage 2 — Base components
-- [ ] Stage 3 — Product components, patterns, screens
-- [ ] Stage 4 — Teaching pages
-- [ ] Stage 5 — Verification and report
+- [x] Stage 2 — Base components (minimal pass, 2026-10-21)
+- [x] Stage 3 — cut to one example screen (minimal pass)
+- [ ] Stage 4 — Teaching pages: **dropped for MVP** (owner, 2026-10-21: "more minimal approach, less money on design strategy")
+- [x] Stage 5 — Verification (browser-checked, see below)
 
 ## Stage 0 — what was read
 
@@ -68,6 +68,23 @@ None blocking Stage 1. Technical risk to watch in Stage 1: `@storybook/addon-vit
 - Did not drive a real browser against the built Storybook to eyeball rendering (MDX tables, fonts, both themes) — relied on `storybook build` succeeding, the Vitest/Storybook integration picking up all 7 MDX pages, and the coverage/typecheck gate. Worth a manual spot-check before Stage 2.
 - Did not verify `npm run design-system:build` end-to-end (output path, that `/design-system/index.html` actually serves from `next dev`/`next build`) — only unit-level pieces (the fallback page, the footer link's href) are tested.
 
+## Minimal pass (2026-10-21) — what was built
+
+Owner asked to finish with a minimal approach and a working page. Run log: `.ai/runs/2026-10-21-design-system-minimal.md`.
+
+- **Token findings fixed (7 → 0):** `text-white` → new `--destructive-foreground` token (light + dark in `globals.css`); `ring-[3px]` → `ring-3`; `translate-y-[2px]` → `translate-y-0.5`.
+- **44 px touch target applied:** new `--spacing-touch` in `spacing.css` (`h-touch`/`size-touch`), used by Button `default`/`lg`/`icon`/`icon-lg` and Input. Button `xs`/`sm`/`icon-xs`/`icon-sm` are still smaller than 44 px; remove them or keep them for non-touch dense spots — **owner decision, open**.
+- **Stories:** one `*.stories.tsx` per base component (7, `autodocs`), plus `src/examples/GardenList.stories.tsx`, a "Moje ogrody" screen built only from base components. 14 stories, a11y-checked in both themes. Stories are excluded from coverage in `vitest.config.ts` (they are test fixtures run by the `storybook` project).
+- **Bug found and fixed: Tailwind was never processed in Storybook.** Every story and doc page rendered unstyled since Stage 1, and a11y passed only because there was nothing to check. Fix: `.storybook/storybook.css` (`@import "tailwindcss"` + `globals.css` + `@source "../src"`) and `viteFinal` in `main.ts` adding `@tailwindcss/postcss` (now a devDependency of `@plant-ai/ui`).
+- **Coverage fix:** components imported `* as React` at runtime only for types; in the browser project Vite's CJS-interop wrapper added an uncovered branch on line 1. Now `import type * as React`.
+- ESLint (`packages/app`) ignores `public/design-system/**` (the build output).
+- **Verified:** `npm test` (146 tests, 100 %), typecheck, lint, token check, `design-system:test` (light + dark), `design-system:build`, `next build`, `npm audit --omit=dev` 0 vulns. In a browser on `next start`: homepage footer link → `/design-system/index.html`, Foundations pages, the example screen and dark-theme components all render styled.
+
+## Not done (cut for MVP)
+
+- Teaching pages (Start here / Content / What to avoid), epic pages, product components (`BedGrid`, `CellGrid`, phase badges). Build them with the features that need them, not ahead.
+- Neutral palette stays shadcn's default (flagged in Color.mdx, owner's call).
+
 ## Next step
 
-Stage 1 is complete and reported to the owner, pending review. Waiting for "dalej" to start Stage 2 (base components, worked in batches of ~6, starting with the shape/density/state differences from shadcn's defaults).
+None scheduled. New components get a story when they are built with their feature. Run `npm run design-system:build` **before** `npm start`: `next start` snapshots `public/` at boot, so a rebuild while it runs gives 404s on the new asset hashes.
