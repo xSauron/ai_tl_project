@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-21 — Check that every collected field is consumed by a derivation
+- **Context:** grilling the task-list spec (#19). It stored `first_autumn_frost`, validated it, and then derived every window from the spring frost only. It also stored annual frost days as full dates next to a `?year=` parameter, and timing as single columns on `crops` that could not hold a second (autumn) sowing.
+- **Lesson:** a spec reviewed against its stories alone can pass while carrying dead inputs and a model that can't express common cases (autumn sowing, perennials planted once, 30 identical tasks for 30 plants).
+- **Action:** in spec review, trace every stored field to the function that reads it, and walk one annual, one perennial and one many-plants case through the derivation. `/grill-me` points at the `grilling` skill, which may only appear mid-session; if it's missing, run the interview inline in the same round format.
+
 ### 2026-10-20 — Solo project: don't keep routing to research the owner can't collect
 - **Context:** the brief, `om-backlog` and `om-discover` kept pointing at interviews with other gardeners (D05). The agent even built an interview kit, until the owner said a one-person course project can't run them ("coś się zapętliło").
 - **Lesson:** when the only reachable informant is the builder, every readiness stop that asks for outside evidence repeats itself. The way out was an owner decision already on file, D05's alternative (b): narrow the target group to what the owner knows first-hand and accept A01 untested (D11).

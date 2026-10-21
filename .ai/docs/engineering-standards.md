@@ -3,6 +3,8 @@
 Date: 2026-10-13
 Status: active (draft — product scope assumptions in §0 to be confirmed)
 
+> **Change (2026-10-21, owner grilling on #19):** the public `(marketing)` crop catalog is Later; in MVP the catalog is signed-in only.
+>
 > **Repo adaptations (2026-10-13, applied when adopting this doc into `AGENTS.md`):**
 > - §1 "DB access only in `export const dynamic = "force-dynamic"` routes/pages": in Next.js 16
 >   `dynamic` is a legacy route segment option and is **removed when Cache Components is enabled**
@@ -394,7 +396,7 @@ packages/
     src/app/
       (marketing)/
         page.tsx                                  # landing
-        crops/page.tsx                            # public crop catalog
+        crops/page.tsx                            # public crop catalog (Later, 2026-10-21; MVP catalog is signed-in only)
         crops/[cropId]/page.tsx                   # crop detail: spacing, timing, companions
       (auth)/
         login/page.tsx
