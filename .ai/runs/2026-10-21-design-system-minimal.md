@@ -22,6 +22,6 @@
 - Gate: test 100 % (146), typecheck, lint, token check, design-system:test ×2 themes (14), design-system:build, next build, audit 0 — all green. Browser-verified on `next start`.
 
 ## Open issues
-- Button `xs`/`sm`/`icon-xs`/`icon-sm` below 44 px — owner decision.
+- ~~Button `xs`/`sm`/`icon-xs`/`icon-sm` below 44 px~~ — owner said remove; removed.
 - Teaching/epic pages and product components dropped for MVP (see POSTEP.md).
-- Changes not committed (owner didn't ask).
+- Shipped as PR #41.

@@ -16,14 +16,14 @@ describe("Button", () => {
 
   it("applies variant, size and custom classes", () => {
     render(
-      <Button variant="destructive" size="sm" className="w-full">
+      <Button variant="destructive" size="lg" className="w-full">
         Delete
       </Button>,
     );
     const button = screen.getByRole("button", { name: "Delete" });
 
     expect(button).toHaveProperty("dataset.variant", "destructive");
-    expect(button).toHaveProperty("dataset.size", "sm");
+    expect(button).toHaveProperty("dataset.size", "lg");
     expect(button.className).toContain("bg-destructive");
     expect(button.className).toContain("w-full");
   });
