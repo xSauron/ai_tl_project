@@ -219,7 +219,7 @@ New reusable components go here:
 | `docker compose up -d db` | Start PostgreSQL |
 | `npm run dev` / `npm run build` / `npm start` | Next.js dev / build / start |
 | `npm run typecheck` · `npm run lint` | Type-check / lint all workspaces |
-| `npm test` · `npm run test:watch` | Unit tests (Vitest) with 100 % coverage gate |
+| `npm test` · `npm run test:watch` | Unit tests (Vitest) with 100 % coverage gate, plus every Storybook story in headless Chromium (one-time `npx playwright install chromium`) |
 | `npm run test:integration` | Integration tests: Testcontainers Postgres + built app + `agent-browser` (needs Docker, or `INTEGRATION_DATABASE_ADMIN_URL`; run `npm run build` first) |
 | `npm run db:migrate` · `db:migrate:create -- --name <slug>` · `db:migrate:down` | Migrations |
 | `npm run ui:add -- <component>` | Add a shadcn primitive |
