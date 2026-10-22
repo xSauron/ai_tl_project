@@ -35,4 +35,8 @@ describe("HomePage", () => {
     expect(html).toMatch(/<a[^>]*href="\/admin"/);
     expect(html).toMatch(/<footer[^>]*>[\s\S]*A square-foot vegetable garden planner\.[\s\S]*<\/footer>/);
   });
+
+  it("renders a design system link in the footer, always visible", () => {
+    expect(html).toMatch(/<footer[^>]*>[\s\S]*<a[^>]*href="\/design-system\/index\.html"[^>]*>Design system/);
+  });
 });

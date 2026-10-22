@@ -1,0 +1,45 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks"
+import { Ruler, Sun } from "lucide-react"
+
+<Meta title="Foundations/Icons" />
+
+# Icons
+
+**Library:** [lucide-react](https://lucide.dev) — already a dependency, already the `iconLibrary` in `components.json`. No new icon set is introduced.
+
+## R02.3 (grounded)
+
+"Proste ikony słońca i rozstawu zamiast opisu" — simple sun and spacing icons instead of a text description, so a crop's needs read at a glance in direct sun. Built with the crop card / `CropPicker` in Stage 3; shown here with real `lucide-react` icons to fix the visual language early.
+
+<Unstyled>
+  <div style={{ display: "flex", gap: "var(--spacing-panel)" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-in-group)" }}>
+      <Sun size={20} aria-hidden="true" />
+      <span className="text-body">Pełne słońce</span>
+    </div>
+    <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-in-group)" }}>
+      <Ruler size={20} aria-hidden="true" />
+      <span className="text-body">30 cm odstępu</span>
+    </div>
+  </div>
+</Unstyled>
+
+Note the icon is paired with a short visible label in both cases above — R02.3 replaces a *long description* with an icon, not the only signal (same "never color/icon alone" principle as R01.6, extended here to icons).
+
+## Sizes
+
+No raw-value token: Tailwind's existing numeric scale already fits.
+
+| Utility | Size | When |
+|---|---|---|
+| `size-4` | 16px | Inline with body text (e.g. inside a sentence or a tight label) |
+| `size-5` | 20px | Default standalone UI icon (the sun/spacing icons above) |
+| `size-6` | 24px | Larger or standalone, no adjacent text |
+
+Pick by context, not by component.
+
+## When an icon needs a label
+
+- **Icon + visible text** (as above): no extra markup — the text is the accessible name.
+- **Icon-only interactive control** (e.g. an icon button): needs an accessible name the text doesn't provide — `aria-label` on the control. WCAG 4.1.2 (Name, Role, Value) / WAI-ARIA.
+- **Purely decorative icon** next to its own label (as above): `aria-hidden="true"`, so a screen reader doesn't announce it twice.

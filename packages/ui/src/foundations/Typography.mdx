@@ -1,0 +1,39 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks"
+
+import { TypeSpecimen } from "../../.storybook/docs-blocks/TypeSpecimen"
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+**Font:** Geist — already self-hosted by the app via `next/font/google` in its own layouts (unchanged, rule 11); this page loads the same family from vendored files so it renders correctly in Storybook too (never from an external CDN — see `.storybook/fonts.css`). No new typeface is introduced.
+
+## Proposal flag
+
+`lekcja-06/referencje.md` only says, **unapproved** (R01.5 "pismo nieczytelne", R02.4 "drobny druk" — both status "propozycja"): don't use a handwriting-style display face, don't use dense tiny print. No reference material fixes a px value for any role. Everything below the font family is **this page's own proposal**, kept away from anything under 13px given the sun/phone context. Confirm or redirect before Stage 2 bakes these into components.
+
+## Roles
+
+Roles, not just sizes — each one answers "what is this text for", and components reach for the role, not a raw size.
+
+<Unstyled>
+  <TypeSpecimen role="page-heading" weightClass="font-bold" sample="Grządka A — 120 × 240 cm" note="one per page, e.g. the bed editor's title" />
+  <TypeSpecimen role="section-heading" weightClass="font-semibold" sample="Rośliny w tej grządce" note="groups content within a page" />
+  <TypeSpecimen role="body" weightClass="font-normal" sample="Pomidor malinowy lubi słoneczne stanowisko i regularny podlew w suche dni." note="default reading text" />
+  <TypeSpecimen role="label" weightClass="font-semibold" sample="Data ostatniego przymrozku" note="form field labels, table headers" />
+  <TypeSpecimen role="metadata" weightClass="font-normal" sample="Źródło: katalog, wpis własny · 3 dni temu" note="secondary, least important text — never smaller than this" />
+</Unstyled>
+
+**Numbers and dates** aren't a separate size: apply `tabular-nums` (Tailwind's built-in utility) on top of body/label wherever a quantity needs to line up in a list or table (e.g. "12 roślin", "120 × 240 cm"). Date *formatting* (no time, Polish "15 maja") is a content rule, covered in Stage 4's Content page, not a type-scale token.
+
+## Line length
+
+Continuous text — body paragraphs, AI answers — stays at **`max-width: var(--measure-prose)`** (65ch), per the design-system brief's own instruction and WCAG 1.4.8. Labels, metadata and table cells aren't continuous text and don't need the constraint.
+
+<Unstyled>
+  <p className="text-body" style={{ maxWidth: "var(--measure-prose)", border: "1px dashed var(--border)", padding: 8 }}>
+    To jest przykładowy akapit tekstu ciągłego, taki jak odpowiedź AI albo opis rośliny — ograniczony do mniej więcej
+    sześćdziesięciu pięciu znaków w linii, żeby został czytelny na większych ekranach, a nie rozciągał się przez całą
+    szerokość panelu.
+  </p>
+</Unstyled>

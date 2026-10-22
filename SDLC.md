@@ -124,7 +124,7 @@ Every PR passes the full validation gate before review sign-off, in this order:
 
 - `npm run typecheck`
 - `npm run lint`
-- `npm test` (100% statements/branches/functions/lines coverage gate via Vitest)
+- `npm test` (100% statements/branches/functions/lines coverage gate via Vitest; also runs every Storybook story with a11y checks in headless Chromium, so install it once with `npx playwright install chromium`)
 - `npm run build` (must succeed with no database and no AI provider reachable)
 - `npm audit --omit=dev`
 

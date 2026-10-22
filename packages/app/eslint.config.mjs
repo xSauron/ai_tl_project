@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Static Storybook export from `npm run design-system:build` (gitignored).
+    "public/design-system/**",
   ]),
 ]);
 

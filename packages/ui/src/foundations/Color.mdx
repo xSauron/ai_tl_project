@@ -1,0 +1,75 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks"
+
+import { ContrastTable } from "../../.storybook/docs-blocks/ContrastTable"
+import { Swatch } from "../../.storybook/docs-blocks/Swatch"
+
+<Meta title="Foundations/Color" />
+
+# Color
+
+Plant.AI has one accent idea so far: **color carries meaning, never alone** (R01.6 — the owner rejected "everything one pen color"; R02.2 — phases get separate colors). Every colored role below ships with a second signal (an icon, a border, a label) wherever it marks a state — see **What to avoid** (Stage 4) for the enforced version of this rule.
+
+## Roles
+
+The neutral palette (background, foreground, card, primary, muted, border…) is still shadcn's default **"neutral" base color** (`components.json`) — not yet a Plant.AI decision. No reference material picks a specific gray or warmth. Flagged for your call; not changed here (rule 12).
+
+The calendar-phase colors below are decided (R02.2, "przyjęte") and are the first real Plant.AI color tokens.
+
+<Unstyled>
+  <Swatch token="--phase-sow" label="Phase: sow (siew)" origin="R02.2 — bg, pairs with --phase-sow-foreground" />
+  <Swatch token="--phase-sow-foreground" label="Phase: sow — text" origin="R02.2" />
+  <Swatch token="--phase-plant-out" label="Phase: plant-out (wysadzanie)" origin="R02.2" />
+  <Swatch token="--phase-plant-out-foreground" label="Phase: plant-out — text" origin="R02.2" />
+  <Swatch token="--phase-prune" label="Phase: prune (cięcie)" origin="R02.2" />
+  <Swatch token="--phase-prune-foreground" label="Phase: prune — text, darkened from the mockup's original (see contrast below)" origin="R02.2" />
+</Unstyled>
+
+R02.2 also names a fourth phase, "zbiór" (harvest). No token exists for it: the task-list spec's `GET /api/gardens/[id]/tasks` only derives `sow | plant-out | prune` windows — the catalogue has no harvest-timing column. Flagged in `packages/ui/POSTEP.md`, not silently dropped.
+
+## Contrast — light theme
+
+Re-measured live against the actual rendered colors (open this page and resize/toggle — the numbers are computed, not typed in).
+
+<Unstyled>
+  <ContrastTable
+    rows={[
+      { label: "Body text on background", foreground: "var(--foreground)", background: "var(--background)", origin: "shadcn base (unchanged)" },
+      { label: "Muted text on card", foreground: "var(--muted-foreground)", background: "var(--card)", origin: "shadcn base (unchanged)" },
+      { label: "Primary button text on primary", foreground: "var(--primary-foreground)", background: "var(--primary)", origin: "shadcn base (unchanged)" },
+      { label: "Destructive text on destructive", foreground: "var(--destructive-foreground, var(--background))", background: "var(--destructive)", origin: "shadcn base — flagged below" },
+      { label: "Phase sow: text on surface", foreground: "var(--phase-sow-foreground)", background: "var(--phase-sow)", origin: "R02.2" },
+      { label: "Phase plant-out: text on surface", foreground: "var(--phase-plant-out-foreground)", background: "var(--phase-plant-out)", origin: "R02.2" },
+      { label: "Phase prune: text on surface", foreground: "var(--phase-prune-foreground)", background: "var(--phase-prune)", origin: "R02.2 (fixed — see below)" },
+    ]}
+  />
+</Unstyled>
+
+**Flag:** `--destructive-foreground` isn't a token shadcn defines here — the base `button.tsx` hardcodes a literal white-text utility class on the destructive variant instead (a real finding from `scripts/check-design-tokens.mjs`, scheduled to be fixed in Stage 2 by introducing a real `--destructive-foreground` token).
+
+**Flag — prune phase, fixed:** the mockup's original text/surface pairing measured **3.46 : 1**, below the 4.5 : 1 text threshold. `--phase-prune-foreground` uses a darker raw step instead — see `lekcja-06/tokeny.md` for the exact values and the worked numbers.
+
+## Contrast — dark theme
+
+Toggle the theme switcher (toolbar, top of this Storybook) to `Dark` and this same table (duplicated here so both are visible without leaving the page) re-measures against the dark-theme values.
+
+<Unstyled>
+  <ContrastTable
+    rows={[
+      { label: "Body text on background", foreground: "var(--foreground)", background: "var(--background)", origin: "shadcn base (unchanged)" },
+      { label: "Phase sow: text on surface", foreground: "var(--phase-sow-foreground)", background: "var(--phase-sow)", origin: "R02.2, dark" },
+      { label: "Phase plant-out: text on surface", foreground: "var(--phase-plant-out-foreground)", background: "var(--phase-plant-out)", origin: "R02.2, dark" },
+      { label: "Phase prune: text on surface", foreground: "var(--phase-prune-foreground)", background: "var(--phase-prune)", origin: "R02.2, dark" },
+    ]}
+  />
+</Unstyled>
+
+## Domain colors not built yet
+
+Two domain-color groups named in the design-system brief have **no token yet**, on purpose:
+
+- **Good/bad companion neighbors** (grid screen) — grounded in R04 and `2026-10-20-garden-grid.md` ("conflicting ones get a `CompanionBadge` outline"), but the actual color + the required second signal (the spec says *outline*, not fill) belongs with the `CompanionBadge` component itself. Building it here, ahead of the component, would guess at a value the component doesn't need yet. Planned for Stage 3.
+- **Grid cell states** (empty / occupied / selected / AI-preview) — same reasoning; "AI proposal preview" is additionally out of scope entirely right now (D08/D09, Later — see `packages/ui/POSTEP.md`).
+
+## Threshold
+
+WCAG AA: **4.5 : 1** for text, **3 : 1** for UI-element boundaries (approved in Stage 0 — not raised for the sun/phone context; see `packages/ui/POSTEP.md`). Any pair below threshold is flagged inline above, never silently shipped.

@@ -1,0 +1,31 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks"
+
+<Meta title="Foundations/Shape & depth" />
+
+# Shape & depth
+
+## Radius
+
+- **Default (`--radius`, 0.625rem / 10px):** shadcn's base value, used by cards, buttons, inputs, dialogs today. No reference material asks to change it — left as-is (rule 12). Flagged for your call, not touched.
+- **`--radius-grid-cell` (0px):** the one deliberate exception. Source: R01.1 — the bed grid is squared paper, one cell = one unit, so a cell reads as a literal square, not a rounded card. Built with `BedGrid` in Stage 3; the value itself is still a proposal (no reference gives a number, only "square grid").
+
+<Unstyled>
+  <div style={{ display: "flex", gap: "var(--spacing-panel)", alignItems: "flex-end" }}>
+    <div style={{ textAlign: "center" }}>
+      <div style={{ width: 64, height: 64, borderRadius: "var(--radius-lg)", background: "var(--card)", border: "1px solid var(--border)" }} />
+      <div style={{ fontSize: 12, marginTop: 4 }}>default (card, button…)</div>
+    </div>
+    <div style={{ textAlign: "center" }}>
+      <div style={{ width: 64, height: 64, borderRadius: "var(--radius-grid-cell)", background: "var(--card)", border: "1px solid var(--border)" }} />
+      <div style={{ fontSize: 12, marginTop: 4 }}>grid cell (R01.1)</div>
+    </div>
+  </div>
+</Unstyled>
+
+## Borders
+
+`--border` (shadcn base) is the only border color today. Companion-conflict outlines (`CompanionBadge`, Stage 3) will need their own border treatment per R04 + `2026-10-20-garden-grid.md` — not decided here.
+
+## Shadows
+
+No owner decision picks a shadow scale yet. One constraint **is** decided, directly from this design-system brief's own What-to-avoid list (Stage 4): a shadow is never the *only* separator between a card/panel and its background — a border or spacing does the primary separation, consistent with the approved anti-character word "generyczny-AI" (soft-shadow-only cards are a named generic-AI tell). Shadow may still be used as a *secondary* elevation cue (e.g. an open dialog/sheet above the page) — Tailwind's default `shadow-xs`/`shadow-md` scale, unchanged, until a reference decides otherwise.

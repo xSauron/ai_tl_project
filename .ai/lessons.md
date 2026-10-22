@@ -21,6 +21,21 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-21 — A link to a `public/` static export needs a fallback route test, not a component test
+- **Context:** PR #41 linked the home footer to `/design-system/index.html` (the Storybook export in `public/`, gitignored and built manually) and added a "not built yet" page at `/design-system`. The page test passed, but the link 404'd in every normal build, because nothing routed the link to the page.
+- **Lesson:** Next serves `public/` files by exact path and has no directory-index fallback. A `fallback` rewrite (`next.config.ts`) runs only after `public/` and all routes miss, so it is the right hook for "static file if built, page otherwise".
+- **Action:** when a page exists to cover a missing static file, test the route (rewrite config or `next start` + curl), not just the component in isolation.
+
+### 2026-10-21 — A test project that needs a browser must install it in CI
+- **Context:** PR #41 added the `storybook` Vitest project (headless Chromium) to `npm test`. It passed locally because `~/.cache/ms-playwright` already had the browser, but CI's `unit` job failed with `browserType.launch: Executable doesn't exist`. PR #40, which was branched from it, failed the same way.
+- **Lesson:** a green local `npm test` doesn't prove CI has the same binaries. Also, in this sandbox `GIT_SSL_CAINFO`/`SSL_CERT_FILE` can be set but empty, which breaks `git fetch`. Unset them for git commands.
+- **Action:** when a test needs a browser or other binary, add its install step to every CI job that runs it (`npx playwright install --with-deps --only-shell chromium` in `unit`). Branch new PRs from `main`, not from another open PR. Never check out the primary worktree's branch inside a linked worktree (`checkout -B` allows it): the primary's index stays on old content, and its next commit reverts the linked worktree's commits. That happened here: `5d64957` silently undid the CI fix. Work on a detached HEAD and `git push origin HEAD:<branch>` instead.
+
+### 2026-10-21 — Storybook a11y tests passed on unstyled stories; look at a screenshot
+- **Context:** Stage 1 of the design system shipped with green `design-system:test` and a successful `storybook build`, but Storybook's Vite build never ran Tailwind (the app's `postcss.config.mjs` isn't read), so every story was raw HTML.
+- **Lesson:** a passing build plus a11y tests doesn't prove anything rendered. With no styles, there is no contrast to fail. Also: `next start` snapshots `public/` at boot, so rebuilding the static Storybook while it runs gives 404s on new hashed assets; and `import * as React` used only for types adds an uncovered Vite CJS-interop branch in the browser test project.
+- **Action:** after any Storybook/CSS pipeline change, screenshot one story with `agent-browser`. Run `design-system:build` before `npm start`. Use `import type * as React` when React is only used for types.
+
 ### 2026-10-20 — Solo project: don't keep routing to research the owner can't collect
 - **Context:** the brief, `om-backlog` and `om-discover` kept pointing at interviews with other gardeners (D05). The agent even built an interview kit, until the owner said a one-person course project can't run them ("coś się zapętliło").
 - **Lesson:** when the only reachable informant is the builder, every readiness stop that asks for outside evidence repeats itself. The way out was an owner decision already on file, D05's alternative (b): narrow the target group to what the owner knows first-hand and accept A01 untested (D11).

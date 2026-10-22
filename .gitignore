@@ -56,3 +56,7 @@ packages/core/src/migrations/.snapshot-*_it_*.json
 .ai/qa/artifacts_*/
 .ai/qa/test-env.json
 .ai/qa/test-env.env
+
+*storybook.log
+storybook-static
+packages/app/public/design-system

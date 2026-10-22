@@ -1,0 +1,49 @@
+/**
+ * Storybook-only font loading. The real app self-hosts Geist via
+ * `next/font/google` in its own layouts (unchanged by the design system —
+ * see rule 11). Storybook isn't a Next.js app, so it can't use that; these
+ * @font-face rules point at woff2 files vendored under
+ * `.storybook/fonts/geist-sans/` (copied once from the `geist` npm package,
+ * OFL-licensed — see the LICENSE.txt next to them), so Storybook stays
+ * self-hosted too and never requests a font from an external CDN.
+ *
+ * `--font-geist-sans` is set here as a fallback for the Storybook iframe,
+ * which never gets the app's `next/font` class on <html>. This file is not
+ * imported by `src/styles/globals.css`, so it can't affect the real app.
+ */
+
+@font-face {
+  font-family: "Geist";
+  src: url("./fonts/geist-sans/Geist-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./fonts/geist-sans/Geist-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./fonts/geist-sans/Geist-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./fonts/geist-sans/Geist-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-geist-sans: "Geist";
+}
