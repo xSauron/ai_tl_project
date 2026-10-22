@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-10-21 — Check that every collected field is consumed by a derivation
+- **Context:** grilling the task-list spec (#19). It stored `first_autumn_frost`, validated it, and then derived every window from the spring frost only. It also stored annual frost days as full dates next to a `?year=` parameter, and timing as single columns on `crops` that could not hold a second (autumn) sowing.
+- **Lesson:** a spec reviewed against its stories alone can pass while carrying dead inputs and a model that can't express common cases (autumn sowing, perennials planted once, 30 identical tasks for 30 plants).
+- **Action:** in spec review, trace every stored field to the function that reads it, and walk one annual, one perennial and one many-plants case through the derivation. `/grill-me` points at the `grilling` skill, which may only appear mid-session; if it's missing, run the interview inline in the same round format.
+
 ### 2026-10-21 — A link to a `public/` static export needs a fallback route test, not a component test
 - **Context:** PR #41 linked the home footer to `/design-system/index.html` (the Storybook export in `public/`, gitignored and built manually) and added a "not built yet" page at `/design-system`. The page test passed, but the link 404'd in every normal build, because nothing routed the link to the page.
 - **Lesson:** Next serves `public/` files by exact path and has no directory-index fallback. A `fallback` rewrite (`next.config.ts`) runs only after `public/` and all routes miss, so it is the right hook for "static file if built, page otherwise".
@@ -74,7 +79,8 @@ Long-term memory for AI agents working in this repository. Read this file before
 ### 2026-10-19 — `git push` fails with "SSL CA cert" in cezar worktrees; `gh pr edit --add-label` silently no-ops
 - **Context:** Opening the docs PR for #11. `git fetch`/`git push` failed with `Problem with the SSL CA cert`, and `gh pr edit --add-label` printed a Projects-classic GraphQL error without applying any labels.
 - **Lesson:** The ambient `GIT_SSL_CAINFO` points at a file that does not exist, and git has no stored credentials. `gh` itself works.
-- **Action:** Push with `GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt git -c credential.helper='!gh auth git-credential' push …`, and never disable TLS verification. Apply labels through REST (`gh api -X POST repos/<o>/<r>/issues/<n>/labels -f 'labels[]=…'`) and read them back to check.
+- **Action:** Push with `GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt git -c credential.helper='!gh auth git-credential' push …`, and never disable TLS verification.
+- **Update 2026-10-21/22:** the ambient value differs between sessions. On 2026-10-21 `GIT_SSL_CAINFO` was `/etc/daytona/netleash/ca.crt` and was required (forcing the system bundle failed). On 2026-10-22 it was set but empty, and only the system bundle worked. Check `ls "$GIT_SSL_CAINFO"` first: if the file exists, use only `git -c credential.helper='!gh auth git-credential' …`; if it is empty or missing, prefix `GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt`. Apply labels through REST (`gh api -X POST repos/<o>/<r>/issues/<n>/labels -f 'labels[]=…'`) and read them back to check.
 
 ### 2026-10-19 — Web research in this sandbox: WebSearch/WebFetch denied, `curl`/`gh api` work
 - **Context:** Researching catalogue data sources for #12. The session's permission mode denied `WebSearch` and `WebFetch`.
