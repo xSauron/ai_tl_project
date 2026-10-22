@@ -22,6 +22,16 @@ const nextConfig: NextConfig = {
     "@mikro-orm/migrations",
     "pg",
   ],
+  // The home page links to the static Storybook export. `fallback` runs only
+  // after `public/` is checked, so a built export still wins; until then the
+  // link lands on the "not built yet" page instead of a 404.
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      afterFiles: [],
+      fallback: [{ source: "/design-system/index.html", destination: "/design-system" }],
+    };
+  },
 };
 
 export default nextConfig;

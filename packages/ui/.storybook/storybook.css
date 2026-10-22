@@ -1,0 +1,9 @@
+/*
+ * Storybook entry stylesheet. The app's admin.css does the same: Tailwind
+ * first, then the shared theme, so utilities and tokens resolve in stories.
+ */
+@import "tailwindcss";
+@import "../src/styles/globals.css";
+
+/* Class names used only in stories and example screens. */
+@source "../src";

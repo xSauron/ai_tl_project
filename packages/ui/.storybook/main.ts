@@ -4,6 +4,7 @@ import { dirname } from "path"
 
 import { fileURLToPath } from "url"
 
+import tailwindcss from "@tailwindcss/postcss"
 import remarkGfm from "remark-gfm"
 
 /**
@@ -36,6 +37,12 @@ const config: StorybookConfig = {
     },
   ],
   "framework": getAbsolutePath('@storybook/react-vite'),
+  // Storybook's Vite build doesn't read the app's postcss.config.mjs, so
+  // Tailwind has to be wired here or every story renders unstyled.
+  viteFinal: (viteConfig) => ({
+    ...viteConfig,
+    css: { ...viteConfig.css, postcss: { plugins: [tailwindcss()] } },
+  }),
   "core": {
     // Rule: the Storybook UI shows only the product name. Hide the
     // "what's new" release-notes notifications (base shadcn/Storybook

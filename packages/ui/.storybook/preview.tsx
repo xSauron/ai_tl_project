@@ -1,7 +1,7 @@
 import type { Preview } from '@storybook/react-vite'
 
 import "./fonts.css"
-import "../src/styles/globals.css"
+import "./storybook.css"
 
 // Rule 9: the theme switch sets the theme on the document root element, not
 // just the story wrapper, so dialogs, menus and popovers rendered in a

@@ -44,4 +44,16 @@ describe("next.config", () => {
       expect.arrayContaining(["@mikro-orm/core", "@mikro-orm/postgresql", "pg"]),
     );
   });
+
+  it("rewrites the design system link to the not-built page as a fallback (after public/ files)", async () => {
+    existsSync.mockReturnValue(false);
+
+    const { default: config } = await import("./next.config");
+
+    expect(await config.rewrites?.()).toEqual({
+      beforeFiles: [],
+      afterFiles: [],
+      fallback: [{ source: "/design-system/index.html", destination: "/design-system" }],
+    });
+  });
 });

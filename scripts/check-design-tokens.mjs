@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CI gate for the Plant.AI design system (packages/ui): every value a
+ * Token check for the Plant.AI design system (packages/ui): every value a
  * component uses must come from a token.
  *
  * Fails (non-zero exit) when it finds, anywhere under `packages/ui/src` or
