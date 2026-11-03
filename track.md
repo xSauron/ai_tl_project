@@ -11,7 +11,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 ## Phase 0 — Alignment
 
 - [x] 0.1 Rules alignment (D02, D08, D09, R07): verify `AGENTS.md` + standards already updated (#38); fill gaps only. Gaps filled: remaining MVP references to journal/photos/upload/layout proposal marked Later in-place; double-apply integration test deferred (D08).
-- [ ] 0.2 Rename scope `@plant-ai/*` → `@plantai/*` (package.json files, imports, scripts, configs, docs, `BACKWARD_COMPATIBILITY.md`).
+- [x] 0.2 Rename scope `@plant-ai/*` → `@plantai/*` (package.json files, imports, scripts, configs, docs, `BACKWARD_COMPATIBILITY.md`).
 - [ ] 0.3 Create `packages/db` (entities in `entities/<concept>/`, migrations + snapshot, ORM config, `getOrm`).
 - [ ] 0.4 Core container split: `core/src/container/{container,cradle,scope}.ts` with `withScope`; `services/gardens/garden.service.ts`; app uses `withScope` (remove `request-scope.ts`).
 - [ ] 0.5 ESLint over every package + `no-restricted-imports` layer rules (`app → core → db`, `ui` isolated, `@mikro-orm/*` only in `db`); update `AGENTS.md` migration table.

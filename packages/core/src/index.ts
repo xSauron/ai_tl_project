@@ -1,5 +1,5 @@
 /**
- * @plant-ai/core — server-only domain package.
+ * @plantai/core — server-only domain package.
  * Never import this from a Client Component.
  */
 export * from "./entities/index.ts";

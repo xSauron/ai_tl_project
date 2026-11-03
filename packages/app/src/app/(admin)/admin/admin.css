@@ -1,5 +1,5 @@
 /*
- * Backend (admin) styles — Tailwind CSS + the shadcn/ui theme from @plant-ai/ui.
+ * Backend (admin) styles — Tailwind CSS + the shadcn/ui theme from @plantai/ui.
  */
 @import "tailwindcss";
-@import "@plant-ai/ui/styles.css";
+@import "@plantai/ui/styles.css";

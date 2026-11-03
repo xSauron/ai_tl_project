@@ -1,5 +1,5 @@
 {
-  "name": "@plant-ai/app",
+  "name": "@plantai/app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,8 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@plant-ai/core": "*",
-    "@plant-ai/ui": "*",
+    "@plantai/core": "*",
+    "@plantai/ui": "*",
     "next": "16.4.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",

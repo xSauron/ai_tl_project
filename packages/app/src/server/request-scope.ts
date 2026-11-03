@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createRequestScope, type RequestCradle } from "@plant-ai/core";
+import { createRequestScope, type RequestCradle } from "@plantai/core";
 
 /**
  * Runs `fn` inside a fresh Awilix request scope (own forked EntityManager)

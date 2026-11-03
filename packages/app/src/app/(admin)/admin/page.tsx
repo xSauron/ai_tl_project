@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { connection } from "next/server";
 
-import { checkDbConnection } from "@plant-ai/core";
-import { Badge } from "@plant-ai/ui/components/badge";
-import { Button } from "@plant-ai/ui/components/button";
+import { checkDbConnection } from "@plantai/core";
+import { Badge } from "@plantai/ui/components/badge";
+import { Button } from "@plantai/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@plant-ai/ui/components/card";
+} from "@plantai/ui/components/card";
 
 export default async function AdminDashboardPage() {
   // Database reads happen per request, never at build time.

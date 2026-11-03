@@ -232,7 +232,6 @@ The repo is at the bootstrap stage. Follow §5 of the standards doc **one builda
 
 | Target rule | Current state | Closed by §5 step |
 | --- | --- | --- |
-| Scope `@plantai/*` | `@plant-ai/*` | 1 |
 | `packages/db` owns entities/migrations/ORM config | in `packages/core` (`entities/`, `migrations/`, `db/`) | 1–2 |
 | `core/src/services/<concept>/` | `core/src/modules/gardens/` (example `GardenService`) | 2 |
 | `core/src/container/{container,cradle}.ts` | `core/src/di/container.ts` | 2 |

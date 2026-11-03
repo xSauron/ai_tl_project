@@ -14,6 +14,7 @@
 ## Steps
 
 - Baseline gate on `bbcb02f`: typecheck, lint, test (100 %) green.
+- 0.2: scope renamed `@plant-ai/*` → `@plantai/*` (package names, deps, imports, scripts, ui tsconfig/components.json, docs, `BACKWARD_COMPATIBILITY.md` rename row, AGENTS.md table row removed); lockfile relinked; gate green except pre-existing `next` 16.4.0 critical advisory (same as baseline); `/api/health` 200.
 
 ## Open issues
 

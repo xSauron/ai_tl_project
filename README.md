@@ -51,9 +51,9 @@ npm run dev                     # http://localhost:3000
 ```
 .
 ├── packages/
-│   ├── app/    @plant-ai/app   Next.js application — integration layer / composition root
-│   ├── core/   @plant-ai/core  Domain & persistence — entities, migrations, services, DI container
-│   └── ui/     @plant-ai/ui    shadcn/ui component library + admin theme
+│   ├── app/    @plantai/app   Next.js application — integration layer / composition root
+│   ├── core/   @plantai/core  Domain & persistence — entities, migrations, services, DI container
+│   └── ui/     @plantai/ui    shadcn/ui component library + admin theme
 ├── docker-compose.yml          Local PostgreSQL
 ├── tsconfig.base.json          Shared compiler options
 └── .env.example                Environment variables (copy to .env)
@@ -61,18 +61,18 @@ npm run dev                     # http://localhost:3000
 
 ```mermaid
 graph LR
-  app["@plant-ai/app<br/>Next.js routes, layouts,<br/>Server Actions, Route Handlers"]
-  core["@plant-ai/core<br/>entities · services · Awilix · MikroORM"]
-  ui["@plant-ai/ui<br/>shadcn/ui components"]
+  app["@plantai/app<br/>Next.js routes, layouts,<br/>Server Actions, Route Handlers"]
+  core["@plantai/core<br/>entities · services · Awilix · MikroORM"]
+  ui["@plantai/ui<br/>shadcn/ui components"]
   db[(PostgreSQL)]
   app --> core
   app --> ui
   core --> db
 ```
 
-- **`@plant-ai/app`**: the only package that knows about Next.js. It holds routing, layouts, Server Actions and Route Handlers, and stays thin: validate input, resolve a service, render.
-- **`@plant-ai/core`**: server-only business logic and persistence. It has no Next.js or React dependencies.
-- **`@plant-ai/ui`**: presentational shadcn/ui components used by the admin pages.
+- **`@plantai/app`**: the only package that knows about Next.js. It holds routing, layouts, Server Actions and Route Handlers, and stays thin: validate input, resolve a service, render.
+- **`@plantai/core`**: server-only business logic and persistence. It has no Next.js or React dependencies.
+- **`@plantai/ui`**: presentational shadcn/ui components used by the admin pages.
 
 Internal packages are consumed as TypeScript source (no build step). Next.js transpiles them.
 
@@ -83,7 +83,7 @@ Internal packages are consumed as TypeScript source (no build step). Next.js tra
 | Route group | URL | Styling |
 | --- | --- | --- |
 | `(frontend)/` | `/`, … | Tailwind CSS with Plant.AI `@theme` tokens (`frontend.css`) |
-| `(admin)/admin/` | `/admin/…` | Tailwind + shadcn/ui theme from `@plant-ai/ui/styles.css` (`admin.css`) |
+| `(admin)/admin/` | `/admin/…` | Tailwind + shadcn/ui theme from `@plantai/ui/styles.css` (`admin.css`) |
 
 Because these are separate root layouts, moving between the public site and the admin is a full page load. That keeps the two design systems fully isolated.
 
@@ -132,7 +132,7 @@ Request ─► Server Component / Server Action / Route Handler
 | `npm run typecheck` | Type-check all packages |
 | `npm run lint` | Lint |
 | `npm run db:migrate` · `db:migrate:create` · `db:migrate:down` | Database migrations |
-| `npm run ui:add -- <component>` | Add a shadcn/ui component to `@plant-ai/ui` |
+| `npm run ui:add -- <component>` | Add a shadcn/ui component to `@plantai/ui` |
 
 ## AI-assisted development
 

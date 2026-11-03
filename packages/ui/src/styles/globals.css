@@ -1,6 +1,6 @@
 /*
  * shadcn/ui theme for backend (admin) pages.
- * Imported by the admin layout in @plant-ai/app — never by public frontend pages.
+ * Imported by the admin layout in @plantai/app — never by public frontend pages.
  */
 @import "tw-animate-css";
 @import "./tokens/raw.css";

@@ -11,10 +11,10 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@plant-ai/ui/components",
-    "utils": "@plant-ai/ui/lib/utils",
-    "hooks": "@plant-ai/ui/hooks",
-    "lib": "@plant-ai/ui/lib",
-    "ui": "@plant-ai/ui/components"
+    "components": "@plantai/ui/components",
+    "utils": "@plantai/ui/lib/utils",
+    "hooks": "@plantai/ui/hooks",
+    "lib": "@plantai/ui/lib",
+    "ui": "@plantai/ui/components"
   }
 }

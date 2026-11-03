@@ -7,7 +7,7 @@ const { connection, checkDbConnection } = vi.hoisted(() => ({
 }));
 
 vi.mock("next/server", () => ({ connection }));
-vi.mock("@plant-ai/core", () => ({ checkDbConnection }));
+vi.mock("@plantai/core", () => ({ checkDbConnection }));
 
 const { default: AdminDashboardPage } = await import("./page");
 

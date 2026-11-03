@@ -20,9 +20,15 @@ As `api/<concept>/route.ts` handlers are added per the domain-invariants section
 
 This surface is pre-auth (no `auth` concept exists yet per `AGENTS.md`'s migration table) — the first PR that adds ownership checks to garden mutations is a deliberate breaking change to this action's signature (it will need a session/user argument) and should be called out explicitly.
 
-## `@plant-ai/core` package exports (`packages/core/src/index.ts`)
+## Workspace package names (`packages/*/package.json`)
 
-Everything re-exported here is the public surface other workspaces (`@plant-ai/app`) are allowed to import; anything not exported here is internal to `core` even if the file is technically reachable.
+| Surface | Contract | Breaking change | Required path |
+|---|---|---|---|
+| Package scope `@plantai/*` (`@plantai/app`, `@plantai/core`, `@plantai/ui`) | Every workspace import specifier (`@plantai/core`, `@plantai/ui/components/*`, `@plantai/ui/styles.css`), every root script's `-w @plantai/<name>`, and the shadcn aliases in `packages/ui/components.json` use this scope. | Renaming the scope or a package. **Done once on 2026-11-03** (app-primitives 0.2, standards §5 step 1): `@plant-ai/*` → `@plantai/*`. Any local branch or tool still importing `@plant-ai/*` or running `npm … -w @plant-ai/<name>` breaks and must switch to `@plantai/*`; re-run `npm install` so `node_modules/@plantai/*` links replace the old `node_modules/@plant-ai/*` ones. | Rename every `package.json` `name` and dependency, import, script, config alias and doc in the same PR, regenerate `package-lock.json`, and call the rename out in the PR body. The packages are private (not published), so there is no external consumer or deprecation window. |
+
+## `@plantai/core` package exports (`packages/core/src/index.ts`)
+
+Everything re-exported here is the public surface other workspaces (`@plantai/app`) are allowed to import; anything not exported here is internal to `core` even if the file is technically reachable.
 
 | Export | Contract | Breaking change | Required path |
 |---|---|---|---|
@@ -53,7 +59,7 @@ As more entities and concepts (`plantings`, `crops`, `calendar`, `journal`, `pho
 
 | Surface | Contract | Breaking change | Required path |
 |---|---|---|---|
-| `npm run db:migrate`, `db:migrate:create -- --name <slug>`, `db:migrate:down` | Thin wrappers over the MikroORM CLI (`mikro-orm migration:up/create/down`) scoped to `@plant-ai/core`; documented in `AGENTS.md`'s Commands table. | Changing a script's name, its required flags, or which workspace it targets, without updating `AGENTS.md` and `SDLC.md`'s validation gate in the same PR. | Treat these as a CLI surface: keep flag compatibility or document the new invocation everywhere it's referenced (`AGENTS.md`, CI, this file). |
+| `npm run db:migrate`, `db:migrate:create -- --name <slug>`, `db:migrate:down` | Thin wrappers over the MikroORM CLI (`mikro-orm migration:up/create/down`) scoped to `@plantai/core`; documented in `AGENTS.md`'s Commands table. | Changing a script's name, its required flags, or which workspace it targets, without updating `AGENTS.md` and `SDLC.md`'s validation gate in the same PR. | Treat these as a CLI surface: keep flag compatibility or document the new invocation everywhere it's referenced (`AGENTS.md`, CI, this file). |
 | `npm run typecheck`, `lint`, `test`, `build`, `test:integration` | The validation gate every PR passes (`SDLC.md`); `test` enforces 100% coverage via `vitest.config.ts`. | Changing what counts as passing (e.g. lowering the coverage threshold, dropping a workspace from `--workspaces --if-present`) without updating `SDLC.md`'s Validation gate section and `.ai/agentic.config.json`'s `validation.commands` together. | Update `SDLC.md`, `.ai/agentic.config.json`, and `.github/workflows/ci.yml` in the same PR as any gate change. |
 
 ## Not yet present

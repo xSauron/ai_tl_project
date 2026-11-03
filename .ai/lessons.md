@@ -151,4 +151,4 @@ Long-term memory for AI agents working in this repository. Read this file before
 ### 2026-10-13 — shadcn CLI emits `import { cn } from "cn"`
 - **Context:** `shadcn add` (v4) wrote `cn` imports from the `cn` npm package and installed it.
 - **Lesson:** `cn` is shadcn's official replacement for `clsx` + `tailwind-merge`, not a typo-squat.
-- **Action:** Keep `cn`; `@plant-ai/ui/lib/utils` re-exports it.
+- **Action:** Keep `cn`; `@plantai/ui/lib/utils` re-exports it.

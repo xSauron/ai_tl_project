@@ -5,7 +5,7 @@ const { createRequestScope, dispose } = vi.hoisted(() => ({
   dispose: vi.fn(),
 }));
 
-vi.mock("@plant-ai/core", () => ({ createRequestScope }));
+vi.mock("@plantai/core", () => ({ createRequestScope }));
 
 const { withRequestScope } = await import("./request-scope");
 

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 
-import { Button } from "@plant-ai/ui/components/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@plant-ai/ui/components/card";
-import { Input } from "@plant-ai/ui/components/input";
-import { Label } from "@plant-ai/ui/components/label";
+import { Button } from "@plantai/ui/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@plantai/ui/components/card";
+import { Input } from "@plantai/ui/components/input";
+import { Label } from "@plantai/ui/components/label";
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@plant-ai/ui/components/table";
+} from "@plantai/ui/components/table";
 
 import { withRequestScope } from "@/server/request-scope";
 
