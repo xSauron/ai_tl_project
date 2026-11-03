@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-11-03 — Radix popups in jsdom: outside content goes aria-hidden, and React bubbles portal keys
+- **Context:** app-primitives 3.4 (`CrudForm` with a Radix `Select`). Tests that found the form via `getByRole("button", …)` failed as soon as the Select was open, and an `Escape` pressed inside the open list reached the form's `onKeyDown` and would have cancelled the whole form.
+- **Lesson:** an open Radix Select/Dialog runs `hideOthers`, so everything outside it drops out of role queries. React synthetic events bubble along the React tree, through portals, even though the portal's DOM sits outside the form.
+- **Action:** in tests, reach containers outside an open popup by `data-slot`, not by role. In form-level key handlers, ignore events whose DOM target the form doesn't `contains`. Also: the first `next build` on `next` 16.4.0 stops with a `SecurityFatalError` upgrade nudge for the known advisory; the retry builds normally (the advisory is pre-existing, not something to fix inside a feature task).
+
 ### 2026-11-03 — Don't hide a run in a /tmp worktree when the owner tests in the editor and the :3000 preview
 - **Context:** implementing spec A, the agent created a worktree in `/tmp/opencode/` to keep the owner's uncommitted `/workspace` changes untouched. The owner's editor and the sandbox preview (`workspace-agent-cli exec --process preview` → `next dev` on :3000) both serve `/workspace`, so they saw none of the work and had to test on another port.
 - **Lesson:** a worktree outside `/workspace` is invisible to the owner's tools. The preview supervisor restarts `next dev` on :3000 by itself when it is killed.
