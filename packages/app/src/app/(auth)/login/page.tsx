@@ -17,7 +17,7 @@ export default async function LoginPage() {
       <CredentialsForm mode="login" />
       <p className="text-body text-muted-foreground">
         No account yet?{" "}
-        <Link href={ROUTES.register} className="font-medium text-foreground underline underline-offset-4">
+        <Link href={ROUTES.register} className="font-medium text-primary underline underline-offset-4">
           Create one
         </Link>
       </p>

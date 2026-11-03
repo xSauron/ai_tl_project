@@ -66,6 +66,12 @@
   --color-phase-prune: var(--phase-prune);
   --color-phase-prune-foreground: var(--phase-prune-foreground);
 
+  /* Brand green (owner, 2026-11-03) — see styles/tokens/semantic.css */
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-muted-foreground: var(--brand-muted-foreground);
+  --color-brand-surface: var(--brand-surface);
+
   /* Grid cell shape (R01.1, component token) — see styles/tokens/semantic.css */
   --radius-grid-cell: var(--grid-cell-radius);
 
