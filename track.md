@@ -30,7 +30,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 
 ## Phase 2 — HTTP layer
 
-- [ ] 2.1 `core/src/http/apiHandler.ts` (body limit, CSRF, Zod parse, envelope, error mapping, request logging, injected `resolveActor`).
+- [x] 2.1 `core/src/http/apiHandler.ts` (body limit, CSRF, Zod parse, envelope, error mapping, request logging, injected `resolveActor`).
 - [ ] 2.2 `db/src/ownership.ts` (`ownedBy`, `findOwned`, `EntityManager` re-export) + `core/src/services/shared/owned.ts` (`findOwnedOrFail`).
 - [ ] 2.3 `core/src/http/makeCrudRoute.ts` (+ `CrudService` type).
 
