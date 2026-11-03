@@ -95,8 +95,8 @@ Because these are separate root layouts, moving between the public site and the 
 
 ```
 Request ─► Server Component / Server Action / Route Handler
-             └─ withRequestScope(({ gardenService }) => …)        packages/app/src/server/request-scope.ts
-                  └─ Awilix scope: em = orm.em.fork()              packages/core/src/di/container.ts (ORM from packages/db/src/orm.ts)
+             └─ withScope(({ gardenService }) => …)               packages/core/src/container/scope.ts
+                  └─ Awilix scope: em = orm.em.fork()              packages/core/src/container/container.ts (cradle types: cradle.ts; ORM from packages/db/src/orm.ts)
                        └─ GardenService({ em }) → MikroORM → PostgreSQL
 ```
 

@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const { connection, list } = vi.hoisted(() => ({ connection: vi.fn(), list: vi.fn() }));
 
 vi.mock("next/server", () => ({ connection }));
-vi.mock("@/server/request-scope", () => ({
-  withRequestScope: (fn: (cradle: unknown) => unknown) => fn({ gardenService: { list } }),
+vi.mock("@plantai/core", () => ({
+  withScope: (fn: (cradle: unknown) => unknown) => fn({ gardenService: { list } }),
 }));
 vi.mock("./actions", () => ({ createGardenAction: vi.fn() }));
 

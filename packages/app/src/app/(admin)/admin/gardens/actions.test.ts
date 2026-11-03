@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { revalidatePath, withRequestScope, create } = vi.hoisted(() => {
+const { revalidatePath, withScope, create } = vi.hoisted(() => {
   const create = vi.fn();
   return {
     create,
     revalidatePath: vi.fn(),
-    withRequestScope: vi.fn((fn: (cradle: unknown) => unknown) => fn({ gardenService: { create } })),
+    withScope: vi.fn((fn: (cradle: unknown) => unknown) => fn({ gardenService: { create } })),
   };
 });
 
 vi.mock("next/cache", () => ({ revalidatePath }));
-vi.mock("@/server/request-scope", () => ({ withRequestScope }));
+vi.mock("@plantai/core", () => ({ withScope }));
 
 const { createGardenAction } = await import("./actions");
 
@@ -45,7 +45,7 @@ describe("createGardenAction", () => {
   it.each([{}, { name: "   " }])("ignores submissions without a name (%j)", async (fields) => {
     await createGardenAction(form(fields));
 
-    expect(withRequestScope).not.toHaveBeenCalled();
+    expect(withScope).not.toHaveBeenCalled();
     expect(revalidatePath).not.toHaveBeenCalled();
   });
 });

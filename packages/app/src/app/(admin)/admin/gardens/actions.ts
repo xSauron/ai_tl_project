@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { withRequestScope } from "@/server/request-scope";
+import { withScope } from "@plantai/core";
 
 export async function createGardenAction(formData: FormData): Promise<void> {
   const name = String(formData.get("name") ?? "").trim();
@@ -11,7 +11,7 @@ export async function createGardenAction(formData: FormData): Promise<void> {
     return;
   }
 
-  await withRequestScope(({ gardenService }) =>
+  await withScope(({ gardenService }) =>
     gardenService.create({ name, description: description || null }),
   );
   revalidatePath("/admin/gardens");

@@ -232,9 +232,6 @@ The repo is at the bootstrap stage. Follow §5 of the standards doc **one builda
 
 | Target rule | Current state | Closed by §5 step |
 | --- | --- | --- |
-| `core/src/services/<concept>/` | `core/src/modules/gardens/` (example `GardenService`) | 2 |
-| `core/src/container/{container,cradle}.ts` | `core/src/di/container.ts` | 2 |
-| `withScope` | `withRequestScope` in `app/src/server/request-scope.ts` | 2 |
 | `core/src/http/`, `ui/src/backend/`, Zod, pino, events | not yet present | 3 / 9 |
 | ESLint `no-restricted-imports` layer rules; ESLint over all packages | ESLint covers `app` only | 3 |
 | shadcn primitives in `ui/src/components/ui/` | `ui/src/components/` | 3 |

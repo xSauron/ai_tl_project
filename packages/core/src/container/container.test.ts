@@ -13,7 +13,7 @@ async function loadContainerModule() {
   vi.resetModules();
   const [container, { GardenService }] = await Promise.all([
     import("./container.ts"),
-    import("../modules/gardens/garden.service.ts"),
+    import("../services/gardens/garden.service.ts"),
   ]);
   return { ...container, GardenService };
 }

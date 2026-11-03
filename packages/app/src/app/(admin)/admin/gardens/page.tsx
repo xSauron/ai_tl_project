@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 
+import { withScope } from "@plantai/core";
 import { Button } from "@plantai/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@plantai/ui/components/card";
 import { Input } from "@plantai/ui/components/input";
@@ -14,8 +15,6 @@ import {
   TableRow,
 } from "@plantai/ui/components/table";
 
-import { withRequestScope } from "@/server/request-scope";
-
 import { createGardenAction } from "./actions";
 
 export const metadata: Metadata = { title: "Gardens" };
@@ -23,7 +22,7 @@ export const metadata: Metadata = { title: "Gardens" };
 export default async function GardensPage() {
   // Database reads happen per request, never at build time.
   await connection();
-  const gardens = await withRequestScope(({ gardenService }) => gardenService.list());
+  const gardens = await withScope(({ gardenService }) => gardenService.list());
 
   return (
     <div className="space-y-6">

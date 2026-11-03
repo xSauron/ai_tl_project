@@ -5,9 +5,9 @@ const { createRequestScope, dispose } = vi.hoisted(() => ({
   dispose: vi.fn(),
 }));
 
-vi.mock("@plantai/core", () => ({ createRequestScope }));
+vi.mock("./container.ts", () => ({ createRequestScope }));
 
-const { withRequestScope } = await import("./request-scope");
+const { withScope } = await import("./scope.ts");
 
 const cradle = { gardenService: { list: vi.fn() } };
 
@@ -16,9 +16,9 @@ beforeEach(() => {
   createRequestScope.mockResolvedValue({ cradle, dispose });
 });
 
-describe("withRequestScope", () => {
+describe("withScope", () => {
   it("runs the callback with a fresh scope and disposes it", async () => {
-    const result = await withRequestScope(async (scope) => {
+    const result = await withScope(async (scope) => {
       expect(scope).toBe(cradle);
       return "done";
     });
@@ -30,7 +30,7 @@ describe("withRequestScope", () => {
 
   it("disposes the scope even when the callback throws", async () => {
     await expect(
-      withRequestScope(async () => {
+      withScope(async () => {
         throw new Error("boom");
       }),
     ).rejects.toThrow("boom");

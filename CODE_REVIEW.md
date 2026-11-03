@@ -18,7 +18,7 @@ This repo is a Next.js 16 (App Router) / React 19 / TypeScript (strict) monorepo
 - **No `core` import inside `packages/ui`.** `ui` is presentation-only; grid/companion/calendar math reaches the client through API responses.
 - **`defineEntity` + `setClass`, no decorators**; entities registered by hand in `packages/db/src/entities/index.ts` — no folder auto-discovery.
 - **Every schema change ships a migration** — review the generated SQL and confirm the matching `.snapshot-*.json` is committed. A merged migration is never edited in place.
-- **No global `EntityManager`.** Code works through a request-scoped `EntityManager` (`withRequestScope` / `withScope`); `allowGlobalContext` stays `false`.
+- **No global `EntityManager`.** Code works through a request-scoped `EntityManager` (`withScope`); `allowGlobalContext` stays `false`.
 - **Services take one destructured cradle argument**, compose collaborators, and are registered explicitly in the DI container — no `container.resolve` inside a service, no base-service hierarchy.
 - **Mass assignment**: only Zod-parsed output reaches `em.create()` / `em.assign()`, never a raw request body.
 - **Routes use the shared layer**: `makeCrudRoute`/`apiHandler` for routes, `upload.ts`/`apiUpload` for file uploads, `CrudForm`/`DataTable`/`feedback/*` on the client. A bare `try/catch` + hand-rolled `NextResponse.json`, a raw `fetch('/api/...')` in a component, or a hand-rolled form/table/loading state needs a stated reason — otherwise it is a finding.

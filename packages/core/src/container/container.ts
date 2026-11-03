@@ -1,4 +1,4 @@
-import { getOrm, type EntityManager, type MikroORM } from "@plantai/db";
+import { getOrm, type EntityManager } from "@plantai/db";
 import {
   asClass,
   asValue,
@@ -7,18 +7,8 @@ import {
   type AwilixContainer,
 } from "awilix";
 
-import { GardenService } from "../modules/gardens/garden.service.ts";
-
-/** Singletons registered once per process. */
-export interface AppCradle {
-  orm: MikroORM;
-}
-
-/** Everything resolvable inside a request scope. */
-export interface RequestCradle extends AppCradle {
-  em: EntityManager;
-  gardenService: GardenService;
-}
+import { GardenService } from "../services/gardens/garden.service.ts";
+import type { AppCradle, RequestCradle } from "./cradle.ts";
 
 export type AppContainer = AwilixContainer<AppCradle>;
 export type RequestScope = AwilixContainer<RequestCradle>;
@@ -52,7 +42,7 @@ export function getContainer(): Promise<AppContainer> {
 
 /**
  * Creates a per-request scope with its own forked EntityManager (identity map).
- * Call once per request / server action and resolve services from it.
+ * Prefer `withScope`, which also disposes the scope.
  */
 export async function createRequestScope(): Promise<RequestScope> {
   const root = await getContainer();

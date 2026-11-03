@@ -1,5 +1,7 @@
 import { Garden, type EntityManager } from "@plantai/db";
 
+import type { RequestCradle } from "../../container/cradle.ts";
+
 export interface CreateGardenInput {
   name: string;
   description?: string | null;
@@ -9,7 +11,7 @@ export interface CreateGardenInput {
 export class GardenService {
   private readonly em: EntityManager;
 
-  constructor({ em }: { em: EntityManager }) {
+  constructor({ em }: Pick<RequestCradle, "em">) {
     this.em = em;
   }
 
