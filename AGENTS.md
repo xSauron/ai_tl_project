@@ -69,8 +69,8 @@ Event IDs follow `concept.entity.action`, past tense (e.g. `plantings.planting.p
 
 - A `Planting` belongs to a garden and may have no bed (R07, D10): an unplaced planting has no cells, no grid check and no companion neighbours. Beds are square-foot grids (`rows × cols`); a placed `Planting` occupies a cell rectangle (`row`, `col`, `rowSpan`, `colSpan`) and stores `plantsPerCell` derived from crop spacing. Placement validity (bounds, overlap, footprint, spacing) is decided only by the pure functions in `services/plantings/grid-rules.ts`. `PlantingService` calls them and persists, checking overlap inside a transaction. Document the chosen occupancy model in the entity file.
 - Companion/combative relations come from catalog data (`crop_companions`: `cropId`, `otherCropId`, `relation`, `source`). Conflicts are computed server-side by a pure function `(plantings, relations) → conflicts` and returned with the bed. Never hard-code crop relationships in the UI.
-- An `Operation` (spraying, pruning, sowing… planned or done, D14, R09) is stored user data owned through the garden; one operation links to many plantings of that garden. It has a type from a fixed list, a date-only date and an `isDone` flag, and no notes, photo or assignee. Derived tasks are never stored (R05) and are not operations.
-- Calendar windows are derived from crop timing + the user's frost dates by pure functions in `services/calendar/`, never stored. Persist only user decisions (overrides). Calendar dates are date-only values (`YYYY-MM-DD`); only timestamps are `timestamptz`.
+- An `Operation` (spraying, pruning, sowing… planned or done, D14, R09) is stored user data owned through the garden; one operation links to many plantings of that garden. It has a type from a fixed list (`sow-indoors`, `sow`, `plant-out`, `prune`, `spray`, `fertilize`, `harvest`, `other`), a date-only date and an `isDone` flag, and no notes, photo or assignee. It is never edited, only toggled done or deleted, and it outlives the plantings it links. A task's done status is derived from matching done operations, never stored. Derived tasks are never stored (R05) and are not operations.
+- Calendar windows are derived from crop timing + the user's frost dates by pure functions in `services/calendar/`, never stored. Persist only user decisions (overrides). Calendar dates are date-only values (`YYYY-MM-DD`); recurring days with no year (frost days, calendar-anchored windows) are `MM-DD`; only timestamps are `timestamptz`. "Today" is computed in the named `APP_TIME_ZONE`.
 - The catalog is reference data from versioned seed files. Users can't edit it in MVP, and every fact has a `source`. Never scrape or copy another app's dataset.
 - Beds use optimistic locking (`version`). A stale write → `ConflictError` (409) and the client reloads. Never silently let the last write win on a layout.
 - Grid, companion and calendar math lives in `core` and reaches the client through API responses, never by importing `core` into `ui`.
@@ -108,7 +108,7 @@ New reusable components go here:
 
 ### Pages & routing (`packages/app/src/app`)
 
-- `(marketing)/`: landing + public crop catalog. Own root layout, plain Tailwind with `@theme` tokens.
+- `(marketing)/`: landing (the public crop catalog is Later; in MVP the catalog is signed-in only). Own root layout, plain Tailwind with `@theme` tokens.
 - `(auth)/` (login, register) and `(app)/` (gardens, beds, calendar, operations, assistant, settings): shadcn/ui theme from `@plantai/ui`. They don't share a root layout with `(marketing)`, so the two design systems never mix. There is no top-level `app/layout.tsx`.
 - `api/<concept>/...`: one `route.ts` per resource. `api/health` must keep working (it runs a real `select 1`).
 - Pages default-export `<Segment>Page`.

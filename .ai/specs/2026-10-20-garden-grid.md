@@ -1,13 +1,13 @@
 # Garden grid: plant list, square-foot beds, multi-cell plantings and companion warnings
 
 - **Status:** draft (design only).
-  - **Phase 1** needs spec A, a minimal crops catalogue with a read API (catalogue spec, not yet written), and the brief's implementation gate D05 (the interviews), unless the owner lifts it.
+  - **Phase 1** needs spec A and the catalogue spec's Phase 1 ([`2026-10-20-catalogue.md`](2026-10-20-catalogue.md): a `Crop` entity and a read API). D05 no longer gates it (superseded by D11; owner, 2026-10-21 grilling G12).
   - **Phases 2–4** are also blocked on A04 (#13: the owner's paper layout).
 - **Date:** 2026-10-20
 - **Origin:** issue #13 (E01-T03, A04), Epic #11. Product item: D07 Now #2 (beds with companion warnings).
 - **Depends on:**
   - [`2026-10-20-app-primitives.md`](2026-10-20-app-primitives.md) (spec A), all phases.
-  - A crops catalogue spec, not yet written (standards §5 step 4, D04), for the `CropFootprint` and companion-relation contracts below.
+  - [`2026-10-20-catalogue.md`](2026-10-20-catalogue.md) (D04), for the `CropFootprint` and companion-relation contracts below.
 - **Design authority:** `.ai/specs/product-brief.md` (R07 supersedes R01; R04, N01, D02, D07, D10), `AGENTS.md` Domain invariants
 
 ## 📝 TLDR
@@ -75,7 +75,7 @@ One aggregate per bed. Pure rules decide validity, and the service locks the bed
 | Entity | Table | Fields (beyond base) | Constraints |
 |---|---|---|---|
 | `Bed` | `beds` | `garden` → `gardens` (cascade), `name` `varchar(60)`, `rows` `smallint`, `cols` `smallint`, `version` `int` default 1 | `1 ≤ rows,cols ≤ MAX_BED_DIMENSION` (check), `MAX_BEDS_PER_GARDEN` in the service |
-| `Planting` | `plantings` | Phase 1: `garden` → `gardens` (cascade), `crop` → `crops`, `note` `varchar(200)` null. **Phase 3 adds** (one migration, after A04): `bed` with composite FK `(bed_id, garden_id)` → `beds(id, garden_id)` **`NO ACTION`** (checked at the end of the statement, so a garden-delete cascade succeeds; the service unplaces before deleting a bed), `row`, `col`, `rowSpan`, `colSpan` `smallint` null, `plantsPerCell` `smallint` null (null when unplaced or multi-cell) | check (Phase 3): `bed_id` null ⇔ all four geometry columns null; spans ≥ 1; `MAX_PLANTINGS_PER_GARDEN` under the garden row lock |
+| `Planting` | `plantings` | Phase 1: `garden` → `gardens` (cascade), `crop` → `crops` **`ON DELETE RESTRICT`** (a seed can't delete a crop in use), `note` `varchar(200)` null. **Phase 3 adds** (one migration, after A04): `bed` with composite FK `(bed_id, garden_id)` → `beds(id, garden_id)` **`NO ACTION`** (checked at the end of the statement, so a garden-delete cascade succeeds; the service unplaces before deleting a bed), `row`, `col`, `rowSpan`, `colSpan` `smallint` null, `plantsPerCell` `smallint` null (null when unplaced or multi-cell) | check (Phase 3): `bed_id` null ⇔ all four geometry columns null; spans ≥ 1; `MAX_PLANTINGS_PER_GARDEN` under the garden row lock |
 
 Named constants in `validators/limits.ts`:
 
@@ -104,7 +104,7 @@ flowchart LR
     entity_5 -->|1-n| entity_4
 ```
 
-`User` and `Garden` come from spec A. `Crop` comes from the future catalogue spec. Ownership always runs `Planting → Garden → User`, never through `Bed`, so an unplaced planting is still owned.
+`User` and `Garden` come from spec A. `Crop` comes from the catalogue spec. Ownership always runs `Planting → Garden → User`, never through `Bed`, so an unplaced planting is still owned.
 
 ## 📝 API Contracts
 
@@ -193,7 +193,7 @@ Table-driven edge cases (`AGENTS.md` Tests):
 
 | Phase | Ships | Gate |
 |---|---|---|
-| 1 | Plant list: the `Planting` entity with no bed or geometry columns, list and create/remove API, plant list on the garden page | spec A done; catalogue spec Phase 1 (a `Crop` entity and a crops list API for `CropPicker`); D05 |
+| 1 | Plant list: the `Planting` entity with no bed or geometry columns, list and create/remove API, plant list on the garden page | spec A done; catalogue spec Phase 1 (a `Crop` entity and a crops list API for `CropPicker`) |
 | 2 | Beds: the `Bed` entity, CRUD with version, `withAggregateLock` (first build), `useMutation` `onConflict` and the conflict notice (first build), empty-bed view | **A04** |
 | 3 | Placement: the `bed_id`/geometry migration with the check and composite FK, `RuleResult` (first build) + grid rules, place, move, resize, unplace, `CellGrid` + `BedGrid`, 409 handling | **A04**; crop footprints in the catalogue |
 | 4 | Companion conflicts in `BedView`, conflict list and badges | catalogue relations (D04) |

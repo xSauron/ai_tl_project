@@ -1,7 +1,7 @@
 # App primitives: the backend and frontend layer every concept builds on
 
 - **Status:** draft (design approved at the gate on 2026-10-20).
-  - **Implementation gate:** the owner's Q3 answer let the primitives proceed while the grid waits for A04. The brief, however, says implementation planning waits for D05, A04 and Q07, and no decision supersedes D05. ⚠️ The owner must confirm before Phase 1 that D05 doesn't block this layer, and record that confirmation in the brief.
+  - **Implementation gate:** the owner's Q3 answer let the primitives proceed while the grid waits for A04. D05 no longer gates any phase: the brief records it as superseded by D11 (confirmed in the 2026-10-21 grilling on #19, G12).
 - **Date:** 2026-10-20
 - **Origin:** issue #13. The owner asked that the spec for the grid feature also define the reusable layer under it. The grid itself is in [`2026-10-20-garden-grid.md`](2026-10-20-garden-grid.md) (spec B), which is this spec's first consumer.
 - **Design authority:** `AGENTS.md` (Reusable API & UI layer, Security minimums, Persistence & DI), `.ai/docs/engineering-standards.md` §1, §4, §5 steps 1–3, `.ai/specs/product-brief.md` (D07–D09, R06)
@@ -21,7 +21,7 @@ The layer is proven end to end by one consumer, **owned gardens**. A signed-in u
 |---|---|---|
 | Q1 | One spec or two? | Two: this spec (primitives) and spec B (grid) as its first consumer. |
 | Q2 | Auth? | Minimal email/password auth is part of this spec. |
-| Q3 | Readiness (D05, A04, Q07 open)? | Write the full design now. Spec B's grid phases are blocked on A04. No phase here depends on how plants fit a grid, but D05 still needs the owner's explicit lift (see Status). |
+| Q3 | Readiness (D05, A04, Q07 open)? | Write the full design now. Spec B's grid phases are blocked on A04. No phase here depends on how plants fit a grid. D05 is superseded by D11 (see Status). |
 | Q4 | Tree outside any bed? | A planting may exist without a bed (D10, R07). This affects spec B only. |
 
 ## 📝 Problem Statement
