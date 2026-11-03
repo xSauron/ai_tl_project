@@ -21,6 +21,7 @@ const meta = {
     brand: "Plant.AI",
     navLabel: "Główna",
     skipLinkLabel: "Przejdź do treści",
+    footer: <Button variant="outline">Wyloguj</Button>,
     children: (
       <PageHeader
         title="Ogrody"

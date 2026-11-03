@@ -60,6 +60,21 @@ describe("AppShell", () => {
     expect(screen.getByText("Plant.AI")).toBeTruthy();
   });
 
+  it("renders the footer in both layouts only when given", () => {
+    const { rerender, container } = render(<AppShell navItems={NAV_ITEMS}>body</AppShell>);
+    expect(container.querySelector(".mt-auto")).toBeNull();
+
+    rerender(
+      <AppShell navItems={NAV_ITEMS} footer={<button type="button">Log out</button>}>
+        body
+      </AppShell>,
+    );
+    const buttons = screen.getAllByRole("button", { name: "Log out" });
+    expect(buttons).toHaveLength(2);
+    expect(within(screen.getByRole("navigation")).getByRole("button").parentElement?.className).toContain("md:block");
+    expect(within(screen.getByRole("main")).getByRole("button").parentElement?.className).toContain("md:hidden");
+  });
+
   it("uses the injected link component and custom labels", () => {
     function TestLink({ children, ...props }: AppNavLinkProps) {
       return (

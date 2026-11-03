@@ -2,6 +2,7 @@
 export const ROUTES = {
   login: "/login",
   register: "/register",
-  /** Where a successful sign-in lands (spec A: "Moje ogrody"; the page ships in Phase 5). */
+  gardens: "/gardens",
+  /** Where a successful sign-in lands (spec A: "Moje ogrody"). */
   afterSignIn: "/gardens",
 } as const;

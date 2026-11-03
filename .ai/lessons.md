@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-11-03 — Browser tests on Radix sheets: wait for the slide-in and for the sheet to close
+- **Context:** app-primitives 5.3, `tests/integration/gardens.test.ts` against `next start`. The create step failed every run even though the same steps worked by hand.
+- **Lesson:** agent-browser clicked "Create garden" while the sheet was still animating in, so the click missed the moving button. After "Save", `wait --text` matched the new name already typed in the input, before the request finished. A fixed sleep hid both problems.
+- **Action:** after opening a dialog, call `Browser.waitForAnimations()`. After a submit that closes it, call `waitForNoDialog()` before checking the page. Don't add sleeps.
+
 ### 2026-11-03 — Tailwind in the app only sees ui classes from folders listed with `@source`
 - **Context:** app-primitives 4.3. `CrudForm` looked right in Storybook but had no field spacing and wrong text sizes on the real `/register` page.
 - **Lesson:** the app imports `@plantai/ui/styles.css` through `node_modules`, which Tailwind v4 never scans automatically. Only `@source "../components"` was listed, so every class used only under `ui/src/backend` was never generated. Storybook scans the ui package itself, so it hid the problem, and so did unit tests and a11y tests.

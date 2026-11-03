@@ -232,9 +232,8 @@ The repo is at the bootstrap stage. Follow §5 of the standards doc **one builda
 
 | Target rule | Current state | Closed by §5 step |
 | --- | --- | --- |
-| `core/src/http/`, `ui/src/backend/`, Zod, pino, events | not yet present | 3 / 9 |
-| Route groups `(marketing)`, `(auth)`, `(app)` | `(frontend)`, `(admin)/admin` | 3–5 |
-| Auth (`auth` concept) | none yet | when first needed (before user-owned data) |
+| Typed in-process events (`core/src/events`) | not yet present (no side effect needs one) | 9 |
+| Route group `(marketing)` | `(frontend)`; `(auth)` and `(app)` exist, `(admin)/admin` is a public status page | 3–5 |
 
 Update this table in the same PR that closes a row. Delete the section once it's empty.
 

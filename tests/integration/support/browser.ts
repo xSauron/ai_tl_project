@@ -67,6 +67,16 @@ export class Browser {
     await this.run(["wait", "--text", text]);
   }
 
+  /** Waits until running CSS animations finish (e.g. a sheet sliding in), so clicks land where elements end up. */
+  async waitForAnimations(): Promise<void> {
+    await this.run(["eval", "Promise.all(document.getAnimations().map((animation) => animation.finished))"]);
+  }
+
+  /** Waits until no dialog is open, e.g. a form sheet that closes once its save succeeded. */
+  async waitForNoDialog(): Promise<void> {
+    await this.run(["wait", "--fn", "!document.querySelector('[role=dialog], [role=alertdialog]')"]);
+  }
+
   async waitForPath(pathname: string): Promise<void> {
     await this.run(["wait", "--url", `**${pathname}`]);
   }

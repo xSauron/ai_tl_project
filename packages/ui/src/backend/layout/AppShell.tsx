@@ -28,6 +28,8 @@ export interface AppShellProps {
   linkComponent?: AppNavLinkComponent
   /** Shown at the top of the sidebar on `md+`. */
   brand?: React.ReactNode
+  /** Account controls (e.g. a log-out button): bottom of the sidebar on `md+`, a slim top row below `md`. */
+  footer?: React.ReactNode
   navLabel?: string
   skipLinkLabel?: string
   /** `id` of the `<main>` landmark, the skip link's target. */
@@ -48,6 +50,7 @@ export function AppShell({
   navItems,
   linkComponent: Link = PlainLink,
   brand,
+  footer,
   navLabel = DEFAULT_NAV_LABEL,
   skipLinkLabel = DEFAULT_SKIP_LINK_LABEL,
   mainId = DEFAULT_MAIN_ID,
@@ -81,9 +84,11 @@ export function AppShell({
             </li>
           ))}
         </ul>
+        {footer && <div className="mt-auto hidden md:block">{footer}</div>}
       </nav>
       {/* tabIndex -1: the skip link moves focus here, not only the scroll position. */}
       <main id={mainId} tabIndex={-1} className="min-w-0 flex-1 p-panel pb-24 outline-none md:pb-panel">
+        {footer && <div className="mb-between-groups flex justify-end md:hidden">{footer}</div>}
         {children}
       </main>
     </div>
