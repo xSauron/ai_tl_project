@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-11-03 — Don't hide a run in a /tmp worktree when the owner tests in the editor and the :3000 preview
+- **Context:** implementing spec A, the agent created a worktree in `/tmp/opencode/` to keep the owner's uncommitted `/workspace` changes untouched. The owner's editor and the sandbox preview (`workspace-agent-cli exec --process preview` → `next dev` on :3000) both serve `/workspace`, so they saw none of the work and had to test on another port.
+- **Lesson:** a worktree outside `/workspace` is invisible to the owner's tools. The preview supervisor restarts `next dev` on :3000 by itself when it is killed.
+- **Action:** when the owner will test manually, work in `/workspace`: stash their WIP (named stash) and switch branches, after asking. Don't start your own server on :3000; the supervisor does it.
+
 ### 2026-11-03 — `no-restricted-imports` gitignore groups match relative paths too
 - **Context:** app-primitives 1.4 banned Node built-ins in `core/src/validators/**` with `group: ["http", "http/*", …]`; it also fired on `../../http/errors.ts`, double-reporting core's own `http/` folder.
 - **Lesson:** `patterns[].group` uses gitignore semantics, so an unanchored `http/*` matches any path segment. Also, two flat-config blocks setting the same rule for overlapping files don't merge: the later one replaces the options.

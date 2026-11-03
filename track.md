@@ -1,7 +1,7 @@
 # Implementation tracker — App primitives
 
 - **Spec:** [`.ai/specs/2026-10-20-app-primitives.md`](.ai/specs/2026-10-20-app-primitives.md)
-- **Branch:** `feat/app-primitives` (worktree `/tmp/opencode/app-primitives`)
+- **Branch:** `feat/app-primitives`, checked out in `/workspace` (worked in a `/tmp` worktree until task 1.5; moved so the editor and preview on :3000 show the branch).
 - **Run log:** [`.ai/runs/2026-11-03-implement-app-primitives.md`](.ai/runs/2026-11-03-implement-app-primitives.md)
 - **Rules:** one commit per task; full gate (`typecheck`, `lint`, `test` 100 %, `build`, `npm audit --omit=dev`, `/api/health`) green after every task; stop for manual testing after every phase.
 - **Gate note:** D05 is superseded by D11 (brief Q10: moot), so Phases 0–3 are unblocked. Phase 4 waits for the spec update for D16/Q17 (task 4.0, owner decision).
