@@ -14,12 +14,16 @@ export const allowAll = { consume: async () => ({ allowed: true, retryAfterSec: 
 
 export async function coreWithFakeScope(importOriginal: () => Promise<typeof Core>): Promise<typeof Core> {
   const real = await importOriginal();
+  const apiHandler = real.createApiHandler({
+    resolveActor: async () => harness.actor,
+    withScope: async (fn) => fn(harness.cradle as never),
+  });
   return {
     ...real,
-    apiHandler: real.createApiHandler({
-      resolveActor: async () => harness.actor,
-      withScope: async (fn) => fn(harness.cradle as never),
-    }),
+    apiHandler,
+    // Same routes, built on the fake-scope apiHandler; the generics are checked at the real call sites.
+    makeCrudRoute: ((options: never, deps?: object) =>
+      real.makeCrudRoute(options, { apiHandler, ...deps })) as unknown as typeof real.makeCrudRoute,
   };
 }
 

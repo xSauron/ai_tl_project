@@ -9,6 +9,8 @@ describe("@plantai/core/validators barrel", () => {
         "uuidSchema",
         "registerSchema",
         "loginSchema",
+        "gardenCreateSchema",
+        "gardenUpdateSchema",
         "idParamsSchema",
         "boundedText",
         "MAX_EMAIL_LENGTH",

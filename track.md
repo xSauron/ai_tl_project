@@ -60,6 +60,6 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 ## Phase 5 — Owned gardens
 
 - [x] 5.1 Migration `add-garden-owner` + `ownedBy.garden` in `db/src/ownership.ts`; `GardenService` as `CrudService(actor)` with `MAX_GARDENS_PER_USER` under user row lock. `/admin/gardens` + `createGardenAction` removed here (not in 5.3): they can't compile against an actor-scoped service.
-- [ ] 5.2 `api/gardens` + `api/gardens/[id]` via `makeCrudRoute`; `validators/gardens/garden-{create,update}.schema.ts`.
+- [x] 5.2 `api/gardens` + `api/gardens/[id]` via `makeCrudRoute`; `validators/gardens/garden-{create,update}.schema.ts`.
 - [ ] 5.3 `(app)` layout with `AppShell` (the e-mail confirmation reminder lands with 4.4), `(app)/gardens` page; integration tests; `BACKWARD_COMPATIBILITY.md`, `AGENTS.md` table.
 - [ ] 5.4 Account settings (first to cut, D17): `(app)/settings` + `POST /api/auth/password`. (Needs P4.)

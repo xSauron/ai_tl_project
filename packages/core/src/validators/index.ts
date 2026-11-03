@@ -5,4 +5,5 @@
  */
 export * from "./auth/index.ts";
 export * from "./common/index.ts";
+export * from "./gardens/index.ts";
 export * from "./limits.ts";
