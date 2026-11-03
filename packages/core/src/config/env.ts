@@ -21,9 +21,14 @@ export type NodeEnv = (typeof NODE_ENVS)[number];
 // production so security flags (e.g. `secure` cookies) fail closed.
 export const DEFAULT_NODE_ENV: NodeEnv = "production";
 
+/** An HTTP header name: the only shape `TRUSTED_PROXY_IP_HEADER` may take. */
+const HEADER_NAME_PATTERN = /^[a-z0-9-]+$/;
+
 export interface Env {
   logLevel: LogLevel;
   nodeEnv: NodeEnv;
+  /** Header the deploy's proxy overwrites with the client IP; `null` = don't key rate limits by IP. */
+  trustedProxyIpHeader: string | null;
 }
 
 /** An empty variable (`FOO=` in `.env`) counts as unset, so its default applies. */
@@ -37,6 +42,14 @@ const envSchema = z.object({
   NODE_ENV: z.preprocess(
     unsetIfEmpty,
     z.enum(NODE_ENVS, { error: `must be one of ${NODE_ENVS.join(", ")}` }).default(DEFAULT_NODE_ENV),
+  ),
+  TRUSTED_PROXY_IP_HEADER: z.preprocess(
+    unsetIfEmpty,
+    z
+      .string()
+      .transform((name) => name.toLowerCase())
+      .pipe(z.string().regex(HEADER_NAME_PATTERN, { error: "must be an HTTP header name" }))
+      .optional(),
   ),
 });
 
@@ -63,7 +76,11 @@ function parseOrThrow<T>(schema: z.ZodType<T>): T {
 
 export function getEnv(): Env {
   const parsed = parseOrThrow(envSchema);
-  return { logLevel: parsed.LOG_LEVEL, nodeEnv: parsed.NODE_ENV };
+  return {
+    logLevel: parsed.LOG_LEVEL,
+    nodeEnv: parsed.NODE_ENV,
+    trustedProxyIpHeader: parsed.TRUSTED_PROXY_IP_HEADER ?? null,
+  };
 }
 
 /** Throws (naming `JWT_SECRET`) when it's missing or shorter than `MIN_JWT_SECRET_BYTES`. */

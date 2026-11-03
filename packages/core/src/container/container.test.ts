@@ -11,12 +11,13 @@ function fakeOrm() {
 
 async function loadContainerModule() {
   vi.resetModules();
-  const [container, { GardenService }, { UserService }] = await Promise.all([
+  const [container, { GardenService }, { UserService }, { InMemoryRateLimiter }] = await Promise.all([
     import("./container.ts"),
     import("../services/gardens/garden.service.ts"),
     import("../services/auth/user.service.ts"),
+    import("../http/rate-limit.ts"),
   ]);
-  return { ...container, GardenService, UserService };
+  return { ...container, GardenService, UserService, InMemoryRateLimiter };
 }
 
 beforeEach(() => {
@@ -48,7 +49,7 @@ describe("getContainer", () => {
 describe("createRequestScope", () => {
   it("gives every scope its own forked EntityManager and scoped services", async () => {
     getOrm.mockResolvedValue(fakeOrm());
-    const { createRequestScope, GardenService, UserService } = await loadContainerModule();
+    const { createRequestScope, GardenService, UserService, InMemoryRateLimiter } = await loadContainerModule();
 
     const first = await createRequestScope();
     const second = await createRequestScope();
@@ -60,6 +61,9 @@ describe("createRequestScope", () => {
     expect(first.cradle.gardenService).not.toBe(second.cradle.gardenService);
     expect(first.cradle.userService).toBeInstanceOf(UserService);
     expect(first.cradle.userService).not.toBe(second.cradle.userService);
+    // Root-level: rate-limit counters persist across request scopes.
+    expect(first.cradle.rateLimiter).toBeInstanceOf(InMemoryRateLimiter);
+    expect(first.cradle.rateLimiter).toBe(second.cradle.rateLimiter);
   });
 });
 

@@ -19,7 +19,8 @@ import {
   type ResolveActor,
   type WithScope,
 } from "./apiHandler.ts";
-import type { Actor } from "./auth.ts";
+import { issueSessionCookie, SESSION_COOKIE, type Actor } from "./auth.ts";
+import { InMemoryRateLimiter } from "./rate-limit.ts";
 import {
   AiUnavailableError,
   AppError,
@@ -52,7 +53,8 @@ const VALID_ID = "0b6e2f5e-3c1d-4a8b-9f7e-2d4c6b8a0e1f";
 const URL_BASE = "http://localhost/api/things";
 const CSRF = { [CSRF_HEADER]: CSRF_HEADER_VALUE };
 
-const cradle = { gardenService: {} } as unknown as RequestCradle;
+// Fresh limiter per test file run; rate-limit tests use their own keys or their own setup().
+const cradle = { gardenService: {}, rateLimiter: new InMemoryRateLimiter() } as unknown as RequestCradle;
 
 function setup({ actor = ACTOR as Actor | null } = {}) {
   const chunks: string[] = [];
@@ -237,12 +239,25 @@ describe("apiHandler auth", () => {
     expect(await json(response)).toEqual({ ok: true, data: { actor } });
   });
 
-  it("the default apiHandler fails closed: every required route is 401 until sessions exist", async () => {
+  it("the default apiHandler fails closed: a required route without a session cookie is 401", async () => {
     const handler = vi.fn(async () => "secret");
     const response = await apiHandler({ auth: "required" }, handler)(new Request(URL_BASE));
 
     expect(response.status).toBe(401);
     expect(handler).not.toHaveBeenCalled();
+  });
+
+  it("the default apiHandler resolves the actor from a valid session cookie", async () => {
+    vi.stubEnv("JWT_SECRET", "s".repeat(32));
+    const cookie = (await issueSessionCookie(ACTOR.userId)).split(";")[0] ?? "";
+    const request = new Request(URL_BASE, { headers: { cookie } });
+
+    const response = await apiHandler({ auth: "required" }, async () => "ok")(request);
+
+    // Past the 401: it reached the (mocked, throwing) real withScope.
+    expect(cookie.startsWith(`${SESSION_COOKIE}=`)).toBe(true);
+    expect(response.status).toBe(500);
+    vi.stubEnv("JWT_SECRET", "");
   });
 
   it("the default apiHandler runs through the real withScope", async () => {
@@ -561,5 +576,105 @@ describe("apiHandler request id and logging", () => {
     await handle({ auth: "required" }, async () => "never")(new Request(URL_BASE));
 
     expect(logs().find((line) => line.level === 30)).toMatchObject({ status: 401 });
+  });
+});
+
+describe("apiHandler rate limits", () => {
+  const LOGIN_BODY = z.object({ email: z.string() });
+  const post = (email: string, extra: Record<string, string> = {}) =>
+    new Request(URL_BASE, { method: "POST", headers: { ...CSRF, ...extra }, body: JSON.stringify({ email }) });
+
+  it("allows requests up to the limit per key, then answers 429 with Retry-After", async () => {
+    const { handle } = setup({ actor: null });
+    const handler = vi.fn(async () => "ok");
+    const route = handle(
+      {
+        auth: "public",
+        body: LOGIN_BODY,
+        rateLimit: [{ name: "login-a", limit: 2, windowMs: 60_000, keys: ({ body }) => [body.email] }],
+      },
+      handler,
+    );
+
+    expect((await route(post("ala@example.com"))).status).toBe(200);
+    expect((await route(post("ala@example.com"))).status).toBe(200);
+    const limited = await route(post("ala@example.com"));
+    expect((await route(post("ola@example.com"))).status).toBe(200);
+
+    expect(limited.status).toBe(429);
+    expect(limited.headers.get("retry-after")).toBe("60");
+    expect(await json(limited)).toMatchObject({ ok: false, error: { code: "RATE_LIMITED" } });
+    expect(handler).toHaveBeenCalledTimes(3);
+  });
+
+  it("checks every rule and key, skipping null keys", async () => {
+    const { handle } = setup({ actor: null });
+    const route = handle(
+      {
+        auth: "public",
+        body: LOGIN_BODY,
+        rateLimit: [
+          { name: "login-b-email", limit: 5, windowMs: 60_000, keys: ({ body }) => [body.email] },
+          { name: "login-b-ip", limit: 1, windowMs: 60_000, keys: ({ req }) => [req.headers.get("x-ip"), null] },
+        ],
+      },
+      async () => "ok",
+    );
+
+    expect((await route(post("a@example.com", { "x-ip": "1.2.3.4" }))).status).toBe(200);
+    expect((await route(post("b@example.com", { "x-ip": "1.2.3.4" }))).status).toBe(429);
+    expect((await route(post("c@example.com"))).status).toBe(200);
+    expect((await route(post("d@example.com"))).status).toBe(200);
+  });
+
+  it("runs after parsing, so an invalid body is 422 and isn't counted", async () => {
+    const { handle } = setup({ actor: null });
+    const keys = vi.fn(() => ["k"]);
+    const route = handle(
+      { auth: "public", body: LOGIN_BODY, rateLimit: [{ name: "login-c", limit: 1, windowMs: 60_000, keys }] },
+      async () => "ok",
+    );
+
+    const invalid = await route(new Request(URL_BASE, { method: "POST", headers: CSRF, body: "{}" }));
+
+    expect(invalid.status).toBe(422);
+    expect(keys).not.toHaveBeenCalled();
+  });
+});
+
+describe("apiHandler response headers", () => {
+  it("merges handler-set headers into a successful response", async () => {
+    const { handle } = setup();
+    const response = await handle({ auth: "required" }, async ({ headers }) => {
+      headers.append("set-cookie", "a=1; Path=/");
+      headers.append("set-cookie", "b=2; Path=/");
+      return "ok";
+    })(new Request(URL_BASE));
+
+    expect(response.headers.getSetCookie()).toEqual(["a=1; Path=/", "b=2; Path=/"]);
+    expect(response.headers.get("content-type")).toBe("application/json");
+  });
+
+  it("drops them when the handler fails", async () => {
+    const { handle } = setup();
+    const response = await handle({ auth: "required" }, async ({ headers }) => {
+      headers.append("set-cookie", "a=1; Path=/");
+      throw new NotFoundError();
+    })(new Request(URL_BASE));
+
+    expect(response.status).toBe(404);
+    expect(response.headers.getSetCookie()).toEqual([]);
+  });
+
+  it("never lets a handler override the content type or request id", async () => {
+    const { handle } = setup();
+    const response = await handle({ auth: "required" }, async ({ headers }) => {
+      headers.set("content-type", "text/html");
+      headers.set(REQUEST_ID_HEADER, "forged");
+      return "ok";
+    })(new Request(URL_BASE, { headers: { [REQUEST_ID_HEADER]: "real-1" } }));
+
+    expect(response.headers.get("content-type")).toBe("application/json");
+    expect(response.headers.get(REQUEST_ID_HEADER)).toBe("real-1");
   });
 });

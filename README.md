@@ -125,6 +125,7 @@ Request ─► Server Component / Server Action / Route Handler
 | `DB_DEBUG` | `false` | Log SQL queries |
 | `JWT_SECRET` | — (required at request time, ≥ 32 bytes) | Session signing secret; `npm run setup` generates one (or `openssl rand -base64 48`) |
 | `LOG_LEVEL` | `info` | pino level: `fatal`, `error`, `warn`, `info`, `debug`, `trace`, `silent` |
+| `TRUSTED_PROXY_IP_HEADER` | unset | Header the proxy overwrites with the client IP; when set, login/register rate limits also key by IP |
 
 All variables are Zod-validated on first use, not at import, so `npm run build` needs none of them: `packages/db/src/env.ts` (DB vars) and `packages/core/src/config/env.ts` (the rest). Errors name the variable, never its value.
 

@@ -7,6 +7,7 @@ import {
   type AwilixContainer,
 } from "awilix";
 
+import { InMemoryRateLimiter } from "../http/rate-limit.ts";
 import { UserService } from "../services/auth/user.service.ts";
 import { GardenService } from "../services/gardens/garden.service.ts";
 import type { AppCradle, RequestCradle } from "./cradle.ts";
@@ -25,6 +26,7 @@ async function buildContainer(): Promise<AppContainer> {
 
   container.register({
     orm: asValue(await getOrm()),
+    rateLimiter: asValue(new InMemoryRateLimiter()),
     // Services are scoped: one instance per request, sharing that request's `em`.
     gardenService: asClass(GardenService).scoped(),
     userService: asClass(UserService).scoped(),

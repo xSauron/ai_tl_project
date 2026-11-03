@@ -1,6 +1,6 @@
 /**
  * The one wrapper every Route Handler goes through. Lifecycle, in order:
- * CSRF → session → parse (params, query, body) → request scope → handler → envelope.
+ * CSRF → session → parse (params, query, body) → request scope → rate limit → handler → envelope.
  *
  * `core` never imports `next`: handlers take a web-standard `Request` and
  * return a web-standard `Response`, which is what Next 16 Route Handlers use.
@@ -10,8 +10,9 @@ import type { z } from "zod";
 import type { RequestCradle } from "../container/cradle.ts";
 import { withScope as defaultWithScope } from "../container/scope.ts";
 import { createRequestLogger, getLogger, REQUEST_ID_HEADER, type Logger } from "../logger.ts";
+import type { RateLimiter, RateLimitWindow } from "./rate-limit.ts";
 import { MAX_JSON_BODY_BYTES } from "../validators/limits.ts";
-import type { Actor } from "./auth.ts";
+import { resolveSessionActor, type Actor } from "./auth.ts";
 import {
   ERROR_CODES,
   ForbiddenError,
@@ -52,11 +53,27 @@ export interface ApiRouteContext {
   params: Promise<Record<string, string | string[]>>;
 }
 
+/** What a rate-limit rule may key on: the parsed request, before the handler runs. */
+export type RateLimitContext<A extends AuthMode, P extends Schema, Q extends Schema, B extends Schema> = Pick<
+  ApiContext<A, P, Q, B>,
+  "req" | "actor" | "params" | "query" | "body"
+>;
+
+export interface RateLimitRule<A extends AuthMode, P extends Schema, Q extends Schema, B extends Schema>
+  extends RateLimitWindow {
+  /** Namespaces the keys, e.g. `"login"`. */
+  name: string;
+  /** Keys this request counts under; `null` entries are skipped (e.g. no trusted client IP). */
+  keys: (ctx: RateLimitContext<A, P, Q, B>) => readonly (string | null)[];
+}
+
 export interface ApiHandlerOptions<A extends AuthMode, P extends Schema, Q extends Schema, B extends Schema> {
   auth: A;
   params?: P;
   query?: Q;
   body?: B;
+  /** Checked after parsing (keys may use the body, e.g. the e-mail), before the handler; over the limit → 429. */
+  rateLimit?: readonly RateLimitRule<A, P, Q, B>[];
   successStatus?: SuccessStatus;
 }
 
@@ -68,6 +85,8 @@ export interface ApiContext<A extends AuthMode, P extends Schema, Q extends Sche
   body: Infer<B>;
   cradle: RequestCradle;
   log: Logger;
+  /** Merged into a successful response, e.g. `headers.append("set-cookie", …)`. Dropped on errors. */
+  headers: Headers;
 }
 
 export type RouteHandler = (req: Request, routeCtx?: ApiRouteContext) => Promise<Response>;
@@ -168,11 +187,25 @@ async function readJsonBody(req: Request): Promise<unknown> {
   }
 }
 
-function jsonResponse(payload: unknown, status: number, requestId: string, extraHeaders: Record<string, string> = {}): Response {
-  return new Response(JSON.stringify(payload), {
-    status,
-    headers: { "content-type": JSON_CONTENT_TYPE, [REQUEST_ID_HEADER]: requestId, ...extraHeaders },
-  });
+function jsonResponse(payload: unknown, status: number, requestId: string, extraHeaders: Headers | Record<string, string> = {}): Response {
+  const headers = new Headers(extraHeaders);
+  headers.set("content-type", JSON_CONTENT_TYPE);
+  headers.set(REQUEST_ID_HEADER, requestId);
+  return new Response(JSON.stringify(payload), { status, headers });
+}
+
+async function enforceRateLimits<A extends AuthMode, P extends Schema, Q extends Schema, B extends Schema>(
+  rules: readonly RateLimitRule<A, P, Q, B>[],
+  ctx: RateLimitContext<A, P, Q, B>,
+  limiter: RateLimiter,
+): Promise<void> {
+  for (const rule of rules) {
+    for (const key of rule.keys(ctx)) {
+      if (key === null) continue;
+      const decision = await limiter.consume(`${rule.name}:${key}`, rule);
+      if (!decision.allowed) throw new RateLimitedError(decision.retryAfterSec);
+    }
+  }
 }
 
 function appErrorResponse(error: AppError, requestId: string): Response {
@@ -209,8 +242,9 @@ export function createApiHandler({
         : undefined;
       const body = options.body ? await parseWith(options.body, await readJsonBody(req)) : undefined;
 
-      const data = await withScope((cradle) =>
-        handler({
+      const responseHeaders = new Headers();
+      const data = await withScope(async (cradle) => {
+        const ctx = {
           req,
           // Narrowed above: a "required" route never reaches here with a null actor.
           actor: actor as ActorFor<typeof options.auth>,
@@ -219,9 +253,17 @@ export function createApiHandler({
           body: body as never,
           cradle,
           log,
-        }),
+          headers: responseHeaders,
+        };
+        await enforceRateLimits(options.rateLimit ?? [], ctx, cradle.rateLimiter);
+        return handler(ctx);
+      });
+      response = jsonResponse(
+        { ok: true, data: data ?? null },
+        options.successStatus ?? DEFAULT_SUCCESS_STATUS,
+        requestId,
+        responseHeaders,
       );
-      response = jsonResponse({ ok: true, data: data ?? null }, options.successStatus ?? DEFAULT_SUCCESS_STATUS, requestId);
     } catch (error) {
       if (isAppError(error)) {
         response = appErrorResponse(error, requestId);
@@ -244,7 +286,5 @@ export function createApiHandler({
   };
 }
 
-/** Until sessions land, no request has an actor, so every "required" route fails closed with 401. */
-const resolveNoActor: ResolveActor = async () => null;
-
-export const apiHandler: ApiHandler = createApiHandler({ resolveActor: resolveNoActor });
+/** The app's handler: the actor comes from the session cookie (`http/auth.ts`). */
+export const apiHandler: ApiHandler = createApiHandler({ resolveActor: resolveSessionActor });

@@ -8,6 +8,7 @@ beforeEach(() => {
   vi.stubEnv("LOG_LEVEL", "");
   vi.stubEnv("JWT_SECRET", "");
   vi.stubEnv("NODE_ENV", "test");
+  vi.stubEnv("TRUSTED_PROXY_IP_HEADER", "");
 });
 
 afterEach(() => {
@@ -27,11 +28,27 @@ describe("module loading", () => {
 describe("getEnv", () => {
   it("falls back to the defaults when the vars are unset or empty", () => {
     vi.stubEnv("NODE_ENV", "");
-    expect(getEnv()).toEqual({ logLevel: DEFAULT_LOG_LEVEL, nodeEnv: DEFAULT_NODE_ENV });
+    expect(getEnv()).toEqual({ logLevel: DEFAULT_LOG_LEVEL, nodeEnv: DEFAULT_NODE_ENV, trustedProxyIpHeader: null });
 
     delete process.env.LOG_LEVEL;
     delete process.env.NODE_ENV;
-    expect(getEnv()).toEqual({ logLevel: "info", nodeEnv: "production" });
+    delete process.env.TRUSTED_PROXY_IP_HEADER;
+    expect(getEnv()).toEqual({ logLevel: "info", nodeEnv: "production", trustedProxyIpHeader: null });
+  });
+
+  it.each([
+    ["X-Real-IP", "x-real-ip"],
+    ["fly-client-ip", "fly-client-ip"],
+  ])("accepts TRUSTED_PROXY_IP_HEADER=%s as a lower-cased header name", (value, expected) => {
+    vi.stubEnv("TRUSTED_PROXY_IP_HEADER", value);
+
+    expect(getEnv().trustedProxyIpHeader).toBe(expected);
+  });
+
+  it("rejects a TRUSTED_PROXY_IP_HEADER that isn't a header name", () => {
+    vi.stubEnv("TRUSTED_PROXY_IP_HEADER", "x real ip");
+
+    expect(() => getEnv()).toThrow("TRUSTED_PROXY_IP_HEADER must be an HTTP header name");
   });
 
   it("doesn't need JWT_SECRET", () => {
