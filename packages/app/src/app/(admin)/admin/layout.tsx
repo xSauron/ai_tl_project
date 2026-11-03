@@ -3,7 +3,7 @@ import { Geist } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { Separator } from "@plantai/ui/components/separator";
+import { Separator } from "@plantai/ui/components/ui/separator";
 
 import "./admin.css";
 

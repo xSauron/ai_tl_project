@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 
 import { withScope } from "@plantai/core";
-import { Button } from "@plantai/ui/components/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@plantai/ui/components/card";
-import { Input } from "@plantai/ui/components/input";
-import { Label } from "@plantai/ui/components/label";
+import { Button } from "@plantai/ui/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@plantai/ui/components/ui/card";
+import { Input } from "@plantai/ui/components/ui/input";
+import { Label } from "@plantai/ui/components/ui/label";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@plantai/ui/components/table";
+} from "@plantai/ui/components/ui/table";
 
 import { createGardenAction } from "./actions";
 

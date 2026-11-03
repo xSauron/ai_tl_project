@@ -233,7 +233,6 @@ The repo is at the bootstrap stage. Follow §5 of the standards doc **one builda
 | Target rule | Current state | Closed by §5 step |
 | --- | --- | --- |
 | `core/src/http/`, `ui/src/backend/`, Zod, pino, events | not yet present | 3 / 9 |
-| shadcn primitives in `ui/src/components/ui/` | `ui/src/components/` | 3 |
 | Route groups `(marketing)`, `(auth)`, `(app)` | `(frontend)`, `(admin)/admin` | 3–5 |
 | Auth (`auth` concept) | none yet | when first needed (before user-owned data) |
 

@@ -15,6 +15,6 @@
     "utils": "@plantai/ui/lib/utils",
     "hooks": "@plantai/ui/hooks",
     "lib": "@plantai/ui/lib",
-    "ui": "@plantai/ui/components"
+    "ui": "@plantai/ui/components/ui"
   }
 }

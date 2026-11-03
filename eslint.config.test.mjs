@@ -29,12 +29,12 @@ describe("eslint.config.mjs layer rules", () => {
     ["ui", 'import "@plantai/db";'],
     ["ui", 'import "next/link";'],
     ["db", 'import "@plantai/core";'],
-    ["db", 'import "@plantai/ui/components/button";'],
+    ["db", 'import "@plantai/ui/components/ui/button";'],
     ["db", 'import "next/server";'],
     ["core", 'import "@mikro-orm/core";'],
     ["core", 'import type { EntityManager } from "@mikro-orm/postgresql";'],
     ["core", 'import "next/server";'],
-    ["core", 'import "@plantai/ui/components/button";'],
+    ["core", 'import "@plantai/ui/components/ui/button";'],
     ["core", 'import "@plantai/app";'],
     ["app", 'import "@plantai/db";'],
     ["app", 'import "@mikro-orm/core";'],
@@ -45,7 +45,7 @@ describe("eslint.config.mjs layer rules", () => {
 
   it.each([
     ["app", 'import "@plantai/core";'],
-    ["app", 'import "@plantai/ui/components/button";'],
+    ["app", 'import "@plantai/ui/components/ui/button";'],
     ["app", 'import "next/server";'],
     ["core", 'import "@plantai/db";'],
     ["db", 'import "@mikro-orm/core";'],
