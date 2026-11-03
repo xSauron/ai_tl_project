@@ -42,7 +42,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 3.2 `ui/src/backend/api/{apiCall,useMutation}.ts` + ESLint `no-restricted-syntax` for raw `fetch("/api`.
 - [x] 3.3 `backend/feedback/*`, `backend/dialogs/ConfirmDialog.tsx`, `backend/layout/{AppShell,PageHeader}.tsx` (+ tests, stories; `@plantai/ui/backend/{dialogs,feedback,layout}/*` exports).
 - [x] 3.4 `backend/forms/CrudForm.tsx` (`zod` peer dep of ui; `_root`/`VALIDATION_FAILED` contract test with core).
-- [ ] 3.5 `backend/tables/DataTable.tsx`.
+- [x] 3.5 `backend/tables/DataTable.tsx` (table `md+`, cards below; error → loading → empty → rows).
 
 **Manual test after Phase 3:** Storybook / `npm test` for the new components (no page uses them yet).
 

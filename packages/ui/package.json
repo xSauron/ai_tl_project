@@ -13,6 +13,7 @@
     "./backend/feedback/*": "./src/backend/feedback/*.tsx",
     "./backend/forms/*": "./src/backend/forms/*.tsx",
     "./backend/layout/*": "./src/backend/layout/*.tsx",
+    "./backend/tables/*": "./src/backend/tables/*.tsx",
     "./styles.css": "./src/styles/globals.css"
   },
   "scripts": {
