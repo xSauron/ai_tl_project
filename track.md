@@ -26,7 +26,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 1.4 `validators/common/*` (`uuidSchema`, `idParamsSchema`, `boundedText`), `validators/limits.ts`, `@plantai/core/validators` export, ESLint rule keeping validators client-safe.
 - [x] 1.5 DTO convention: `services/gardens/garden.dto.ts` (`toGardenDto`), `GardenService` returns DTOs.
 
-**Manual test after Phase 1:** no visible change; app and `/api/health` work; review the new modules and tests.
+**Manual test after Phase 1:** no visible change; app and `/api/health` work; review the new modules and tests. ✅ Owner confirmed 2026-11-03.
 
 ## Phase 2 — HTTP layer
 
