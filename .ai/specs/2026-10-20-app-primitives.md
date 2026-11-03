@@ -254,6 +254,7 @@ Each step leaves `npm run typecheck && npm run lint && npm test && npm run build
 ### Phase 2 — HTTP layer
 8. `http/apiHandler.ts` (body limit, CSRF, Zod parse, envelope, error mapping, request logging; auth through an injected `resolveActor` until Phase 4). Tests: each error class → status, unknown error → 500 without stack, missing CSRF header → 403, `params` Promise awaited.
 9. `db/src/ownership.ts` (`ownedBy`, `findOwned`, the `EntityManager` re-export) + `core/src/services/shared/owned.ts`. Tests: a foreign row and a missing row both raise `NotFoundError`, and the layer lint rule finds no `@mikro-orm` import in `core`.
+   *Note (2026-11-03):* built as `findOwned` + `OwnerFilter` only. `ownedBy.garden` needs the `owner` column, so it lands with step 19 (`add-garden-owner`) instead of as an empty registry now.
 10. `http/makeCrudRoute.ts`. Tests: a fake `CrudService` drives all five verbs, including 201 and the `parent` param.
 
 ### Phase 3 — Client layer

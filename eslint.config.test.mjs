@@ -104,6 +104,22 @@ describe("eslint.config.mjs layer rules", () => {
     }, LINT_TIMEOUT_MS);
   });
 
+  describe("core/src/services/shared/owned.ts (owned lookup)", () => {
+    const OWNED = "src/services/shared/owned.ts";
+
+    it.each([
+      'import "@mikro-orm/core";',
+      'import type { FilterQuery } from "@mikro-orm/postgresql";',
+    ])("rejects %s", async (source) => {
+      expect(await layerViolations("core", source, OWNED)).toHaveLength(1);
+    }, LINT_TIMEOUT_MS);
+
+    it("allows @plantai/db", async () => {
+      const source = 'import { findOwned, type EntityManager } from "@plantai/db";';
+      expect(await layerViolations("core", source, OWNED)).toEqual([]);
+    }, LINT_TIMEOUT_MS);
+  });
+
   it("applies the layer rules outside src/ too", async () => {
     expect(await layerViolations("ui", 'import "@plantai/core";', ".storybook/fixture.tsx")).toHaveLength(1);
   }, LINT_TIMEOUT_MS);

@@ -31,7 +31,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 ## Phase 2 — HTTP layer
 
 - [x] 2.1 `core/src/http/apiHandler.ts` (body limit, CSRF, Zod parse, envelope, error mapping, request logging, injected `resolveActor`).
-- [ ] 2.2 `db/src/ownership.ts` (`ownedBy`, `findOwned`, `EntityManager` re-export) + `core/src/services/shared/owned.ts` (`findOwnedOrFail`).
+- [x] 2.2 `db/src/ownership.ts` (`findOwned`, `OwnerFilter`, `EntityManager`/`EntityName` re-export) + `core/src/services/shared/owned.ts` (`findOwnedOrFail`). `ownedBy` deferred: `ownedBy.garden` lands in 5.1 with the `owner` column (no empty registry now).
 - [ ] 2.3 `core/src/http/makeCrudRoute.ts` (+ `CrudService` type).
 
 **Manual test after Phase 2:** no route uses it yet; review tests (`npm test`).
@@ -55,6 +55,6 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 
 ## Phase 5 — Owned gardens
 
-- [ ] 5.1 Migration `add-garden-owner`; `GardenService` as `CrudService(actor)` with `MAX_GARDENS_PER_USER` under user row lock.
+- [ ] 5.1 Migration `add-garden-owner` + `ownedBy.garden` in `db/src/ownership.ts`; `GardenService` as `CrudService(actor)` with `MAX_GARDENS_PER_USER` under user row lock.
 - [ ] 5.2 `api/gardens` + `api/gardens/[id]` via `makeCrudRoute`; `validators/gardens/garden-{create,update}.schema.ts`.
 - [ ] 5.3 `(app)` layout with `AppShell`, `(app)/gardens` page; remove `/admin/gardens` + `createGardenAction`; integration tests; `BACKWARD_COMPATIBILITY.md`, `AGENTS.md` table.
