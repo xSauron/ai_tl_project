@@ -14,10 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const nav = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/gardens", label: "Gardens" },
-];
+const nav = [{ href: "/admin", label: "Dashboard" }];
 
 /** Root layout for backend (admin) pages — built with shadcn/ui components. */
 export default function AdminLayout({ children }: Readonly<{ children: ReactNode }>) {

@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { connection } from "next/server";
 
 import { checkDbConnection } from "@plantai/core";
 import { Badge } from "@plantai/ui/components/ui/badge";
-import { Button } from "@plantai/ui/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,6 +10,10 @@ import {
   CardTitle,
 } from "@plantai/ui/components/ui/card";
 
+/**
+ * System status only, public on purpose (spec A): it shows what `/api/health`
+ * shows and holds no user data. Gardens are managed by their owners in the app.
+ */
 export default async function AdminDashboardPage() {
   // Database reads happen per request, never at build time.
   await connection();
@@ -37,18 +39,6 @@ export default async function AdminDashboardPage() {
               </Badge>
             )}
           </div>
-        </CardContent>
-      </Card>
-
-      <Card className="max-w-md">
-        <CardHeader>
-          <CardTitle>Gardens</CardTitle>
-          <CardDescription>Create and manage gardens stored in PostgreSQL.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button asChild>
-            <Link href="/admin/gardens">Manage gardens</Link>
-          </Button>
         </CardContent>
       </Card>
     </div>

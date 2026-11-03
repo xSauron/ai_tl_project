@@ -5,5 +5,6 @@
 export type { EntityManager, EntityName, MikroORM } from "@mikro-orm/postgresql";
 export * from "./entities/index.ts";
 export { isUniqueViolation } from "./errors.ts";
-export { findOwned, type OwnedEntity, type OwnerFilter } from "./ownership.ts";
+export { findForUpdate } from "./locking.ts";
+export { findOwned, ownedBy, type OwnedEntity, type OwnerFilter } from "./ownership.ts";
 export { getOrm, closeOrm, checkDbConnection, type DbConnectionStatus } from "./orm.ts";

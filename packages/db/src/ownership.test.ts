@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { Garden } from "./entities/index.ts";
-import { findOwned, type OwnerFilter } from "./ownership.ts";
+import { findOwned, ownedBy, type OwnerFilter } from "./ownership.ts";
 
 import type { EntityManager } from "@mikro-orm/postgresql";
 
@@ -57,6 +57,20 @@ describe("findOwned", () => {
     const { em, findOne } = fakeEm(new Garden());
 
     await expect(findOwned(em, Garden, ID, filter as OwnerFilter<Garden>)).rejects.toThrow(TypeError);
+    expect(findOne).not.toHaveBeenCalled();
+  });
+});
+
+describe("ownedBy", () => {
+  it("scopes a garden to its owner", () => {
+    expect(ownedBy.garden(ID)).toEqual({ owner: ID });
+  });
+
+  it("fails closed through findOwned when the user id is missing", async () => {
+    const { em, findOne } = fakeEm(null);
+    const missingUserId = undefined as unknown as string;
+
+    await expect(findOwned(em, Garden, ID, ownedBy.garden(missingUserId))).rejects.toThrow(TypeError);
     expect(findOne).not.toHaveBeenCalled();
   });
 });

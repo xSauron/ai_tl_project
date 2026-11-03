@@ -1,5 +1,7 @@
 import type { EntityManager, EntityName, FilterObject, FilterQuery } from "@mikro-orm/postgresql";
 
+import type { Garden } from "./entities/gardens/garden.entity.ts";
+
 /** Every owned entity has a UUID primary key named `id`. */
 export type OwnedEntity = { id: string };
 
@@ -35,3 +37,11 @@ export async function findOwned<T extends OwnedEntity>(
   const where = { ...filter, id } as FilterQuery<T>;
   return em.findOne(entity, where);
 }
+
+/**
+ * The one owner filter per owned entity, so "resolved through the garden" is
+ * written exactly once. Beds and plantings add `{ garden: { owner } }` here.
+ */
+export const ownedBy = {
+  garden: (userId: string): OwnerFilter<Garden> => ({ owner: userId }),
+};

@@ -16,15 +16,15 @@ beforeEach(() => {
 });
 
 describe("AdminDashboardPage", () => {
-  it("links to garden management", async () => {
+  it("shows system status only, with no user data or garden management", async () => {
     checkDbConnection.mockResolvedValue({ ok: true });
 
     const html = renderToStaticMarkup(await AdminDashboardPage());
 
     expect(html).toContain("Dashboard");
     expect(html).toContain('data-slot="card-title"');
-    expect(html).toMatch(/<a[^>]*data-slot="button"[^>]*href="\/admin\/gardens"|<a[^>]*href="\/admin\/gardens"[^>]*data-slot="button"/);
-    expect(html).toContain("Manage gardens");
+    expect(html).not.toContain("/admin/gardens");
+    expect(html).not.toContain("Manage gardens");
   });
 
   it("opts into request-time rendering before checking the database", async () => {

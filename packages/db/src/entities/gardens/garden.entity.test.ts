@@ -31,6 +31,16 @@ describe("Garden entity", () => {
     expect(meta.properties.updatedAt.fieldNames).toEqual(["updated_at"]);
   });
 
+  it("belongs to one user, deleted with them", () => {
+    const owner = orm.getMetadata().get(Garden).properties.owner;
+
+    expect(owner.kind).toBe("m:1");
+    expect(owner.type).toBe("User");
+    expect(owner.fieldNames).toEqual(["owner_id"]);
+    expect(owner.nullable).toBeFalsy();
+    expect(owner.deleteRule).toBe("cascade");
+  });
+
   it("generates a UUID primary key and audit timestamps on create", () => {
     const { properties } = orm.getMetadata().get(Garden);
     const garden = new Garden();
