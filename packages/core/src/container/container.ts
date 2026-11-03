@@ -7,6 +7,7 @@ import {
   type AwilixContainer,
 } from "awilix";
 
+import { UserService } from "../services/auth/user.service.ts";
 import { GardenService } from "../services/gardens/garden.service.ts";
 import type { AppCradle, RequestCradle } from "./cradle.ts";
 
@@ -26,6 +27,7 @@ async function buildContainer(): Promise<AppContainer> {
     orm: asValue(await getOrm()),
     // Services are scoped: one instance per request, sharing that request's `em`.
     gardenService: asClass(GardenService).scoped(),
+    userService: asClass(UserService).scoped(),
   });
 
   return container as unknown as AppContainer;

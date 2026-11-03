@@ -11,11 +11,12 @@ function fakeOrm() {
 
 async function loadContainerModule() {
   vi.resetModules();
-  const [container, { GardenService }] = await Promise.all([
+  const [container, { GardenService }, { UserService }] = await Promise.all([
     import("./container.ts"),
     import("../services/gardens/garden.service.ts"),
+    import("../services/auth/user.service.ts"),
   ]);
-  return { ...container, GardenService };
+  return { ...container, GardenService, UserService };
 }
 
 beforeEach(() => {
@@ -47,7 +48,7 @@ describe("getContainer", () => {
 describe("createRequestScope", () => {
   it("gives every scope its own forked EntityManager and scoped services", async () => {
     getOrm.mockResolvedValue(fakeOrm());
-    const { createRequestScope, GardenService } = await loadContainerModule();
+    const { createRequestScope, GardenService, UserService } = await loadContainerModule();
 
     const first = await createRequestScope();
     const second = await createRequestScope();
@@ -57,6 +58,8 @@ describe("createRequestScope", () => {
     expect(first.cradle.gardenService).toBeInstanceOf(GardenService);
     expect(first.cradle.gardenService).toBe(first.cradle.gardenService);
     expect(first.cradle.gardenService).not.toBe(second.cradle.gardenService);
+    expect(first.cradle.userService).toBeInstanceOf(UserService);
+    expect(first.cradle.userService).not.toBe(second.cradle.userService);
   });
 });
 

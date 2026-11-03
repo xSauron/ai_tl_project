@@ -15,8 +15,8 @@ afterAll(async () => {
 });
 
 describe("Garden entity", () => {
-  it("is the only registered entity", () => {
-    expect(entities).toEqual([Garden]);
+  it("is registered", () => {
+    expect(entities).toContain(Garden);
   });
 
   it("maps to the gardens table with snake_case columns", () => {
