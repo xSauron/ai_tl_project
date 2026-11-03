@@ -16,6 +16,7 @@ describe("@plantai/core public API", () => {
       "GardenService",
       "NotFoundError",
       "PayloadTooLargeError",
+      "ROOT_FIELD_ERROR_KEY",
       "RateLimitedError",
       "UnauthorizedError",
       "ValidationError",

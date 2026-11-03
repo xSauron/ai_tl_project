@@ -11,6 +11,7 @@ export {
   createApiHandler,
   CSRF_HEADER,
   CSRF_HEADER_VALUE,
+  ROOT_FIELD_ERROR_KEY,
   type ApiContext,
   type ApiHandlerOptions,
   type ApiRouteContext,
