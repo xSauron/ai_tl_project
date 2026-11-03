@@ -34,7 +34,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 2.2 `db/src/ownership.ts` (`findOwned`, `OwnerFilter`, `EntityManager`/`EntityName` re-export) + `core/src/services/shared/owned.ts` (`findOwnedOrFail`). `ownedBy` deferred: `ownedBy.garden` lands in 5.1 with the `owner` column (no empty registry now).
 - [x] 2.3 `core/src/http/makeCrudRoute.ts` (+ `CrudService` type).
 
-**Manual test after Phase 2:** no route uses it yet; review tests (`npm test`).
+**Manual test after Phase 2:** no route uses it yet; review tests (`npm test`). ✅ Owner confirmed 2026-11-03.
 
 ## Phase 3 — Client layer
 
