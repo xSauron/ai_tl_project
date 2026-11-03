@@ -1,4 +1,4 @@
-import { Garden } from "./garden.entity.ts";
+import { Garden } from "./gardens/garden.entity.ts";
 
 export { Garden };
 

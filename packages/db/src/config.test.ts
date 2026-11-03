@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { entities } from "../entities/index.ts";
+import { entities } from "./entities/index.ts";
 import { createOrmConfig } from "./config.ts";
 
 beforeEach(() => {

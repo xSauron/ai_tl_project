@@ -6,7 +6,7 @@ import { existsSync } from "node:fs";
 
 import { Migrator } from "@mikro-orm/migrations";
 
-import { createOrmConfig } from "./db/config.ts";
+import { createOrmConfig } from "./config.ts";
 
 // Same `.env` files as the Next.js app: repo root. Existing env vars win.
 for (const file of [".env.local", ".env"]) {

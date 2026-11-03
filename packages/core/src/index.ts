@@ -2,8 +2,7 @@
  * @plantai/core — server-only domain package.
  * Never import this from a Client Component.
  */
-export * from "./entities/index.ts";
-export { getOrm, closeOrm, checkDbConnection, type DbConnectionStatus } from "./db/orm.ts";
+export { entities, Garden, getOrm, closeOrm, checkDbConnection, type DbConnectionStatus } from "@plantai/db";
 export {
   getContainer,
   createRequestScope,

@@ -1,7 +1,7 @@
 import { MikroORM } from "@mikro-orm/postgresql";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { entities, Garden } from "./index.ts";
+import { entities, Garden } from "../index.ts";
 
 // MikroORM 7 connects lazily, so discovery runs without a database.
 let orm: MikroORM;

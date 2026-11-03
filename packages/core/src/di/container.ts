@@ -1,4 +1,4 @@
-import type { EntityManager, MikroORM } from "@mikro-orm/postgresql";
+import { getOrm, type EntityManager, type MikroORM } from "@plantai/db";
 import {
   asClass,
   asValue,
@@ -7,7 +7,6 @@ import {
   type AwilixContainer,
 } from "awilix";
 
-import { getOrm } from "../db/orm.ts";
 import { GardenService } from "../modules/gardens/garden.service.ts";
 
 /** Singletons registered once per process. */
@@ -24,7 +23,7 @@ export interface RequestCradle extends AppCradle {
 export type AppContainer = AwilixContainer<AppCradle>;
 export type RequestScope = AwilixContainer<RequestCradle>;
 
-// Module-level, like the ORM — see the note in db/orm.ts.
+// Module-level, like the ORM — see the note in @plantai/db orm.ts.
 let containerPromise: Promise<AppContainer> | undefined;
 
 async function buildContainer(): Promise<AppContainer> {

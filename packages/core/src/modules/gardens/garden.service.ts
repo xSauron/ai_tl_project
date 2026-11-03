@@ -1,6 +1,4 @@
-import type { EntityManager } from "@mikro-orm/postgresql";
-
-import { Garden } from "../../entities/index.ts";
+import { Garden, type EntityManager } from "@plantai/db";
 
 export interface CreateGardenInput {
   name: string;

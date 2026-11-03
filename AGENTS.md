@@ -171,7 +171,7 @@ New reusable components go here:
 - No magic numbers/strings: name them (cells per sq ft, max bed size, AI quota/timeout, upload limit, frost-date fallback).
 - Booleans read positively (`isCompanion`). No bare `true`/`false` arguments.
 - TS: strict, `noUncheckedIndexedAccess`, `erasableSyntaxOnly` (no `enum`/`namespace`/parameter properties). In non-Next packages, relative imports use explicit `.ts` extensions.
-- Env vars only through `core/src/config/env.ts` (Zod-validated), each documented in `.env.example`. `.env*` files live at the repo root.
+- Env vars only through `core/src/config/env.ts` (Zod-validated), each documented in `.env.example`. The DB connection vars (`DATABASE_URL`, `DB_POOL_*`, `DB_DEBUG`) are the one exception: they are read by `db/src/env.ts`, because `db` can't import `core` and the MikroORM CLI runs without `core`. `.env*` files live at the repo root.
 - A PR's diff traces entirely to its stated purpose.
 
 ## Tests
@@ -232,11 +232,9 @@ The repo is at the bootstrap stage. Follow §5 of the standards doc **one builda
 
 | Target rule | Current state | Closed by §5 step |
 | --- | --- | --- |
-| `packages/db` owns entities/migrations/ORM config | in `packages/core` (`entities/`, `migrations/`, `db/`) | 1–2 |
 | `core/src/services/<concept>/` | `core/src/modules/gardens/` (example `GardenService`) | 2 |
 | `core/src/container/{container,cradle}.ts` | `core/src/di/container.ts` | 2 |
 | `withScope` | `withRequestScope` in `app/src/server/request-scope.ts` | 2 |
-| Entities in `entities/<concept>/` | `entities/garden.entity.ts` (flat) | 2 |
 | `core/src/http/`, `ui/src/backend/`, Zod, pino, events | not yet present | 3 / 9 |
 | ESLint `no-restricted-imports` layer rules; ESLint over all packages | ESLint covers `app` only | 3 |
 | shadcn primitives in `ui/src/components/ui/` | `ui/src/components/` | 3 |

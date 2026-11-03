@@ -1,5 +1,5 @@
 /**
- * Typed access to environment variables used by the core package.
+ * Typed access to the database environment variables (read by the ORM config).
  * Fail fast: a missing required variable throws on first access.
  */
 function required(name: string): string {

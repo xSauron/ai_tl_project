@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-11-03 — Moving persistence to `packages/db` drags the DB env reader with it
+- **Context:** app-primitives 0.3 moved the ORM config from `core` to `db`. `createOrmConfig` reads `DATABASE_URL`/`DB_POOL_*` through `core/src/config/env.ts`, but `db` may not import `core` (`app → core → db`), and the MikroORM CLI runs from `packages/db` alone.
+- **Lesson:** the "env only through `core/src/config/env.ts`" rule can't hold for DB connection vars. They now live in `db/src/env.ts`. Migrations keep their applied state across a folder move because MikroORM tracks them by class name in `mikro_orm_migrations`, not by path.
+- **Action:** when task 1.1 moves env to Zod, give `db/src/env.ts` the same treatment instead of pulling it back into `core`. When moving migrations, `git mv` only (R100) and confirm with `mikro-orm migration:list`.
+
 ### 2026-10-21 — A link to a `public/` static export needs a fallback route test, not a component test
 - **Context:** PR #41 linked the home footer to `/design-system/index.html` (the Storybook export in `public/`, gitignored and built manually) and added a "not built yet" page at `/design-system`. The page test passed, but the link 404'd in every normal build, because nothing routed the link to the page.
 - **Lesson:** Next serves `public/` files by exact path and has no directory-index fallback. A `fallback` rewrite (`next.config.ts`) runs only after `public/` and all routes miss, so it is the right hook for "static file if built, page otherwise".

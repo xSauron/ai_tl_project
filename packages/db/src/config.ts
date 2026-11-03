@@ -1,7 +1,7 @@
 import { defineConfig, type Options } from "@mikro-orm/postgresql";
 
-import { env } from "../config/env.ts";
-import { entities } from "../entities/index.ts";
+import { env } from "./env.ts";
+import { entities } from "./entities/index.ts";
 
 /**
  * Runtime ORM configuration shared by the Next.js app and the CLI.

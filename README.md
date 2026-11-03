@@ -52,7 +52,8 @@ npm run dev                     # http://localhost:3000
 .
 ├── packages/
 │   ├── app/    @plantai/app   Next.js application — integration layer / composition root
-│   ├── core/   @plantai/core  Domain & persistence — entities, migrations, services, DI container
+│   ├── core/   @plantai/core  Business rules — services, DI container
+│   ├── db/     @plantai/db    Persistence — entities, migrations, ORM config (the only `@mikro-orm/*` importer)
 │   └── ui/     @plantai/ui    shadcn/ui component library + admin theme
 ├── docker-compose.yml          Local PostgreSQL
 ├── tsconfig.base.json          Shared compiler options
@@ -62,16 +63,19 @@ npm run dev                     # http://localhost:3000
 ```mermaid
 graph LR
   app["@plantai/app<br/>Next.js routes, layouts,<br/>Server Actions, Route Handlers"]
-  core["@plantai/core<br/>entities · services · Awilix · MikroORM"]
+  core["@plantai/core<br/>services · Awilix"]
+  dbpkg["@plantai/db<br/>entities · migrations · MikroORM"]
   ui["@plantai/ui<br/>shadcn/ui components"]
-  db[(PostgreSQL)]
+  pg[(PostgreSQL)]
   app --> core
   app --> ui
-  core --> db
+  core --> dbpkg
+  dbpkg --> pg
 ```
 
 - **`@plantai/app`**: the only package that knows about Next.js. It holds routing, layouts, Server Actions and Route Handlers, and stays thin: validate input, resolve a service, render.
-- **`@plantai/core`**: server-only business logic and persistence. It has no Next.js or React dependencies.
+- **`@plantai/core`**: server-only business logic. It has no Next.js or React dependencies and reaches the database only through `@plantai/db`.
+- **`@plantai/db`**: persistence — entities, migrations, ORM config and `getOrm()`. It re-exports the MikroORM types other packages need.
 - **`@plantai/ui`**: presentational shadcn/ui components used by the admin pages.
 
 Internal packages are consumed as TypeScript source (no build step). Next.js transpiles them.
@@ -92,7 +96,7 @@ Because these are separate root layouts, moving between the public site and the 
 ```
 Request ─► Server Component / Server Action / Route Handler
              └─ withRequestScope(({ gardenService }) => …)        packages/app/src/server/request-scope.ts
-                  └─ Awilix scope: em = orm.em.fork()              packages/core/src/di/container.ts
+                  └─ Awilix scope: em = orm.em.fork()              packages/core/src/di/container.ts (ORM from packages/db/src/orm.ts)
                        └─ GardenService({ em }) → MikroORM → PostgreSQL
 ```
 
@@ -102,9 +106,9 @@ Request ─► Server Component / Server Action / Route Handler
 
 ### Persistence
 
-- Entities are defined with `defineEntity` (no decorators) in `packages/core/src/entities` and registered in `entities/index.ts`.
+- Entities are defined with `defineEntity` (no decorators) in `packages/db/src/entities/<concept>/` and registered explicitly in `entities/index.ts`.
 - Connection pooling is configured by `DB_POOL_MIN` / `DB_POOL_MAX`.
-- Migrations live in `packages/core/src/migrations` and are generated from entity changes:
+- Migrations live in `packages/db/src/migrations` and are generated from entity changes:
 
   ```bash
   npm run db:migrate:create -- --name add-beds   # diff entities → new migration

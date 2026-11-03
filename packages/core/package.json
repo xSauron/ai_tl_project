@@ -7,22 +7,14 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "mikro-orm": "mikro-orm",
-    "db:migrate": "mikro-orm migration:up",
-    "db:migrate:create": "mikro-orm migration:create",
-    "db:migrate:down": "mikro-orm migration:down"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@mikro-orm/core": "^7",
-    "@mikro-orm/migrations": "^7",
-    "@mikro-orm/postgresql": "^7",
+    "@plantai/db": "*",
     "awilix": "^13"
   },
   "devDependencies": {
-    "@mikro-orm/cli": "^7",
     "@types/node": "^22",
-    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

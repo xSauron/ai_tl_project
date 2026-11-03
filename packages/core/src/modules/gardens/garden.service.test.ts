@@ -1,7 +1,6 @@
-import type { EntityManager } from "@mikro-orm/postgresql";
+import { Garden, type EntityManager } from "@plantai/db";
 import { describe, expect, it, vi } from "vitest";
 
-import { Garden } from "../../entities/index.ts";
 import { GardenService } from "./garden.service.ts";
 
 function createEm() {

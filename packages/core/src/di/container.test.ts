@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getOrm } = vi.hoisted(() => ({ getOrm: vi.fn() }));
 
-vi.mock("../db/orm.ts", () => ({ getOrm }));
+vi.mock("@plantai/db", () => ({ getOrm }));
 
 function fakeOrm() {
   let forks = 0;

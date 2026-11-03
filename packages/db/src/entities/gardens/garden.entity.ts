@@ -1,6 +1,6 @@
 import { defineEntity, p } from "@mikro-orm/postgresql";
 
-import { baseProperties } from "./base.entity.ts";
+import { baseProperties } from "../base.entity.ts";
 
 const GardenSchema = defineEntity({
   name: "Garden",

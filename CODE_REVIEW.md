@@ -16,7 +16,7 @@ This repo is a Next.js 16 (App Router) / React 19 / TypeScript (strict) monorepo
 - **No `any`** and no unexplained `unknown` — narrowed at runtime where it enters.
 - **No raw MikroORM queries or AI SDK calls in `packages/app`** — persistence lives in `db`/`core`, HTTP/rendering in `app`. A page or route handler that constructs an `EntityManager` query directly, or calls a vendor AI SDK outside `adapters/`, is a blocker.
 - **No `core` import inside `packages/ui`.** `ui` is presentation-only; grid/companion/calendar math reaches the client through API responses.
-- **`defineEntity` + `setClass`, no decorators**; entities registered by hand in `entities/index.ts` (or the current `packages/core/src/entities/` location per the migration table in `AGENTS.md`) — no folder auto-discovery.
+- **`defineEntity` + `setClass`, no decorators**; entities registered by hand in `packages/db/src/entities/index.ts` — no folder auto-discovery.
 - **Every schema change ships a migration** — review the generated SQL and confirm the matching `.snapshot-*.json` is committed. A merged migration is never edited in place.
 - **No global `EntityManager`.** Code works through a request-scoped `EntityManager` (`withRequestScope` / `withScope`); `allowGlobalContext` stays `false`.
 - **Services take one destructured cradle argument**, compose collaborators, and are registered explicitly in the DI container — no `container.resolve` inside a service, no base-service hierarchy.
