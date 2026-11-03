@@ -8,7 +8,10 @@
     "./components/*": "./src/components/*.tsx",
     "./lib/*": "./src/lib/*.ts",
     "./hooks/*": "./src/hooks/*.ts",
-    "./backend/*": "./src/backend/*.ts",
+    "./backend/api/*": "./src/backend/api/*.ts",
+    "./backend/dialogs/*": "./src/backend/dialogs/*.tsx",
+    "./backend/feedback/*": "./src/backend/feedback/*.tsx",
+    "./backend/layout/*": "./src/backend/layout/*.tsx",
     "./styles.css": "./src/styles/globals.css"
   },
   "scripts": {

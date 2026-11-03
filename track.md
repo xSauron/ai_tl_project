@@ -40,7 +40,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 
 - [x] 3.1 shadcn primitives moved to `ui/src/components/ui/` (`@plantai/ui/components/ui/*`, AGENTS.md migration row closed); `alert-dialog`, `sheet`, `textarea`, `select` added via the CLI (+ smoke tests, stories).
 - [x] 3.2 `ui/src/backend/api/{apiCall,useMutation}.ts` + ESLint `no-restricted-syntax` for raw `fetch("/api`.
-- [ ] 3.3 `backend/feedback/*`, `backend/dialogs/ConfirmDialog.tsx`, `backend/layout/{AppShell,PageHeader}.tsx`.
+- [x] 3.3 `backend/feedback/*`, `backend/dialogs/ConfirmDialog.tsx`, `backend/layout/{AppShell,PageHeader}.tsx` (+ tests, stories; `@plantai/ui/backend/{dialogs,feedback,layout}/*` exports).
 - [ ] 3.4 `backend/forms/CrudForm.tsx`.
 - [ ] 3.5 `backend/tables/DataTable.tsx`.
 
