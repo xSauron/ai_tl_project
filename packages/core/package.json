@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@plantai/db": "*",
-    "awilix": "^13"
+    "awilix": "^13",
+    "zod": "^4"
   },
   "devDependencies": {
     "@types/node": "^22",

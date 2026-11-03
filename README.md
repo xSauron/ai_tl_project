@@ -123,6 +123,10 @@ Request ─► Server Component / Server Action / Route Handler
 | `DATABASE_URL` | — (required at runtime) | PostgreSQL connection string |
 | `DB_POOL_MIN` / `DB_POOL_MAX` | `0` / `10` | Connection pool size |
 | `DB_DEBUG` | `false` | Log SQL queries |
+| `JWT_SECRET` | — (required at request time, ≥ 32 bytes) | Session signing secret; `npm run setup` generates one (or `openssl rand -base64 48`) |
+| `LOG_LEVEL` | `info` | pino level: `fatal`, `error`, `warn`, `info`, `debug`, `trace`, `silent` |
+
+All variables are Zod-validated on first use, not at import, so `npm run build` needs none of them: `packages/db/src/env.ts` (DB vars) and `packages/core/src/config/env.ts` (the rest). Errors name the variable, never its value.
 
 `.env.local` and `.env` are read from the **repo root**, both by `next.config.ts` and by the MikroORM CLI config. Variables already set in the environment take precedence.
 

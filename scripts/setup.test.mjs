@@ -28,8 +28,10 @@ vi.mock("pg", () => ({ default: { Client: MockClient } }));
 import {
   DB_COMPOSE_SERVICE,
   DB_HEALTHCHECK_TIMEOUT_MS,
+  ENV_EXAMPLE_FILE,
   ENV_FILE,
   ENV_LOCAL_FILE,
+  GENERATED_JWT_SECRET_BYTES,
   NPM_HIDDEN_LOCKFILE,
   PACKAGE_LOCK_FILE,
   defaultIo,
@@ -50,7 +52,9 @@ function createFakeIo(overrides = {}) {
   return {
     fileExists: vi.fn().mockReturnValue(false),
     fileMtimeMs: vi.fn().mockReturnValue(0),
-    copyFile: vi.fn(),
+    readFile: vi.fn().mockReturnValue(""),
+    writeFile: vi.fn(),
+    randomSecret: vi.fn().mockReturnValue("generated-secret"),
     loadEnvFile: vi.fn(),
     getEnv: vi.fn().mockReturnValue(undefined),
     canConnectToDatabase: vi.fn().mockResolvedValue(false),
@@ -125,18 +129,52 @@ describe("createEnvFile", () => {
 
     createEnvFile(io);
 
-    expect(io.copyFile).not.toHaveBeenCalled();
+    expect(io.readFile).not.toHaveBeenCalled();
+    expect(io.writeFile).not.toHaveBeenCalled();
   });
 
-  it("copies .env.example to .env when .env is missing", () => {
-    const io = createFakeIo({ fileExists: vi.fn().mockReturnValue(false) });
+  it.each([
+    {
+      label: "fills the empty JWT_SECRET placeholder with a random secret",
+      example: "DATABASE_URL=postgresql://x\nJWT_SECRET=\nLOG_LEVEL=info\n",
+      expected: "DATABASE_URL=postgresql://x\nJWT_SECRET=generated-secret\nLOG_LEVEL=info\n",
+    },
+    {
+      label: "replaces a non-empty JWT_SECRET value too",
+      example: "JWT_SECRET=change-me\n",
+      expected: "JWT_SECRET=generated-secret\n",
+    },
+    {
+      label: "copies the example unchanged when it has no JWT_SECRET line",
+      example: "# JWT_SECRET= is documented here\nDATABASE_URL=postgresql://x\n",
+      expected: "# JWT_SECRET= is documented here\nDATABASE_URL=postgresql://x\n",
+    },
+  ])("$label", ({ example, expected }) => {
+    const io = createFakeIo({ fileExists: vi.fn().mockReturnValue(false), readFile: vi.fn().mockReturnValue(example) });
 
     createEnvFile(io);
 
-    expect(io.copyFile).toHaveBeenCalledWith(
-      expect.stringContaining(".env.example"),
-      expect.stringContaining(".env"),
-    );
+    expect(io.readFile).toHaveBeenCalledWith(ENV_EXAMPLE_FILE);
+    expect(io.writeFile).toHaveBeenCalledWith(ENV_FILE, expected);
+  });
+
+  it("inserts the secret literally, even if it contained replacement patterns", () => {
+    const io = createFakeIo({
+      readFile: vi.fn().mockReturnValue("JWT_SECRET=\n"),
+      randomSecret: vi.fn().mockReturnValue("a$&b$1"),
+    });
+
+    createEnvFile(io);
+
+    expect(io.writeFile).toHaveBeenCalledWith(ENV_FILE, "JWT_SECRET=a$&b$1\n");
+  });
+
+  it("never logs the generated secret", () => {
+    const io = createFakeIo({ readFile: vi.fn().mockReturnValue("JWT_SECRET=\n") });
+
+    createEnvFile(io);
+
+    expect(io.log.mock.calls.flat().join("\n")).not.toContain("generated-secret");
   });
 });
 
@@ -442,14 +480,19 @@ describe("defaultIo (real wiring)", () => {
     expect(defaultIo.fileMtimeMs(filePath)).toBeGreaterThan(0);
   });
 
-  it("copyFile copies real file contents", () => {
-    const source = path.join(tmpDir, "source.txt");
-    const dest = path.join(tmpDir, "dest.txt");
-    writeFileSync(source, "plant.ai");
+  it("writeFile and readFile round-trip real file contents", () => {
+    const filePath = path.join(tmpDir, "file.txt");
 
-    defaultIo.copyFile(source, dest);
+    defaultIo.writeFile(filePath, "plant.ai");
 
-    expect(defaultIo.fileExists(dest)).toBe(true);
+    expect(defaultIo.readFile(filePath)).toBe("plant.ai");
+  });
+
+  it("randomSecret returns a fresh base64 secret of GENERATED_JWT_SECRET_BYTES bytes", () => {
+    const secret = defaultIo.randomSecret();
+
+    expect(Buffer.from(secret, "base64")).toHaveLength(GENERATED_JWT_SECRET_BYTES);
+    expect(defaultIo.randomSecret()).not.toBe(secret);
   });
 
   it("loadEnvFile and getEnv read a real .env file into process.env", () => {

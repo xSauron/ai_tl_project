@@ -1,6 +1,6 @@
 import { defineConfig, type Options } from "@mikro-orm/postgresql";
 
-import { env } from "./env.ts";
+import { getDbEnv } from "./env.ts";
 import { entities } from "./entities/index.ts";
 
 /**
@@ -9,6 +9,7 @@ import { entities } from "./entities/index.ts";
  * identically when bundled by Next.js and when run through the MikroORM CLI.
  */
 export function createOrmConfig(overrides: Options = {}): Options {
+  const env = getDbEnv();
   return defineConfig({
     clientUrl: env.databaseUrl,
     entities,
