@@ -22,7 +22,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 
 - [x] 1.1 `core/src/config/env.ts` on Zod (lazy parse, `JWT_SECRET`, `LOG_LEVEL`), `.env.example` updated.
 - [x] 1.2 `core/src/logger.ts` (pino, redaction, child logger with `requestId`).
-- [ ] 1.3 `core/src/http/errors.ts` (`AppError` hierarchy, codes, `details`).
+- [x] 1.3 `core/src/http/errors.ts` (`AppError` hierarchy, codes, `details`).
 - [ ] 1.4 `validators/common/*` (`uuidSchema`, `idParamsSchema`, `boundedText`), `validators/limits.ts`, `@plantai/core/validators` export, ESLint rule keeping validators client-safe.
 - [ ] 1.5 DTO convention: `services/gardens/garden.dto.ts` (`toGardenDto`), `GardenService` returns DTOs.
 
