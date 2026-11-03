@@ -13,6 +13,7 @@
   "dependencies": {
     "@plantai/db": "*",
     "awilix": "^13",
+    "pino": "^10.4.0",
     "zod": "^4"
   },
   "devDependencies": {
