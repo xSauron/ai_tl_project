@@ -62,11 +62,12 @@ export default defineConfig({
       },
       {
         test: {
-          // Repo-root config files (eslint.config.mjs layer rules).
+          // Repo-root config files (eslint.config.mjs layer rules) and
+          // cross-package contracts that no single package may test (ui can't import core).
           name: "config",
           root: fromRoot(),
           environment: "node",
-          include: ["eslint.config.test.mjs"],
+          include: ["eslint.config.test.mjs", "tests/contracts/**/*.test.ts"],
         },
       },
       {

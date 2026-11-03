@@ -120,6 +120,46 @@ describe("eslint.config.mjs layer rules", () => {
     }, LINT_TIMEOUT_MS);
   });
 
+  describe("raw fetch to /api is banned outside apiCall", () => {
+    const API_FETCH_RULE = "no-restricted-syntax";
+    const APP_COMPONENT = "src/app/(app)/gardens/fixture.tsx";
+    const UI_COMPONENT = "src/components/gardens/fixture.tsx";
+    const API_CALL = "src/backend/api/apiCall.ts";
+
+    const fetchViolations = async (packageName, source, file) => {
+      const [result] = await eslint.lintText(source, { filePath: fixturePath(packageName, file) });
+      return result.messages.filter((message) => message.ruleId === API_FETCH_RULE);
+    };
+
+    it.each([
+      ["app", APP_COMPONENT, 'fetch("/api/gardens");'],
+      ["ui", UI_COMPONENT, 'fetch("/api/gardens");'],
+      ["ui", UI_COMPONENT, "fetch('/api');"],
+      ["ui", UI_COMPONENT, 'fetch("/api?x=1");'],
+      ["app", APP_COMPONENT, "const id = 1; fetch(`/api/gardens/${id}`, { method: 'DELETE' });"],
+      ["app", APP_COMPONENT, "const id = 1; fetch(`/api${id}`);"],
+      ["app", APP_COMPONENT, "fetch(`/api/gardens`);"],
+      ["ui", UI_COMPONENT, 'window.fetch("/api/gardens");'],
+      ["ui", UI_COMPONENT, 'globalThis.fetch("/api/gardens");'],
+      ["core", "src/services/fixture.ts", 'fetch("/api/gardens");'],
+      ["ui", "src/backend/forms/fixture.test.tsx", 'fetch("/api/gardens");'],
+    ])("%s %s rejects %s", async (packageName, file, source) => {
+      expect(await fetchViolations(packageName, source, file)).toHaveLength(1);
+    }, LINT_TIMEOUT_MS);
+
+    it.each([
+      ["ui", UI_COMPONENT, 'fetch("https://example.com/api/x");'],
+      ["ui", UI_COMPONENT, 'fetch("/apis/other");'],
+      ["ui", UI_COMPONENT, 'fetch("/design-system/index.html");'],
+      ["app", APP_COMPONENT, "const host = 'x'; fetch(`https://${host}/api`);"],
+      ["app", APP_COMPONENT, 'apiCall("/api/gardens");'],
+      ["ui", API_CALL, 'fetch("/api/gardens");'],
+      ["ui", API_CALL, "const path = '/api/x'; fetch(path);"],
+    ])("%s %s allows %s", async (packageName, file, source) => {
+      expect(await fetchViolations(packageName, source, file)).toEqual([]);
+    }, LINT_TIMEOUT_MS);
+  });
+
   it("applies the layer rules outside src/ too", async () => {
     expect(await layerViolations("ui", 'import "@plantai/core";', ".storybook/fixture.tsx")).toHaveLength(1);
   }, LINT_TIMEOUT_MS);

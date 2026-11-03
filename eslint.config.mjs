@@ -71,6 +71,26 @@ const NO_NODE_BUILTINS = {
 // options instead of merging them, so this repeats the core restrictions.
 const CORE_LAYER = [NO_APP, NO_UI, NO_MIKRO_ORM, NO_NEXT];
 
+// `apiCall` is the only sanctioned `fetch()` to `/api/*` (AGENTS.md "Reusable
+// API & UI layer"): it sets the CSRF header and parses the envelope. Matches a
+// string or template literal starting with `/api` passed to `fetch`,
+// `window.fetch` or `globalThis.fetch`.
+// No other block sets `no-restricted-syntax`; one that does for overlapping
+// files must repeat these selectors (flat config replaces rule options).
+const API_PATH = String.raw`/^\/api(\/|\?|#|$)/`;
+const FETCH_CALLEE = ":matches([callee.name='fetch'], [callee.type='MemberExpression'][callee.property.name='fetch'])";
+const NO_RAW_API_FETCH_MESSAGE =
+  "Call /api/* through apiCall (@plantai/ui/backend/api/apiCall), never a raw fetch(): it sets the CSRF header and parses the envelope.";
+const API_CALL_FILE = "packages/ui/src/backend/api/apiCall.ts";
+const NO_RAW_API_FETCH = [
+  "error",
+  { selector: `CallExpression${FETCH_CALLEE}[arguments.0.value=${API_PATH}]`, message: NO_RAW_API_FETCH_MESSAGE },
+  {
+    selector: `CallExpression${FETCH_CALLEE}[arguments.0.type='TemplateLiteral'][arguments.0.quasis.0.value.cooked=${API_PATH}]`,
+    message: NO_RAW_API_FETCH_MESSAGE,
+  },
+];
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -120,6 +140,11 @@ const eslintConfig = defineConfig([
     name: "plantai/layers/ui",
     files: ["packages/ui/**"],
     rules: { "no-restricted-imports": layerRules(NO_APP, NO_CORE, NO_DB_FROM_UI, NO_MIKRO_ORM, NO_NEXT) },
+  },
+  {
+    name: "plantai/api-calls-through-apiCall",
+    ignores: [API_CALL_FILE],
+    rules: { "no-restricted-syntax": NO_RAW_API_FETCH },
   },
   globalIgnores([
     "**/.next/**",
