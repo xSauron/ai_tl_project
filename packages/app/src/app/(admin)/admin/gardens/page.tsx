@@ -69,7 +69,7 @@ export default async function GardensPage() {
               <TableRow key={garden.id}>
                 <TableCell className="font-medium">{garden.name}</TableCell>
                 <TableCell>{garden.description}</TableCell>
-                <TableCell>{garden.createdAt.toLocaleString("en-GB")}</TableCell>
+                <TableCell>{new Date(garden.createdAt).toLocaleString("en-GB")}</TableCell>
               </TableRow>
             ))
           )}

@@ -37,8 +37,8 @@ describe("GardensPage", () => {
 
   it("lists gardens with their creation date", async () => {
     list.mockResolvedValue([
-      { id: "g1", name: "Backyard", description: "Tomatoes", createdAt: new Date("2026-10-13T08:30:00Z") },
-      { id: "g2", name: "Herb spiral", description: null, createdAt: new Date("2026-10-12T08:30:00Z") },
+      { id: "g1", name: "Backyard", description: "Tomatoes", createdAt: "2026-10-13T08:30:00.000Z" },
+      { id: "g2", name: "Herb spiral", description: null, createdAt: "2026-10-12T08:30:00.000Z" },
     ]);
 
     const html = renderToStaticMarkup(await GardensPage());
@@ -47,6 +47,7 @@ describe("GardensPage", () => {
     expect(html).toContain("Backyard");
     expect(html).toContain("Tomatoes");
     expect(html).toContain("Herb spiral");
+    expect(html).toContain(new Date("2026-10-13T08:30:00.000Z").toLocaleString("en-GB"));
     expect(html).toContain("13/10/2026");
   });
 

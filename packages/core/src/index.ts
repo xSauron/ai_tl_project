@@ -7,3 +7,4 @@ export { getContainer, type AppContainer, type RequestScope } from "./container/
 export type { AppCradle, RequestCradle } from "./container/cradle.ts";
 export { withScope } from "./container/scope.ts";
 export { GardenService, type CreateGardenInput } from "./services/gardens/garden.service.ts";
+export type { GardenDto } from "./services/gardens/garden.dto.ts";

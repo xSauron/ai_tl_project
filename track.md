@@ -24,7 +24,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 1.2 `core/src/logger.ts` (pino, redaction, child logger with `requestId`).
 - [x] 1.3 `core/src/http/errors.ts` (`AppError` hierarchy, codes, `details`).
 - [x] 1.4 `validators/common/*` (`uuidSchema`, `idParamsSchema`, `boundedText`), `validators/limits.ts`, `@plantai/core/validators` export, ESLint rule keeping validators client-safe.
-- [ ] 1.5 DTO convention: `services/gardens/garden.dto.ts` (`toGardenDto`), `GardenService` returns DTOs.
+- [x] 1.5 DTO convention: `services/gardens/garden.dto.ts` (`toGardenDto`), `GardenService` returns DTOs.
 
 **Manual test after Phase 1:** no visible change; app and `/api/health` work; review the new modules and tests.
 
