@@ -8,8 +8,13 @@
 @import "./tokens/spacing.css";
 @import "./tokens/typography.css";
 
-/* Let Tailwind scan this package's components for class names. */
+/*
+ * Let Tailwind scan this package's components for class names. Apps import
+ * this file from node_modules, which Tailwind never scans on its own, so
+ * every folder with shipped components must be listed (globals.test.ts).
+ */
 @source "../components";
+@source "../backend";
 
 @custom-variant dark (&:is(.dark *));
 

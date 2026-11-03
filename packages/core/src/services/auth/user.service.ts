@@ -51,6 +51,12 @@ export class UserService {
     return toUserDto(user);
   }
 
+  /** The session's user, or `null` when the account no longer exists. */
+  async getById(userId: string): Promise<UserDto | null> {
+    const user = await this.em.findOne(User, { id: userId });
+    return user ? toUserDto(user) : null;
+  }
+
   async authenticate(input: CredentialsInput): Promise<UserDto> {
     const user = await this.em.findOne(User, { email: normalizeEmail(input.email) });
     const isValid = await verifyPassword(input.password, user?.passwordHash ?? null);

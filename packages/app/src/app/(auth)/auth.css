@@ -1,0 +1,5 @@
+/*
+ * Sign-in pages — Tailwind CSS + the shadcn/ui theme from @plantai/ui.
+ */
+@import "tailwindcss";
+@import "@plantai/ui/styles.css";

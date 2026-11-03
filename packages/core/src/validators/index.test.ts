@@ -7,6 +7,8 @@ describe("@plantai/core/validators barrel", () => {
     expect(Object.keys(validators)).toEqual(
       expect.arrayContaining([
         "uuidSchema",
+        "registerSchema",
+        "loginSchema",
         "idParamsSchema",
         "boundedText",
         "MAX_EMAIL_LENGTH",

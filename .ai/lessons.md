@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-11-03 — Tailwind in the app only sees ui classes from folders listed with `@source`
+- **Context:** app-primitives 4.3. `CrudForm` looked right in Storybook but had no field spacing and wrong text sizes on the real `/register` page.
+- **Lesson:** the app imports `@plantai/ui/styles.css` through `node_modules`, which Tailwind v4 never scans automatically. Only `@source "../components"` was listed, so every class used only under `ui/src/backend` was never generated. Storybook scans the ui package itself, so it hid the problem, and so did unit tests and a11y tests.
+- **Action:** when ui gets a new folder of shipped components, add an `@source` line (`ui/src/styles/globals.test.ts` now enforces it). Check a new ui component once on a real app page, not only in Storybook.
+
 ### 2026-11-03 — Radix popups in jsdom: outside content goes aria-hidden, and React bubbles portal keys
 - **Context:** app-primitives 3.4 (`CrudForm` with a Radix `Select`). Tests that found the form via `getByRole("button", …)` failed as soon as the Select was open, and an `Escape` pressed inside the open list reached the form's `onKeyDown` and would have cancelled the whole form.
 - **Lesson:** an open Radix Select/Dialog runs `hideOthers`, so everything outside it drops out of role queries. React synthetic events bubble along the React tree, through portals, even though the portal's DOM sits outside the form.

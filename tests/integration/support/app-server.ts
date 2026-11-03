@@ -1,4 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
 import { createServer } from "node:net";
 import path from "node:path";
@@ -15,9 +16,12 @@ export interface AppServer {
   stop(): Promise<void>;
 }
 
-/** Environment for child processes: the test DB, and no inherited NODE_ENV (Next sets its own). */
+/** A fresh signing secret per run: CI has no `.env`, and test sessions must never verify elsewhere. */
+const TEST_JWT_SECRET = randomBytes(48).toString("base64");
+
+/** Environment for child processes: the test DB and secret, and no inherited NODE_ENV (Next sets its own). */
 function childEnv(databaseUrl: string): NodeJS.ProcessEnv {
-  const env: NodeJS.ProcessEnv = { ...process.env, DATABASE_URL: databaseUrl };
+  const env: NodeJS.ProcessEnv = { ...process.env, DATABASE_URL: databaseUrl, JWT_SECRET: TEST_JWT_SECRET };
   delete env.NODE_ENV;
   return env;
 }

@@ -123,3 +123,20 @@ describe("UserService.authenticate", () => {
     expect(verifyPassword).toHaveBeenCalledWith("nope-nope-nope", hash);
   });
 });
+
+describe("UserService.getById", () => {
+  it("returns the DTO of an existing user", async () => {
+    const { em, service } = createEm();
+    em.findOne.mockResolvedValue(STORED);
+
+    await expect(service.getById("u1")).resolves.toStrictEqual({ id: "u1", email: "ala@example.com", isEmailVerified: false });
+    expect(em.findOne).toHaveBeenCalledWith(User, { id: "u1" });
+  });
+
+  it("returns null for a deleted account", async () => {
+    const { em, service } = createEm();
+    em.findOne.mockResolvedValue(null);
+
+    await expect(service.getById("u1")).resolves.toBeNull();
+  });
+});

@@ -51,7 +51,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 4.0 Spec A updated for D16/Q17 (owner answers Q5–Q7 on 2026-11-03; agent proposals P1–P4 wait for confirmation). Phase 4 re-planned below; settings moved to 5.4 (needs the `(app)` layout).
 - [x] 4.1 `User` entity (+ `emailVerifiedAt`) + migration `add-users`; `password.ts` (SHA-256 pre-hash, bcrypt 12); `user.service.ts` (register, authenticate with a dummy compare); `UserDto`.
 - [x] 4.2 `http/auth.ts` (jose session cookie, `requireSession`), `http/rate-limit.ts` + `InMemoryRateLimiter`; `apiHandler` uses the real session, gains `rateLimit` rules and `ctx.headers`.
-- [ ] 4.3 `/api/auth/{register,login,logout,me}`, `app/src/server/session.ts` DAL, `(auth)` layout + login/register pages; integration test.
+- [x] 4.3 `/api/auth/{register,login,logout,me}`, `app/src/server/session.ts` DAL, `(auth)` layout + login/register pages; integration test. (Login lands on `/gardens`, which ships in 5.3.)
 - [ ] 4.4 E-mail confirmation: `EmailSender` port + `LocalOutboxEmailSender`/`InMemoryEmailSender`, `APP_BASE_URL`/`EMAIL_OUTBOX_DIR`, `AccountToken` + migration `add-account-tokens`, `account-token.service.ts`, `/api/auth/verify-email{,/resend}`, `/verify-email` page; `AGENTS.md` ports list. (Needs P1, P2.)
 - [ ] 4.5 Password reset (first to cut, D17): `/api/auth/password-reset/{request,confirm}`, `/forgot-password`, `/reset-password`.
 

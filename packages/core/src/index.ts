@@ -18,7 +18,15 @@ export {
   type ResolveActor,
   type RouteHandler,
 } from "./http/apiHandler.ts";
-export type { Actor } from "./http/auth.ts";
+export {
+  clearSessionCookie,
+  issueSessionCookie,
+  requireSession,
+  SESSION_COOKIE,
+  verifySessionToken,
+  type Actor,
+} from "./http/auth.ts";
+export { credentialsRateLimit } from "./http/credentials-rate-limit.ts";
 export {
   makeCrudRoute,
   type CrudListOptions,
@@ -41,4 +49,5 @@ export {
   type FieldErrors,
 } from "./http/errors.ts";
 export { GardenService, type CreateGardenInput } from "./services/gardens/garden.service.ts";
+export type { UserDto } from "./services/auth/user.dto.ts";
 export type { GardenDto } from "./services/gardens/garden.dto.ts";
