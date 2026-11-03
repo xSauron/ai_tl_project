@@ -1,0 +1,15 @@
+# D16 — Accounts in MVP include e-mail verification, password reset, account settings and a Polish/English interface; the confirmation link may sign the user in, without backdoors
+- Date, owner: 2026-11-02, project owner.
+  - Screen map for the account prototype (`.ai/prototypes/konto-i-ogrody/mapa-ekranow.md`, section 0, owner rows): L20 "Reset hasła jest w zakresie"; L21 "Ustawienia konta są w zakresie"; L22 "Weryfikacja e-maila jest w zakresie"; L13 "Interfejs po polsku i po angielsku; wewnętrznie (kod, klucze, teksty źródłowe) po angielsku".
+  - `om-discover --refresh`, written chat, Polish, on what happens after the confirmation link (options: sign in and open "Moje ogrody"; confirm then log in again, as in the prototype; let an unconfirmed account in with a reminder): "Moze od razu logowac ale nie chcialem jakis backdorow itp." (it can sign in straight away, but I didn't want any backdoors and the like).
+- Context and the options weighed: spec A (`2026-10-20-app-primitives.md`) registers with an immediate session cookie and has no verification, reset or settings endpoints, and `AGENTS.md` has no e-mail port. The agent recommended signing in from the link, based only on the synthetic panel (`research/walkthroughs/2026-11-02-rejestracja-potwierdzenie-e-maila-i-pierwszy-ogrod-session-001/report.md`) and the step count; its cost is that the link must then work like a one-time credential.
+- Decision and why:
+  - E-mail verification, password reset, account settings (at least changing the password; L21 proposal) and a PL/EN interface are in MVP.
+  - The confirmation link may sign the user in and open "Moje ogrody". The owner chose this option with "może" (it can); asked whether it is required, the owner left it to the auth spec ("Q17 B)", 2026-11-02). Condition from the owner that it opens no backdoor. The agent reads "no backdoor" as: the link is single-use, expires, is stored only as a hash, signs in only the account it was issued to, and never bypasses the password for anything else. That reading is the agent's and goes to the auth spec for the owner to confirm.
+- Consequences, and what would make us revisit it:
+  - Adds work against the 25 hours (D06, A02): token storage, verification and reset endpoints, an e-mail port with a mock adapter, settings, i18n. None of this is estimated.
+  - `AGENTS.md` (ports list: no e-mail sender; no i18n) and spec A must change before the product is built; an e-mail sender is a new external system, which `AGENTS.md` allows only through a port, and its fixed MVP port list (`AiGateway`, `ImageStorage`, `FrostDateProvider`) must be updated in the same PR, as `AGENTS.md` requires for any rule change.
+  - Still open (map L22, L20): whether an unconfirmed account may log in, link lifetimes, a mistyped address, what reset shows when sending fails.
+  - Revisit after the owner's own test (D13).
+- Supersedes: none
+- Status: active

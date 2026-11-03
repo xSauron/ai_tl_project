@@ -1,0 +1,14 @@
+# D15 — Every person, including the owner's mother and grandmother, has their own account and gardens; no sharing in MVP, sharing reconsidered after MVP
+- Date, owner: 2026-11-02, project owner. Two answers the same day:
+  - Screen map for the account prototype (`.ai/prototypes/konto-i-ogrody/mapa-ekranow.md`, gap L19, "Kto zakłada konta?"): "Każdy użytkownik (także mama i babcia) ma własne konto z własnym ogrodem."
+  - `om-discover --refresh`, written chat, Polish, choosing between (a) the owner keeps the family gardens in the owner's own account, (b) mother and grandmother run their gardens in their own accounts and the owner does not see them, (c) reopen sharing: "B z opcja rozwiniecia do C po MVP" (B, with the option of extending to C after the MVP).
+- Context and the options weighed: the owner's account says the owner keeps track of their own, their mother's and their grandmother's gardens (Q08, D11). Gap L19 gave every family member an own account. With no sharing (N03), a garden on the mother's account is invisible to the owner. The agent recommended (a), because the only real account says the owner does the tracking and N03 stays intact; the owner chose (b).
+- Decision and why: (b). Each person has an own account with own gardens (the 20-garden limit per account from the app-primitives spec is unchanged). The owner does not see gardens on other accounts in MVP. Sharing between accounts (N03) is a candidate to reconsider after the MVP, not a commitment.
+- Consequences, and what would make us revisit it:
+  - That the mother and grandmother will register and keep their gardens themselves is untested; the owner's account describes the owner doing the tracking. Recorded as A06.
+  - Nothing stops the owner from also creating gardens for the family in the owner's own account; that is not decided here.
+  - N03 stays active; its review point becomes "after the MVP".
+  - Matches the prototype's demo accounts (`ewa`, `ola`) and the 404 for someone else's garden (#23/AC2).
+  - Revisit after the MVP (owner). Agent's proposal, not confirmed: revisit earlier if the owner's own test (D13) shows the family gardens can't be followed.
+- Supersedes: none (narrows how D11's family gardens are served)
+- Status: active

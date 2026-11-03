@@ -1,0 +1,102 @@
+{
+  "format": "discovery-prototype-v1",
+  "skill": "om-mockup-prototype",
+  "slug": "gardener-onboarding",
+  "revision": 1,
+  "revisionPath": ".ai/prototypes/discovery/gardener-onboarding/revision-001",
+  "previousRevision": null,
+  "brief": ".ai/specs/product-brief.md",
+  "flow": "Gardener onboarding: from sign-up to the first task list",
+  "panelReport": null,
+  "verification": "passed",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "2d09c5656c8078b7dc68274c63dce67e0b21cb5e2ef12a4366abf42f1f5c18ec"
+    },
+    {
+      "path": "evidence/01-start.png",
+      "sha256": "557b71e1efe0d9f1eeec7ddbf3ac14cbaeae0f88067523336d689f073e6b8363"
+    },
+    {
+      "path": "evidence/02-register-invalid.png",
+      "sha256": "ed4da7a8c97cc6910863e3ce46feee48e978e7087613a4f5b6b2dcc1ab10d45a"
+    },
+    {
+      "path": "evidence/03-check-inbox.png",
+      "sha256": "bfd42e4a0da78d8389f29b5e8a822d836d724058daaa00b049c5865f2c3950df"
+    },
+    {
+      "path": "evidence/04-confirmed.png",
+      "sha256": "03c78fa7ec5f718a219b115d505c5216fcd507e412a9d41ec675860d1e046c39"
+    },
+    {
+      "path": "evidence/05-gardens-empty.png",
+      "sha256": "f7caf91eb51c2f8a367e53e89b7bac189eadf2dd322bef78b9b87fb5e865999c"
+    },
+    {
+      "path": "evidence/06-garden-setup.png",
+      "sha256": "f8ece32070d8fe10ece5a91cc537897866d8559cec2b0226e96ca32437253e18"
+    },
+    {
+      "path": "evidence/07-tasks-empty.png",
+      "sha256": "9bf2a6ee35d94e0301274483f248456a600940076544a8bfb983e982f4c93685"
+    },
+    {
+      "path": "evidence/08-catalogue-error.png",
+      "sha256": "c6c71b69c4e09eb5193f5f1ef58bfa6cf2b889520d474563b185390fb09804f4"
+    },
+    {
+      "path": "evidence/09-plants-added.png",
+      "sha256": "2a9efcfd5a97583bea0167575bdb16127e1275cfaa7f5420b867215bbe6abb68"
+    },
+    {
+      "path": "evidence/10-tasks-no-frost.png",
+      "sha256": "365d974f79a57aa264b196e0dc296b7ca9f7d1d4f42fe19c769bb495dfe0b1e2"
+    },
+    {
+      "path": "evidence/11-frost-invalid.png",
+      "sha256": "e1cd1f789f8368ff66a1279a0975e29da9a5274162ce4e8f2d02e944531d054c"
+    },
+    {
+      "path": "evidence/12-frost-save-failed.png",
+      "sha256": "2f6bfc8d53ddd63fc168675dd0b0bd3481cd846bdc002cf17eeca31a7ef70c0f"
+    },
+    {
+      "path": "evidence/13-garden-both-done.png",
+      "sha256": "b4dd89894baed74591893d34b55a6c8cc54751db353d7b63ad65130196a7af73"
+    },
+    {
+      "path": "evidence/14-tasks-complete.png",
+      "sha256": "9c25760cee9fc969592dea848a2c2b69a68d63f703688174c6a42939ef9a50c1"
+    },
+    {
+      "path": "evidence/15-unknown-fragment.png",
+      "sha256": "93d114d6cab128a14a12ff92f0a32054e2b66d5a76cdee121edfe195f2d9ce7b"
+    },
+    {
+      "path": "evidence/16-plants-narrow.png",
+      "sha256": "bde00fc3874f806902225515842689b70c977a2bc860684c431d5c56bae2fa94"
+    },
+    {
+      "path": "evidence/17-tasks-narrow.png",
+      "sha256": "18dd616a5832330f4a4d47804cd6bed15648115827ae5eb14d2343eed8830096"
+    },
+    {
+      "path": "evidence/18-keyboard-focus.png",
+      "sha256": "10df015df16ae0b11ff2fed71ece2a33432ac0773fe089c0915704f971563ad0"
+    },
+    {
+      "path": "evidence/19-register-refused.png",
+      "sha256": "80962dc24725413e240a9cd6fb43dfbefd944ea6ca00c99377119b4f17c22362"
+    },
+    {
+      "path": "evidence/20-after-reset.png",
+      "sha256": "a513b66c96a185a19bb94b6c81c4b1a47f9008f3a7ea4ad652e1bad33fe755e2"
+    },
+    {
+      "path": "index.html",
+      "sha256": "d136147415127d8684a5cd9877ee66a942d0fa01307c3d13f716d26c776b8bd6"
+    }
+  ]
+}

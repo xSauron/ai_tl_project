@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gardener onboarding — discovery prototype</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1a1a1a; background: #f4f4f4; line-height: 1.45; }
+  a { color: #1a1a1a; }
+  :focus-visible { outline: 3px solid #000; outline-offset: 2px; }
+  .proto-bar { background: #2b2b2b; color: #fff; padding: .5rem 1rem; display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; font-size: .9rem; }
+  .proto-bar button { background: #fff; color: #000; }
+  main { max-width: 40rem; margin: 0 auto; padding: 1rem; }
+  section[data-screen] { background: #fff; border: 1px solid #bbb; padding: 1rem 1.25rem 1.5rem; }
+  section[hidden] { display: none; }
+  h1 { font-size: 1.4rem; margin: .25rem 0 .75rem; }
+  h1:focus { outline: none; }
+  h1:focus-visible { outline: 3px solid #000; }
+  h2 { font-size: 1.1rem; margin: 1.25rem 0 .5rem; }
+  button, .btn { font: inherit; padding: .55rem .9rem; border: 2px solid #1a1a1a; background: #fff; color: #1a1a1a; cursor: pointer; text-decoration: none; display: inline-block; min-height: 2.75rem; }
+  .primary { background: #1a1a1a; color: #fff; font-weight: 600; }
+  button[disabled] { opacity: .55; cursor: not-allowed; }
+  label { display: block; font-weight: 600; margin-top: .75rem; }
+  .hint { font-size: .85rem; color: #444; margin: .15rem 0 0; }
+  input, select, textarea { font: inherit; width: 100%; padding: .5rem; border: 1px solid #555; background: #fff; margin-top: .25rem; }
+  input[aria-invalid="true"], textarea[aria-invalid="true"] { border: 2px solid #000; }
+  .field-error { font-weight: 600; margin: .25rem 0 0; }
+  .field-error::before { content: "⚠ "; }
+  .actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+  .box { border: 1px dashed #777; padding: .75rem; margin: .75rem 0; background: #fafafa; }
+  .banner { border: 2px solid #1a1a1a; padding: .75rem; margin: .75rem 0; }
+  .alert { border-left: 6px solid #1a1a1a; padding: .5rem .75rem; background: #eee; margin: .75rem 0; }
+  ul.plain { list-style: none; padding: 0; margin: 0; }
+  ul.plain > li { border-bottom: 1px solid #ddd; padding: .6rem 0; display: flex; flex-wrap: wrap; gap: .5rem; justify-content: space-between; align-items: center; }
+  .meta { font-size: .85rem; color: #444; }
+  .tag { font-size: .8rem; border: 1px solid #555; padding: 0 .35rem; }
+  .checklist li { padding: .6rem 0; border-bottom: 1px solid #ddd; }
+  .outside { color: #555; font-size: .9rem; }
+  .outside li { padding: .15rem 0; }
+  details.test { margin: 1rem auto; max-width: 40rem; padding: .75rem 1rem; border: 2px dashed #555; background: #fff; }
+  details.test summary { font-weight: 600; cursor: pointer; }
+  details.test label { font-weight: 400; display: flex; gap: .5rem; align-items: center; }
+  details.test input[type=checkbox] { width: auto; margin: 0; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 30rem) { main { padding: .5rem; } section[data-screen] { padding: .75rem; } .actions > * { flex: 1 1 100%; } }
+</style>
+</head>
+<body>
+<div class="proto-bar" role="banner">
+  <strong>Discovery prototype. Simulated data.</strong>
+  <span>Plant.AI — gardener onboarding, revision 001</span>
+  <button type="button" id="reset-btn">Reset simulation</button>
+</div>
+<p id="announcer" class="sr-only" role="status" aria-live="polite"></p>
+
+<main>
+  <!-- S01 Entry -->
+  <section id="start" data-screen aria-labelledby="start-h">
+    <h1 id="start-h" tabindex="-1">Plant.AI</h1>
+    <p>Keep track of what to do in your garden, and when.</p>
+    <div class="actions"><a class="btn primary" href="#register">Plan your garden</a></div>
+    <p class="outside">Log in for an existing account is outside this prototype.</p>
+  </section>
+
+  <!-- S02 Register -->
+  <section id="register" data-screen hidden aria-labelledby="register-h">
+    <h1 id="register-h" tabindex="-1">Create your account</h1>
+    <form id="register-form" novalidate>
+      <div id="register-error" class="alert" role="alert" hidden></div>
+      <label for="reg-email">Email</label>
+      <input id="reg-email" name="email" type="email" autocomplete="off" maxlength="300" aria-describedby="reg-email-err">
+      <p id="reg-email-err" class="field-error" hidden></p>
+      <label for="reg-password">Password</label>
+      <input id="reg-password" name="password" type="password" autocomplete="new-password" aria-describedby="reg-password-hint reg-password-err">
+      <p id="reg-password-hint" class="hint">10 to 128 characters.</p>
+      <p id="reg-password-err" class="field-error" hidden></p>
+      <div class="actions">
+        <button type="submit" class="primary" id="register-submit">Create account</button>
+        <a class="btn" href="#start">Back</a>
+      </div>
+    </form>
+  </section>
+
+  <!-- S03 Check inbox -->
+  <section id="check-inbox" data-screen hidden aria-labelledby="inbox-h">
+    <h1 id="inbox-h" tabindex="-1">Check your inbox</h1>
+    <p>We sent a confirmation link to <strong id="inbox-email"></strong>. Open it to finish creating your account.</p>
+    <p id="resend-status" role="status"></p>
+    <div class="actions">
+      <button type="button" id="resend-btn">Send the link again</button>
+      <a class="btn" href="#register">Back</a>
+    </div>
+    <p class="hint">In this prototype the email is simulated: use “Open the confirmation link” in the Test state panel below.</p>
+  </section>
+
+  <!-- S04 Email confirmed -->
+  <section id="confirmed" data-screen hidden aria-labelledby="confirmed-h">
+    <h1 id="confirmed-h" tabindex="-1">Email confirmed</h1>
+    <p>Your account is ready.</p>
+    <div class="actions"><a class="btn primary" href="#gardens">Go to my gardens</a></div>
+  </section>
+
+  <!-- S05 My gardens -->
+  <section id="gardens" data-screen hidden aria-labelledby="gardens-h">
+    <h1 id="gardens-h" tabindex="-1">My gardens</h1>
+    <div id="gardens-empty">
+      <p>No gardens yet — create your first one.</p>
+    </div>
+    <ul id="gardens-list" class="plain" hidden></ul>
+    <div class="actions"><button type="button" id="new-garden-btn" class="primary">New garden</button></div>
+
+    <form id="garden-form" class="box" novalidate hidden aria-labelledby="garden-form-h">
+      <h2 id="garden-form-h">New garden</h2>
+      <label for="garden-name">Name</label>
+      <input id="garden-name" name="name" maxlength="200" aria-describedby="garden-name-hint garden-name-err">
+      <p id="garden-name-hint" class="hint">Required, up to 120 characters.</p>
+      <p id="garden-name-err" class="field-error" hidden></p>
+      <label for="garden-desc">Description <span class="hint">(optional)</span></label>
+      <textarea id="garden-desc" name="description" rows="3" aria-describedby="garden-desc-err"></textarea>
+      <p id="garden-desc-err" class="field-error" hidden></p>
+      <div class="actions">
+        <button type="submit" class="primary">Create garden</button>
+        <button type="button" id="garden-cancel">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- S06 Garden home: setup in any order -->
+  <section id="garden" data-screen hidden aria-labelledby="garden-h">
+    <p><a href="#gardens">← My gardens</a></p>
+    <h1 id="garden-h" tabindex="-1"></h1>
+    <p id="garden-desc-view" class="meta"></p>
+    <h2>Set up this garden</h2>
+    <p class="hint">Do these in any order.</p>
+    <ul class="plain checklist">
+      <li>
+        <div><a href="#frost">Frost dates</a><div class="meta" id="frost-summary"></div></div>
+        <span class="tag" id="frost-tag"></span>
+      </li>
+      <li>
+        <div><a href="#plants">Plants you grow</a><div class="meta" id="plants-summary"></div></div>
+        <span class="tag" id="plants-tag"></span>
+      </li>
+    </ul>
+    <div class="actions"><a class="btn primary" href="#tasks">See what to do and when</a></div>
+    <h2>Outside this prototype</h2>
+    <ul class="outside">
+      <li>Beds (square-foot grid) — not simulated here</li>
+      <li>Operations (planned or done) — not simulated here</li>
+      <li>Ask about my garden — not simulated here</li>
+      <li>Account settings — not simulated here</li>
+    </ul>
+  </section>
+
+  <!-- S07 Frost dates -->
+  <section id="frost" data-screen hidden aria-labelledby="frost-h">
+    <p><a href="#garden">← Back to garden</a></p>
+    <h1 id="frost-h" tabindex="-1">Frost dates</h1>
+    <p>Sowing and planting-out dates are counted from your last spring frost. You can pick a region to fill in suggested dates, then change them.</p>
+    <form id="frost-form" novalidate>
+      <div id="frost-error" class="alert" role="alert" hidden></div>
+      <label for="frost-region">Region <span class="hint">(optional)</span></label>
+      <select id="frost-region" aria-describedby="frost-region-hint">
+        <option value="">— Choose a region —</option>
+      </select>
+      <p id="frost-region-hint" class="hint"></p>
+      <label for="frost-spring">Last spring frost</label>
+      <input id="frost-spring" type="date" aria-describedby="frost-spring-err">
+      <p id="frost-spring-err" class="field-error" hidden></p>
+      <label for="frost-autumn">First autumn frost</label>
+      <input id="frost-autumn" type="date" aria-describedby="frost-autumn-err">
+      <p id="frost-autumn-err" class="field-error" hidden></p>
+      <div class="actions">
+        <button type="submit" class="primary" id="frost-submit">Save frost dates</button>
+        <a class="btn" href="#garden">Cancel</a>
+      </div>
+    </form>
+  </section>
+
+  <!-- S08 Plants -->
+  <section id="plants" data-screen hidden aria-labelledby="plants-h">
+    <p><a href="#garden">← Back to garden</a></p>
+    <h1 id="plants-h" tabindex="-1">Plants you grow</h1>
+    <h2 id="mine-h">In this garden</h2>
+    <p id="mine-empty">No plants yet. Add them from the catalogue below.</p>
+    <ul id="mine-list" class="plain" aria-labelledby="mine-h" hidden></ul>
+    <h2 id="cat-h">Catalogue</h2>
+    <div id="cat-loading" role="status" hidden>Loading the catalogue…</div>
+    <div id="cat-error" class="alert" hidden>
+      <p>Could not load the catalogue.</p>
+      <button type="button" id="cat-retry">Try again</button>
+    </div>
+    <div id="cat-body" hidden></div>
+    <div class="actions"><a class="btn primary" href="#tasks">See what to do and when</a></div>
+  </section>
+
+  <!-- S09 Tasks -->
+  <section id="tasks" data-screen hidden aria-labelledby="tasks-h">
+    <p><a href="#garden">← Back to garden</a></p>
+    <h1 id="tasks-h" tabindex="-1">What to do and when</h1>
+    <p class="meta">Season 2027</p>
+    <div id="tasks-frost-banner" class="banner" hidden>
+      <p><strong>Add your frost dates to see sowing and planting-out dates.</strong> Pruning dates don’t depend on frost and are shown below.</p>
+      <a class="btn" href="#frost">Set frost dates</a>
+    </div>
+    <div id="tasks-empty" hidden>
+      <p>No plants in this garden yet, so there is nothing to do.</p>
+      <a class="btn primary" href="#plants">Add plants</a>
+    </div>
+    <div id="tasks-body"></div>
+  </section>
+
+  <!-- Guard: no account -->
+  <section id="need-account" data-screen hidden aria-labelledby="need-account-h">
+    <h1 id="need-account-h" tabindex="-1">You need an account first</h1>
+    <p>This page belongs to a garden. Create an account and a garden to open it.</p>
+    <div class="actions"><a class="btn primary" href="#register">Create your account</a></div>
+  </section>
+
+  <!-- Guard: no garden yet -->
+  <section id="need-garden" data-screen hidden aria-labelledby="need-garden-h">
+    <h1 id="need-garden-h" tabindex="-1">Create a garden first</h1>
+    <p>Frost dates, plants and tasks belong to a garden.</p>
+    <div class="actions"><a class="btn primary" href="#gardens">Go to my gardens</a></div>
+  </section>
+
+  <!-- Unknown fragment -->
+  <section id="not-found" data-screen hidden aria-labelledby="not-found-h">
+    <h1 id="not-found-h" tabindex="-1">Page not found</h1>
+    <p>This page doesn’t exist in the prototype.</p>
+    <div class="actions"><a class="btn primary" href="#start">Go to the start</a></div>
+  </section>
+</main>
+
+<details class="test">
+  <summary>Test state (prototype controls, not part of the product)</summary>
+  <p class="hint">Use these to reach states a reviewer can’t trigger from the screens.</p>
+  <div class="actions"><button type="button" id="test-confirm-email">Open the confirmation link (simulated email)</button></div>
+  <label><input type="checkbox" id="test-register-fails"> Registration is refused (generic message)</label>
+  <label><input type="checkbox" id="test-catalogue-fails"> Catalogue fails to load</label>
+  <label><input type="checkbox" id="test-save-fails"> Saving frost dates fails</label>
+</details>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- Fictitious fixtures (simulation only) ----
+  var SEASON = 2027;
+  var PASSWORD_MIN = 10, PASSWORD_MAX = 128, EMAIL_MAX = 254;
+  var GARDEN_NAME_MAX = 120, GARDEN_DESC_MAX = 2000;
+  var LOADING_MS = 700;
+  var SIM_SOURCE = "Simulated source (fictitious)";
+
+  var REGIONS = [
+    { slug: "lowland", name: "Lowland (simulated)", spring: "2027-04-28", autumn: "2027-10-12" },
+    { slug: "upland", name: "Upland (simulated)", spring: "2027-05-15", autumn: "2027-09-28" }
+  ];
+
+  // Offsets in days from the last spring frost; prune windows are months 1–12.
+  var CATALOGUE = [
+    { id: "tomato", kind: "Vegetables", name: "Tomato", latin: "Solanum lycopersicum", sow: [-56, -42], plantOut: [7, 21] },
+    { id: "lettuce", kind: "Vegetables", name: "Lettuce", latin: "Lactuca sativa", sow: [-28, 14], plantOut: [-7, 14] },
+    { id: "carrot", kind: "Vegetables", name: "Carrot", latin: "Daucus carota", sow: [-14, 28] },
+    { id: "rhubarb", kind: "Vegetables", name: "Rhubarb", latin: "Rheum rhabarbarum" },
+    { id: "blueberry", kind: "Berry bushes", name: "Highbush blueberry", latin: "Vaccinium corymbosum", prune: [2, 3] },
+    { id: "raspberry", kind: "Berry bushes", name: "Raspberry", latin: "Rubus idaeus", prune: [3, 3] },
+    { id: "apple", kind: "Fruit trees", name: "Apple", latin: "Malus domestica", prune: [1, 3] },
+    { id: "plum", kind: "Fruit trees", name: "Plum", latin: "Prunus domestica", prune: [6, 8] }
+  ];
+  var KINDS = ["Vegetables", "Berry bushes", "Fruit trees"];
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  function initialState() {
+    return { email: "", accountState: "none", gardens: [], gardenId: null, catalogueLoaded: false, nextId: 1 };
+  }
+  var state = initialState();
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, attrs, text) {
+    var n = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function announce(msg) { var a = $("announcer"); a.textContent = ""; setTimeout(function () { a.textContent = msg; }, 30); }
+  function garden() { return state.gardens.find(function (g) { return g.id === state.gardenId; }) || null; }
+  function crop(id) { return CATALOGUE.find(function (c) { return c.id === id; }); }
+
+  // ---- Dates (UTC, date-only) ----
+  function parseDate(s) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+    var p = s.split("-").map(Number);
+    var d = new Date(Date.UTC(p[0], p[1] - 1, p[2]));
+    return d.getUTCMonth() === p[1] - 1 ? d : null;
+  }
+  function addDays(d, n) { return new Date(d.getTime() + n * 86400000); }
+  function fmt(d) { return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()].slice(0, 3); }
+  function fmtLong(d) { return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()] + " " + d.getUTCFullYear(); }
+
+  // ---- Field errors ----
+  function setFieldError(input, errEl, msg) {
+    if (msg) { input.setAttribute("aria-invalid", "true"); errEl.textContent = msg; errEl.hidden = false; }
+    else { input.removeAttribute("aria-invalid"); errEl.textContent = ""; errEl.hidden = true; }
+  }
+
+  // ---- Routing ----
+  var APP_SCREENS = ["gardens", "garden", "frost", "plants", "tasks"];
+  var GARDEN_SCREENS = ["garden", "frost", "plants", "tasks"];
+
+  function resolve(hash) {
+    var id = (hash || "").replace(/^#/, "") || "start";
+    var section = document.getElementById(id);
+    if (!section || !section.hasAttribute("data-screen")) return "not-found";
+    if ((id === "check-inbox" || id === "confirmed") && state.accountState === "none") return "register";
+    if (id === "confirmed" && state.accountState !== "active") return "check-inbox";
+    if (APP_SCREENS.indexOf(id) !== -1 && state.accountState !== "active") return "need-account";
+    if (GARDEN_SCREENS.indexOf(id) !== -1 && !garden()) return "need-garden";
+    return id;
+  }
+
+  function render(id) {
+    if (id === "check-inbox") $("inbox-email").textContent = state.email;
+    if (id === "gardens") renderGardens();
+    if (id === "garden") renderGarden();
+    if (id === "frost") renderFrost();
+    if (id === "plants") renderPlants();
+    if (id === "tasks") renderTasks();
+  }
+
+  function show(moveFocus) {
+    var id = resolve(location.hash);
+    document.querySelectorAll("section[data-screen]").forEach(function (s) { s.hidden = s.id !== id; });
+    render(id);
+    var section = $(id);
+    var h = section.querySelector("h1");
+    document.title = h.textContent + " — Gardener onboarding prototype";
+    if (moveFocus) h.focus();
+  }
+  function go(id) { if (location.hash === "#" + id) show(true); else location.hash = id; }
+  window.addEventListener("hashchange", function () { show(true); });
+
+  // ---- Register ----
+  $("register-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = $("reg-email"), pw = $("reg-password");
+    var emailMsg = "", pwMsg = "";
+    var ev = email.value.trim();
+    if (!ev) emailMsg = "Enter your email.";
+    else if (ev.length > EMAIL_MAX || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ev)) emailMsg = "Enter a valid email address.";
+    if (pw.value.length < PASSWORD_MIN) pwMsg = "Password must be at least " + PASSWORD_MIN + " characters.";
+    else if (pw.value.length > PASSWORD_MAX) pwMsg = "Password must be at most " + PASSWORD_MAX + " characters.";
+    setFieldError(email, $("reg-email-err"), emailMsg);
+    setFieldError(pw, $("reg-password-err"), pwMsg);
+    var formErr = $("register-error");
+    formErr.hidden = true;
+    if (emailMsg) { email.focus(); return; }
+    if (pwMsg) { pw.focus(); return; }
+    if ($("test-register-fails").checked) {
+      formErr.textContent = "Could not create the account. If you already have one, log in.";
+      formErr.hidden = false;
+      return;
+    }
+    state.email = ev;
+    state.accountState = "pending";
+    pw.value = "";
+    $("resend-status").textContent = "";
+    go("check-inbox");
+  });
+
+  $("resend-btn").addEventListener("click", function () {
+    $("resend-status").textContent = "We sent the link again.";
+  });
+
+  $("test-confirm-email").addEventListener("click", function () {
+    if (state.accountState === "none") { announce("Create an account first."); go("register"); return; }
+    state.accountState = "active";
+    go("confirmed");
+  });
+
+  // ---- Gardens ----
+  function renderGardens() {
+    var list = $("gardens-list");
+    list.textContent = "";
+    $("gardens-empty").hidden = state.gardens.length > 0;
+    list.hidden = state.gardens.length === 0;
+    state.gardens.forEach(function (g) {
+      var li = el("li");
+      var a = el("a", { href: "#garden", "data-garden": g.id }, g.name);
+      a.addEventListener("click", function () { state.gardenId = g.id; });
+      li.appendChild(a);
+      li.appendChild(el("span", { "class": "meta" }, g.plants.length + " plants"));
+      list.appendChild(li);
+    });
+  }
+  function openGardenForm(open) {
+    $("garden-form").hidden = !open;
+    $("new-garden-btn").hidden = open;
+    if (open) $("garden-name").focus();
+  }
+  $("new-garden-btn").addEventListener("click", function () { openGardenForm(true); });
+  $("garden-cancel").addEventListener("click", function () { resetGardenForm(); openGardenForm(false); $("new-garden-btn").focus(); });
+  $("garden-form").addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { resetGardenForm(); openGardenForm(false); $("new-garden-btn").focus(); }
+  });
+  function resetGardenForm() {
+    $("garden-name").value = ""; $("garden-desc").value = "";
+    setFieldError($("garden-name"), $("garden-name-err"), "");
+    setFieldError($("garden-desc"), $("garden-desc-err"), "");
+  }
+  $("garden-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("garden-name"), desc = $("garden-desc");
+    var nv = name.value.trim();
+    var nameMsg = !nv ? "Enter a name for the garden." : nv.length > GARDEN_NAME_MAX ? "Name must be at most " + GARDEN_NAME_MAX + " characters." : "";
+    var descMsg = desc.value.length > GARDEN_DESC_MAX ? "Description must be at most " + GARDEN_DESC_MAX + " characters." : "";
+    setFieldError(name, $("garden-name-err"), nameMsg);
+    setFieldError(desc, $("garden-desc-err"), descMsg);
+    if (nameMsg) { name.focus(); return; }
+    if (descMsg) { desc.focus(); return; }
+    var g = { id: "g" + state.nextId++, name: nv, description: desc.value.trim(), spring: "", autumn: "", region: "", plants: [] };
+    state.gardens.unshift(g);
+    state.gardenId = g.id;
+    resetGardenForm();
+    openGardenForm(false);
+    announce("Garden created.");
+    go("garden");
+  });
+
+  // ---- Garden home ----
+  function renderGarden() {
+    var g = garden();
+    $("garden-h").textContent = g.name;
+    $("garden-desc-view").textContent = g.description;
+    $("garden-desc-view").hidden = !g.description;
+    var hasFrost = !!(g.spring || g.autumn);
+    $("frost-tag").textContent = hasFrost ? "Done" : "Not set";
+    $("frost-summary").textContent = hasFrost
+      ? "Last spring frost: " + (g.spring ? fmtLong(parseDate(g.spring)) : "not set") + " · First autumn frost: " + (g.autumn ? fmtLong(parseDate(g.autumn)) : "not set")
+      : "Needed for sowing and planting-out dates.";
+    $("plants-tag").textContent = g.plants.length ? g.plants.length + " added" : "None yet";
+    $("plants-summary").textContent = g.plants.length
+      ? g.plants.map(function (p) { return crop(p.cropId).name; }).join(", ")
+      : "Vegetables, berry bushes and fruit trees. No bed needed.";
+  }
+
+  // ---- Frost dates ----
+  (function fillRegions() {
+    var sel = $("frost-region");
+    REGIONS.forEach(function (r) { sel.appendChild(el("option", { value: r.slug }, r.name)); });
+    sel.addEventListener("change", function () {
+      var r = REGIONS.find(function (x) { return x.slug === sel.value; });
+      if (!r) { $("frost-region-hint").textContent = ""; return; }
+      $("frost-spring").value = r.spring;
+      $("frost-autumn").value = r.autumn;
+      $("frost-region-hint").textContent = "Suggested dates filled in below (" + SIM_SOURCE + "). You can change them.";
+    });
+  })();
+  function renderFrost() {
+    var g = garden();
+    $("frost-region").value = g.region;
+    $("frost-spring").value = g.spring;
+    $("frost-autumn").value = g.autumn;
+    $("frost-region-hint").textContent = "";
+    $("frost-error").hidden = true;
+    setFieldError($("frost-spring"), $("frost-spring-err"), "");
+    setFieldError($("frost-autumn"), $("frost-autumn-err"), "");
+  }
+  $("frost-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var sp = $("frost-spring"), au = $("frost-autumn");
+    var spMsg = "", auMsg = "";
+    if (sp.value && !parseDate(sp.value)) spMsg = "Enter a valid date.";
+    if (au.value && !parseDate(au.value)) auMsg = "Enter a valid date.";
+    if (!spMsg && !auMsg && sp.value && au.value && parseDate(au.value) <= parseDate(sp.value)) auMsg = "The first autumn frost must be after the last spring frost.";
+    setFieldError(sp, $("frost-spring-err"), spMsg);
+    setFieldError(au, $("frost-autumn-err"), auMsg);
+    $("frost-error").hidden = true;
+    if (spMsg) { sp.focus(); return; }
+    if (auMsg) { au.focus(); return; }
+    if ($("test-save-fails").checked) {
+      $("frost-error").textContent = "Could not save the frost dates. Nothing was changed. Try again.";
+      $("frost-error").hidden = false;
+      $("frost-submit").focus();
+      return;
+    }
+    var g = garden();
+    g.spring = sp.value; g.autumn = au.value; g.region = $("frost-region").value;
+    announce("Frost dates saved.");
+    go("garden");
+  });
+
+  // ---- Plants ----
+  var loadTimer = null;
+  function renderPlants() {
+    renderMine();
+    if (state.catalogueLoaded) { showCatalogue(); return; }
+    loadCatalogue();
+  }
+  function loadCatalogue() {
+    $("cat-body").hidden = true; $("cat-error").hidden = true; $("cat-loading").hidden = false;
+    clearTimeout(loadTimer);
+    loadTimer = setTimeout(function () {
+      $("cat-loading").hidden = true;
+      if ($("test-catalogue-fails").checked) { $("cat-error").hidden = false; return; }
+      state.catalogueLoaded = true;
+      showCatalogue();
+    }, LOADING_MS);
+  }
+  $("cat-retry").addEventListener("click", function () { loadCatalogue(); });
+  function showCatalogue() {
+    var body = $("cat-body");
+    body.textContent = "";
+    KINDS.forEach(function (kind) {
+      var h = el("h3", null, kind);
+      body.appendChild(h);
+      var ul = el("ul", { "class": "plain" });
+      CATALOGUE.filter(function (c) { return c.kind === kind; }).forEach(function (c) {
+        var li = el("li");
+        var d = el("div");
+        d.appendChild(el("strong", null, c.name));
+        d.appendChild(el("div", { "class": "meta" }, c.latin + " · " + timingText(c)));
+        d.appendChild(el("div", { "class": "meta" }, "Source: " + SIM_SOURCE));
+        li.appendChild(d);
+        var b = el("button", { type: "button", "aria-label": "Add " + c.name + " to garden" }, "Add to garden");
+        b.addEventListener("click", function () { addPlant(c.id); });
+        li.appendChild(b);
+        ul.appendChild(li);
+      });
+      body.appendChild(ul);
+    });
+    body.hidden = false;
+  }
+  function timingText(c) {
+    var parts = [];
+    if (c.sow) parts.push("Sow " + rel(c.sow));
+    if (c.plantOut) parts.push("plant out " + rel(c.plantOut));
+    if (c.prune) parts.push("prune " + MONTHS[c.prune[0] - 1] + (c.prune[1] !== c.prune[0] ? "–" + MONTHS[c.prune[1] - 1] : ""));
+    return parts.length ? parts.join(", ") : "No timing in the catalogue";
+  }
+  function rel(r) {
+    function one(n) { return n === 0 ? "frost day" : Math.abs(n) + " days " + (n < 0 ? "before" : "after"); }
+    return one(r[0]) + " to " + one(r[1]) + " the last spring frost";
+  }
+  function addPlant(cropId) {
+    var g = garden();
+    g.plants.push({ id: "p" + state.nextId++, cropId: cropId });
+    renderMine();
+    announce(crop(cropId).name + " added to " + g.name + ".");
+  }
+  function removePlant(pid) {
+    var g = garden();
+    var p = g.plants.find(function (x) { return x.id === pid; });
+    g.plants = g.plants.filter(function (x) { return x.id !== pid; });
+    renderMine();
+    announce(crop(p.cropId).name + " removed.");
+    $("mine-h").focus();
+  }
+  function renderMine() {
+    var g = garden();
+    var ul = $("mine-list");
+    ul.textContent = "";
+    $("mine-empty").hidden = g.plants.length > 0;
+    ul.hidden = g.plants.length === 0;
+    g.plants.forEach(function (p) {
+      var c = crop(p.cropId);
+      var li = el("li");
+      var d = el("div");
+      d.appendChild(el("strong", null, c.name));
+      d.appendChild(el("div", { "class": "meta" }, c.kind + " · not in a bed"));
+      li.appendChild(d);
+      var b = el("button", { type: "button", "aria-label": "Remove " + c.name }, "Remove");
+      b.addEventListener("click", function () { removePlant(p.id); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+  }
+  $("mine-h").setAttribute("tabindex", "-1");
+
+  // ---- Tasks (derived, never stored) ----
+  function deriveTasks(g) {
+    var spring = g.spring ? parseDate(g.spring) : null;
+    var tasks = [];
+    g.plants.forEach(function (p) {
+      var c = crop(p.cropId);
+      if (spring && c.sow) tasks.push({ kind: "Sow", crop: c, from: addDays(spring, c.sow[0]), to: addDays(spring, c.sow[1]) });
+      if (spring && c.plantOut) tasks.push({ kind: "Plant out", crop: c, from: addDays(spring, c.plantOut[0]), to: addDays(spring, c.plantOut[1]) });
+      if (c.prune) tasks.push({ kind: "Prune", crop: c, from: new Date(Date.UTC(SEASON, c.prune[0] - 1, 1)), to: new Date(Date.UTC(SEASON, c.prune[1], 0)) });
+    });
+    tasks.sort(function (a, b) { return a.from - b.from || a.crop.name.localeCompare(b.crop.name); });
+    return tasks;
+  }
+  function renderTasks() {
+    var g = garden();
+    var body = $("tasks-body");
+    body.textContent = "";
+    var needsFrost = !g.spring && g.plants.some(function (p) { var c = crop(p.cropId); return c.sow || c.plantOut; });
+    $("tasks-empty").hidden = g.plants.length > 0;
+    $("tasks-frost-banner").hidden = !needsFrost;
+    if (!g.plants.length) return;
+    var tasks = deriveTasks(g);
+    if (!tasks.length) {
+      body.appendChild(el("p", null, needsFrost ? "No pruning tasks for these plants." : "The catalogue has no dates for these plants yet."));
+      return;
+    }
+    var month = -1, ul = null;
+    tasks.forEach(function (t) {
+      if (t.from.getUTCMonth() !== month || t.from.getUTCFullYear() !== SEASON) {
+        month = t.from.getUTCMonth();
+        body.appendChild(el("h2", null, MONTHS[month] + " " + t.from.getUTCFullYear()));
+        ul = el("ul", { "class": "plain" });
+        body.appendChild(ul);
+      }
+      var li = el("li");
+      var d = el("div");
+      d.appendChild(el("strong", null, t.kind + " " + t.crop.name.toLowerCase()));
+      d.appendChild(el("div", null, fmt(t.from) + " – " + fmt(t.to) + (t.to.getUTCFullYear() !== t.from.getUTCFullYear() ? " " + t.to.getUTCFullYear() : "")));
+      d.appendChild(el("div", { "class": "meta" }, "Source: " + SIM_SOURCE));
+      li.appendChild(d);
+      li.appendChild(el("span", { "class": "tag" }, t.crop.kind));
+      ul.appendChild(li);
+    });
+  }
+
+  // ---- Reset ----
+  $("reset-btn").addEventListener("click", function () {
+    clearTimeout(loadTimer);
+    state = initialState();
+    document.querySelectorAll("form").forEach(function (f) { f.reset(); });
+    document.querySelectorAll("[aria-invalid]").forEach(function (i) { i.removeAttribute("aria-invalid"); });
+    document.querySelectorAll(".field-error, #register-error, #frost-error").forEach(function (x) { x.hidden = true; x.textContent = ""; });
+    ["test-register-fails", "test-catalogue-fails", "test-save-fails"].forEach(function (id) { $(id).checked = false; });
+    $("resend-status").textContent = "";
+    openGardenForm(false);
+    $("cat-loading").hidden = true; $("cat-error").hidden = true; $("cat-body").hidden = true;
+    announce("Simulation reset.");
+    go("start");
+  });
+
+  show(false);
+})();
+</script>
+</body>
+</html>
