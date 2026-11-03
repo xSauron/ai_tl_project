@@ -16,9 +16,10 @@ Status: active (draft — product scope assumptions in §0 to be confirmed)
 >   see `.ai/lessons/2026-10-13-mikroorm-next-layers.md`. This applies unchanged once the ORM moves to `db`.
 
 > **2026-10-20 rules alignment (D02, D08, D09, D10/R07, D14/R09):** scope is vegetables, berry bushes and fruit trees; the MVP AI feature is garden Q&A (layout proposal is Later); journal, photos and spraying advice are Later; a planting may have no bed; stored `operations` are a concept. `AGENTS.md` is authoritative where this document's §0 still mentions the older scope.
+> 2026-11-03 follow-up (app-primitives task 0.1): the remaining D02/D08/D09/R07 contradictions are marked in place rather than deleted — §0 scope and concepts; §1 naming example, `makeCrudRoute`/`upload.ts`/`apiUpload`/`ImageDropzone`, grid model (unplaced plantings), ports (`ImageStorage` Later), AI layout validation, proposal/apply, idempotency, upload/photo security rules and the double-apply test (all Later); §2 example concept; §4 tree entries tagged `Later (D08)`/`Later (D09)`; §5 steps 3, 7 and 8.
 
 Adapted from the DevMentor engineering standards (2026-09-01) for a different product:
-**Plant.AI**, a vegetable-garden planner with AI assistance, using Planter
+**Plant.AI**, a garden planner (vegetables, berry bushes and fruit trees, D02) with AI assistance, using Planter
 (planter.garden) as a functional/UX benchmark — not copying its branding, content,
 data or code. The layered monorepo, the reusable API/UI layer and the `awilix` DI
 decision carry over unchanged; domain concepts, ports and security rules are rewritten.
@@ -32,18 +33,21 @@ Plant.AI is a single-persona, mobile-first web app where a user:
 - creates **gardens** and **beds** (raised beds / plots) laid out on a
   **square-foot grid** (rows × columns of cells),
 - places **plantings** of crops into cells; each crop defines how many plants fit in
-  one square (1, 4, 9, 16...) or how many squares one plant needs,
-- browses a **crop catalog** (~80 vegetables/fruits/herbs, each with varieties) with
+  one square (1, 4, 9, 16...) or how many squares one plant needs; a planting may also
+  stay unplaced, with no bed (R07),
+- browses a **crop catalog** (vegetables, berry bushes and fruit trees (D02), each with varieties) with
   spacing, sun, days to maturity, and **companion / combative** relations,
 - sees **companion conflicts and suggestions** for neighboring cells while planning,
 - gets a **planting calendar** (start seeds indoors, transplant, direct sow, harvest
   windows) computed from their **frost dates**,
-- keeps a **garden journal** (notes + photos per garden/bed/planting),
-- uses **AI** for: suggesting a bed layout from a list of desired crops, answering
-  questions about their garden, and (stretch) diagnosing a plant problem from a photo.
+- keeps a **garden journal** (notes + photos per garden/bed/planting) — **Later (D09)**,
+- uses **AI** to answer questions about their garden (the one MVP AI feature, D08);
+  suggesting a bed layout (D08) and diagnosing a plant problem from a photo (D09) are
+  **Later**.
 
 Domain concepts (~8): `auth`, `gardens` (gardens + beds), `plantings`, `crops`
 (catalog, varieties, companion relations), `calendar`, `journal`, `photos`, `assistant`.
+`journal` and `photos` are **Later (D09)**; spraying advice is Later too.
 
 **Explicitly not in scope for MVP:** sharing/collaborative gardens, social features,
 marketplace/seed shop, payments, RBAC beyond a single `user` role, multi-tenancy,
@@ -70,7 +74,7 @@ layered packages** (not a module runtime), **keep `awilix` DI**.
 | Pure domain logic (no I/O) | kebab-case module, file `<name>.ts`, functions only | `services/plantings/grid-rules.ts`, `services/calendar/sowing-windows.ts` |
 | Port (external integration interface) | PascalCase + `Gateway`/`Port`, file `<name>.port.ts` | `AiGateway` → `services/assistant/ai-gateway.port.ts` |
 | Adapter | PascalCase + adapter name, under `adapters/` | `MockAiGateway` → `services/assistant/adapters/mock-ai-gateway.ts` |
-| Prompt template | kebab-case + version suffix, under `core/src/ai/prompts/` | `suggest-bed-layout.v1.ts` |
+| Prompt template | kebab-case + version suffix, under `core/src/ai/prompts/` | `garden-qa.v1.ts` |
 | Catalog seed data | kebab-case JSON/TS under `db/src/seeds/` | `db/src/seeds/crops.ts` |
 | DI cradle key | camelCase, one entry per dependency | `plantingService: PlantingService` |
 | Zod schema | camelCase + `Schema`, file `<name>.schema.ts`, shared client/server | `plantingPlaceSchema` → `validators/plantings/planting-place.schema.ts` |
@@ -100,25 +104,26 @@ pattern appears, never re-implement an existing one inline.**
   logs unexpected failures, never leaks a stack trace. No route writes its own
   `try/catch`.
 - `makeCrudRoute.ts` — for plain list/create/update/delete resources (`gardens`,
-  `beds` metadata, `journal` entries, catalog reads). Workflow endpoints (placing /
-  moving plantings in the grid, applying an AI layout, uploading photos, calendar
-  generation) use `apiHandler` directly.
+  `beds` metadata, catalog reads; `journal` entries when built, Later D09). Workflow
+  endpoints (placing / moving plantings in the grid, calendar generation; applying an
+  AI layout, Later D08; uploading photos, Later D09) use `apiHandler` directly.
 - `auth.ts` — `requireSession(req)` and ownership assertions
-  (`assertOwnsGarden`, `assertOwnsBed`, `assertOwnsPhoto`). Ownership of a bed or
+  (`assertOwnsGarden`, `assertOwnsBed`; `assertOwnsPhoto` Later, D09). Ownership of a bed or
   planting is always resolved **through its garden** — never trust a `gardenId` sent
   by the client alongside a `bedId`.
 - `upload.ts` — the only multipart parser (size limit, magic-byte MIME check).
+  **Later (D09):** deferred with photos; not built before they are specced.
 
 **Client side — `packages/ui/src/backend/`:**
 
-- `api/apiCall.ts` (+ `apiUpload`) — the only sanctioned `fetch()` to `/api/*`;
+- `api/apiCall.ts` (+ `apiUpload`, Later D09) — the only sanctioned `fetch()` to `/api/*`;
   defensive envelope parsing; typed `ApiResult<T>`.
 - `forms/CrudForm.tsx` — schema-driven form bound to the server's Zod schema; shows
   `fieldErrors`; `Cmd/Ctrl+Enter` submits, `Escape` cancels. Bespoke UI only where
   the UX isn't form-over-schema — the **bed grid editor** is the main legitimate
   exception.
 - `tables/DataTable.tsx` — column-config lists with loading/empty/error, pagination,
-  row actions, card mode on mobile (crop catalog, journal, calendar list view).
+  row actions, card mode on mobile (crop catalog, calendar list view; journal Later D09).
 - `feedback/{LoadingMessage,ErrorMessage,EmptyState}.tsx` — the only sanctioned
   loading/error/empty renderers.
 
@@ -130,8 +135,8 @@ bed endpoint returns computed conflicts), not by importing `core` into `ui`.
 **Where a new reusable component goes:**
 
 1. Raw shadcn primitive → `ui/src/components/ui/`, only via `npx shadcn@latest add`.
-2. Generic, concept-agnostic panel pattern (new field type, image dropzone, generic
-   grid/cell renderer) → `ui/src/backend/<category>/`.
+2. Generic, concept-agnostic panel pattern (new field type, image dropzone (Later,
+   D09), generic grid/cell renderer) → `ui/src/backend/<category>/`.
 3. Component tied to one concept's domain shape (`BedGrid`, `CropPicker`,
    `CompanionBadge`, `CalendarTimeline`) → `ui/src/components/<concept>/`.
 4. Used by exactly one page → colocate; promote on the second consumer.
@@ -141,7 +146,9 @@ bed endpoint returns computed conflicts), not by importing `core` into `ui`.
 - Keep the enforced dependency direction `app → core → db`, `ui` importable by `app`
   only (ESLint `no-restricted-imports`).
 - A concept folder is created **only when its first entity/service is added**.
-- **Grid model is the core invariant.** A bed has `rows × cols` cells; a `Planting`
+- **Grid model is the core invariant.** A bed has `rows × cols` cells. A `Planting`
+  belongs to a garden and may have no bed (R07): an unplaced planting has no cells, no
+  grid check and no companion neighbours. A placed `Planting`
   occupies a rectangle of cells (`row`, `col`, `rowSpan`, `colSpan`) and stores
   `plantsPerCell` derived from the crop's spacing. All placement rules (bounds, no
   overlap, crop footprint, spacing) live in **pure functions** in
@@ -164,19 +171,21 @@ bed endpoint returns computed conflicts), not by importing `core` into `ui`.
   Every catalog fact has a `source` field; do not scrape or copy another app's dataset.
 - **External integrations go through ports in `core`**, each with a mock/local
   adapter used in tests and CI:
-  - `AiGateway` — layout suggestions, garden Q&A, (stretch) photo diagnosis.
+  - `AiGateway` — garden Q&A (MVP, D08); layout suggestions (Later, D08) and photo
+    diagnosis (Later, D09).
     `MockAiGateway` is deterministic. No vendor AI SDK outside its adapter file.
-  - `ImageStorage` — journal/diagnosis photos. `LocalDiskImageStorage` for MVP;
-    entities store only a storage key.
+  - `ImageStorage` — journal/diagnosis photos, **Later (D09)**. `LocalDiskImageStorage`
+    when photos ship; entities store only a storage key.
   - `FrostDateProvider` — frost dates for a region/postal code.
     `StaticFrostDateProvider` (bundled table) for MVP; the user can always override
     dates manually.
 - **AI layer — `core/src/ai/`:** versioned prompts (`prompts/<name>.vN.ts`); every
-  response parsed with a Zod schema (`ai/schemas/`). AI layout output is additionally
-  validated **against the domain**: crop IDs must exist in the catalog, every proposed
+  response parsed with a Zod schema (`ai/schemas/`). AI layout output (Later, D08) is
+  additionally validated **against the domain**: crop IDs must exist in the catalog, every proposed
   planting must pass `grid-rules.ts`. Invalid output → one retry, then
   `AiUnavailableError`. Persisted AI results store `model` and `promptVersion`.
-- **AI proposes, the user applies.** An AI layout is returned as a *proposal* (preview
+- **AI proposes, the user applies.** (Layout proposal is Later, D08; the rule stays for
+  when it is built.) An AI layout is returned as a *proposal* (preview
   diff on the grid). Only an explicit "apply" request writes plantings, through the
   same `PlantingService` path as manual placement — there is no AI-only write path.
 - **No background workers in MVP.** "What to do this week" is computed on read from
@@ -202,7 +211,7 @@ more explicit**.
   persistence for one concept; route = HTTP wiring; prompt file = one prompt.
   `grid-rules.ts` decides whether a placement is valid; it never touches the DB.
 - **DRY.** One Zod schema per input, imported by route and form; one grid-rule
-  implementation used by manual placement *and* AI layout validation; one companion
+  implementation used by manual placement *and* AI layout validation (Later, D08); one companion
   check used by the bed view *and* AI prompts.
 - **Separation of Concerns.** Persistence in `db`, business rules in `core`,
   HTTP/rendering in `app`, presentation in `ui`. A page never runs a MikroORM query or
@@ -220,7 +229,7 @@ more explicit**.
   catalog and the event bus; no base-service class hierarchies.
 - **Fail closed.** Ownership errors deny. An AI failure surfaces an error state — it
   never silently applies a partial layout.
-- **Idempotency.** Applying the same AI proposal twice, or double-tapping "place",
+- **Idempotency.** Applying the same AI proposal twice (Later, D08), or double-tapping "place",
   must not create duplicate plantings: proposals have an ID and are applied at most
   once; placement is guarded by the bed `version` + overlap check in one transaction.
 - **AI output is untrusted input.** Validate with Zod and against the domain, never
@@ -236,28 +245,28 @@ more explicit**.
 - **Cookies:** `httpOnly`, `secure` in production, `sameSite=lax`, scoped `path`. No
   JWT in `localStorage`.
 - **CSRF:** every state-changing route requires the custom header `apiCall`/
-  `apiUpload` always set, plus `sameSite` cookies.
+  `apiUpload` (Later, D09) always set, plus `sameSite` cookies.
 - **Rate limiting:** login/register (per IP+email, cooldown) and **every AI endpoint**
   (per-user daily quota + per-minute limit) → `RateLimitedError` (429). In-memory
   limiter is MVP-only.
 - **Location data minimization:** store the user's frost dates and a coarse region
   (postal-code prefix or climate zone), never precise coordinates. Never send location
   to the AI provider beyond what the task needs (climate zone, frost dates).
-- **File uploads:** server-side size limit (e.g. 8 MB) before buffering; allow-list
+- **File uploads** (when photos ship, Later D09): server-side size limit (e.g. 8 MB) before buffering; allow-list
   `image/jpeg|png|webp` by **magic bytes**; re-encode/resize server-side; **strip EXIF**
   (garden photos carry the GPS of the user's home); random UUID storage keys; never
   use client filenames in paths.
-- **Photo access:** private, served only through an authenticated, ownership-checked
+- **Photo access** (Later, D09): private, served only through an authenticated, ownership-checked
   route — never from a public static folder.
 - **Ownership:** a user can only read/modify *their own* gardens, beds, plantings,
-  journal entries, photos and AI conversations. Missing ownership checks are blockers.
+  operations, AI conversations, and (Later, D09) journal entries and photos. Missing ownership checks are blockers.
 - **Mass assignment:** never spread the raw body into `em.create()`/`em.assign()`;
   use the Zod-parsed output (no smuggled `userId`, `gardenId`, `version`).
 - **Input bounds:** bed dimensions, number of beds per garden, plantings per bed and
-  journal text length have explicit max values in the Zod schemas (prevents
+  text lengths have explicit max values in the Zod schemas (prevents
   10 000×10 000 grids and payload abuse).
 - **Injection:** MikroORM entity/query APIs only — no raw SQL with interpolated input.
-- **Prompt injection & data minimization:** user text (journal notes, questions) goes
+- **Prompt injection & data minimization:** user text (questions; journal notes Later D09) goes
   to the model as delimited data, never merged into system instructions; the model
   sees only the current garden's relevant data — no email, no IDs of other users'
   objects.
@@ -334,9 +343,11 @@ more explicit**.
 - All tests use `MockAiGateway`, `StaticFrostDateProvider` and local image storage —
   **CI never calls a real AI provider or the network.**
 - AI parsing is tested against malformed, partial and hostile output, and against
-  layouts that violate grid rules or reference unknown crops.
+  unknown crops; layouts that violate grid rules are tested when the layout proposal
+  ships (Later, D08).
 - Concurrency: an integration test covers two conflicting edits to the same bed
-  (second gets 409) and double-applying the same AI proposal (applied once).
+  (second gets 409); double-applying the same AI proposal (applied once) is added when
+  the layout proposal ships (Later, D08).
 - Catalog seed integrity test: every companion relation references existing crops;
   relations are symmetric where the data says they should be.
 - Behavior changes ship with a test that fails on the pre-change code; bug fixes ship
@@ -346,7 +357,7 @@ more explicit**.
 
 ## 2. How to Place & Generate a New Example (for the agent)
 
-When asked to scaffold a new domain concept (e.g. "add journal"):
+When asked to scaffold a new domain concept (e.g. "add operations"):
 
 1. Create `packages/db/src/entities/<concept>/<name>.entity.ts`; register in
    `entities/index.ts`; generate a MikroORM migration. Reference data → seed file in
@@ -404,8 +415,8 @@ packages/
         gardens/[gardenId]/page.tsx               # garden overview: beds
         gardens/[gardenId]/beds/[bedId]/page.tsx  # bed grid editor + conflicts
         gardens/[gardenId]/calendar/page.tsx      # planting calendar
-        gardens/[gardenId]/journal/page.tsx       # journal
-        gardens/[gardenId]/assistant/page.tsx     # AI: layout suggestions, Q&A
+        gardens/[gardenId]/journal/page.tsx       # journal — Later (D09)
+        gardens/[gardenId]/assistant/page.tsx     # AI: Q&A (layout suggestions Later, D08)
         settings/page.tsx                         # frost dates / region, profile
       api/
         auth/route.ts
@@ -418,11 +429,11 @@ packages/
         beds/[id]/plantings/route.ts              # place
         plantings/[id]/route.ts                   # move / resize / remove
         gardens/[id]/calendar/route.ts            # computed windows
-        gardens/[id]/journal/route.ts
-        journal/[id]/photos/route.ts              # upload
-        photos/[id]/route.ts                      # authorized read / delete
-        beds/[id]/layout-proposals/route.ts       # AI: create proposal
-        layout-proposals/[id]/apply/route.ts      # apply once
+        gardens/[id]/journal/route.ts             # Later (D09)
+        journal/[id]/photos/route.ts              # upload — Later (D09)
+        photos/[id]/route.ts                      # authorized read / delete — Later (D09)
+        beds/[id]/layout-proposals/route.ts       # AI: create proposal — Later (D08)
+        layout-proposals/[id]/apply/route.ts      # apply once — Later (D08)
         gardens/[id]/assistant/route.ts           # AI Q&A
         health/route.ts
 
@@ -436,16 +447,16 @@ packages/
         apiHandler.ts
         makeCrudRoute.ts
         auth.ts
-        upload.ts
+        upload.ts                                 # Later (D09)
       events/
         event-bus.ts
         event-map.ts
       ai/
         prompts/
-          suggest-bed-layout.v1.ts
+          suggest-bed-layout.v1.ts                # Later (D08)
           garden-qa.v1.ts
         schemas/
-          layout-proposal.schema.ts
+          layout-proposal.schema.ts               # Later (D08)
           garden-answer.schema.ts
       services/
         auth/user.service.ts
@@ -459,11 +470,11 @@ packages/
         calendar/sowing-windows.ts                # pure: date math
         calendar/frost-date-provider.port.ts
         calendar/adapters/static-frost-date-provider.ts
-        journal/journal.service.ts
-        photos/photo.service.ts
-        photos/image-storage.port.ts
-        photos/adapters/local-disk-image-storage.ts
-        assistant/layout-proposal.service.ts
+        journal/journal.service.ts                # Later (D09)
+        photos/photo.service.ts                   # Later (D09)
+        photos/image-storage.port.ts              # Later (D09)
+        photos/adapters/local-disk-image-storage.ts  # Later (D09)
+        assistant/layout-proposal.service.ts      # Later (D08)
         assistant/assistant.service.ts
         assistant/ai-gateway.port.ts
         assistant/adapters/mock-ai-gateway.ts
@@ -482,13 +493,13 @@ packages/
         auth/user.entity.ts                       # + frost dates / region
         gardens/garden.entity.ts
         gardens/bed.entity.ts                     # rows, cols, version
-        plantings/planting.entity.ts              # bed, crop, variety, row/col/span
+        plantings/planting.entity.ts              # garden, bed? (R07), crop, variety, row/col/span
         crops/crop.entity.ts
         crops/variety.entity.ts
         crops/crop-companion.entity.ts
-        journal/journal-entry.entity.ts
-        photos/photo.entity.ts
-        assistant/layout-proposal.entity.ts       # proposal payload, appliedAt
+        journal/journal-entry.entity.ts           # Later (D09)
+        photos/photo.entity.ts                    # Later (D09)
+        assistant/layout-proposal.entity.ts       # proposal payload, appliedAt — Later (D08)
       seeds/
         crops.ts
         crop-companions.ts
@@ -505,17 +516,17 @@ packages/
           companion-badge.tsx
         calendar/
           calendar-timeline.tsx
-        journal/
+        journal/                                  # Later (D09)
           journal-entry-card.tsx
         assistant/
-          layout-proposal-preview.tsx
+          layout-proposal-preview.tsx             # Later (D08)
       backend/
         api/
-          apiCall.ts                              # + apiUpload
+          apiCall.ts                              # + apiUpload (Later, D09)
           types.ts
         forms/
           CrudForm.tsx
-          ImageDropzone.tsx
+          ImageDropzone.tsx                       # Later (D09)
         tables/
           DataTable.tsx
         feedback/
@@ -537,7 +548,7 @@ One buildable step at a time — never a single move-everything commit.
    obsolete tables. Run `npm run typecheck && npm run lint && npm run build`.
 2. **Move `auth` into its concept sub-folder** (`entities/auth/`, `services/auth/`);
    update `index.ts`, `container.ts`, `cradle.ts`.
-3. **Add the shared layers** — `core/src/http/` (incl. `upload.ts`) and
+3. **Add the shared layers** — `core/src/http/` (`upload.ts` deferred, Later D09) and
    `ui/src/backend/` — before the second concept.
 4. **`crops` catalog first**: entities + seed data + read-only routes + catalog pages.
    Everything else depends on it. Use `makeCrudRoute`/`DataTable` here as the reference
@@ -547,9 +558,10 @@ One buildable step at a time — never a single move-everything commit.
    the core loop — finish it before anything AI.
 6. **`calendar`** with `sowing-windows.ts`, `FrostDateProvider` and frost dates in
    settings.
-7. **`journal` + `photos`** with the `ImageStorage` port.
-8. **`assistant`**: `AiGateway` + `MockAiGateway`, layout proposals (proposal → preview
-   → apply once), then Q&A. Plug in a real AI adapter only after the mock-driven flow
+7. **`journal` + `photos`** with the `ImageStorage` port — **Later (D09)**, not part of
+   the MVP sequence.
+8. **`assistant`**: `AiGateway` + `MockAiGateway`, then garden Q&A (the MVP AI
+   feature, D08). Layout proposals (proposal → preview → apply once) are Later (D08). Plug in a real AI adapter only after the mock-driven flow
    and its tests are green.
 9. Add `core/src/events/` and validators when the first concept needs them.
 10. **Update `AGENTS.md`** with the §3 diff in the same PR as step 2.

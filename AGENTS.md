@@ -77,9 +77,9 @@ Event IDs follow `concept.entity.action`, past tense (e.g. `plantings.planting.p
 
 ### External integrations & AI
 
-- External systems only through ports in `core`: `AiGateway`, `ImageStorage`, `FrostDateProvider`. Vendor SDKs only inside `adapters/`. MVP adapters: `MockAiGateway` (deterministic), `LocalDiskImageStorage`, `StaticFrostDateProvider`. Users can always override frost dates manually.
+- External systems only through ports in `core`: `AiGateway`, `ImageStorage`, `FrostDateProvider`. Vendor SDKs only inside `adapters/`. MVP adapters: `MockAiGateway` (deterministic), `StaticFrostDateProvider`. `ImageStorage`/`LocalDiskImageStorage` are Later with photos (D09). Users can always override frost dates manually.
 - Tests and CI always use mock/static/local adapters, never a real AI provider or network call.
-- Prompts are versioned in `core/src/ai/prompts/<name>.vN.ts`. AI output is parsed with Zod (`core/src/ai/schemas/`) **and** validated against domain rules (crop IDs exist, every planting passes `grid-rules.ts`). Invalid output → one retry, then `AiUnavailableError`. Results store `model` + `promptVersion`.
+- Prompts are versioned in `core/src/ai/prompts/<name>.vN.ts`. AI output is parsed with Zod (`core/src/ai/schemas/`) **and** validated against domain rules (crop IDs exist; for the layout proposal, Later D08, every planting passes `grid-rules.ts`). Invalid output → one retry, then `AiUnavailableError`. Results store `model` + `promptVersion`.
 - (Layout proposal is Later, D08; the rule stays for when it is built.) AI proposes, the user applies: AI never writes plantings directly. A layout is a *proposal* with an ID, applied at most once via an explicit "apply" request through `PlantingService`, like a manual edit.
 - AI calls are synchronous with a hard timeout (named constant, e.g. 30 s). No `assistant/` folder before the first AI feature.
 
@@ -88,11 +88,11 @@ Event IDs follow `concept.entity.action`, past tense (e.g. `plantings.planting.p
 - `packages/core/src/http/`:
   - `errors.ts`: `AppError` hierarchy (`NotFoundError`, `ForbiddenError`, `UnauthorizedError`, `ValidationError`, `ConflictError`, `RateLimitedError`, `AiUnavailableError`, `PayloadTooLargeError`; grid errors such as `CellOccupiedError` and `OutOfBedBoundsError` extend these). Services throw these and never build HTTP responses.
   - `apiHandler.ts`: maps errors to status + envelope `{ ok: true, data }` / `{ ok: false, error: { code, message, fieldErrors? } }`, never leaks stack traces.
-  - `makeCrudRoute.ts`: plain CRUD. Workflow endpoints (grid placement, applying AI layouts, uploads, calendar) use `apiHandler` directly.
+  - `makeCrudRoute.ts`: plain CRUD. Workflow endpoints (grid placement, calendar; later applying AI layouts, D08, and uploads, D09) use `apiHandler` directly.
   - `auth.ts`: `requireSession`, plus ownership assertions resolved **through the garden**.
-  - `upload.ts`: the only multipart parser.
+  - `upload.ts`: the only multipart parser. Later (D09).
 - `packages/ui/src/backend/`:
-  - `api/apiCall.ts` (+ `apiUpload`): the only sanctioned `fetch()` to `/api/*`.
+  - `api/apiCall.ts` (+ `apiUpload`, Later D09): the only sanctioned `fetch()` to `/api/*`.
   - `forms/CrudForm.tsx`: Zod-driven, shows `fieldErrors`, `Cmd/Ctrl+Enter` submits, `Escape` cancels.
   - `tables/DataTable.tsx`.
   - `feedback/{LoadingMessage,ErrorMessage,EmptyState}.tsx`.
@@ -126,7 +126,7 @@ New reusable components go here:
 | Service | `<Name>Service`, `<name>.service.ts` | `services/plantings/planting.service.ts` |
 | Pure logic | kebab-case module, functions only | `services/plantings/grid-rules.ts` |
 | Port / adapter | `<Name>Gateway`/`Port` in `<name>.port.ts`; adapters in `adapters/` | `ai-gateway.port.ts`, `adapters/mock-ai-gateway.ts` |
-| Prompt | kebab-case + version | `core/src/ai/prompts/suggest-bed-layout.v1.ts` |
+| Prompt | kebab-case + version | `core/src/ai/prompts/garden-qa.v1.ts` |
 | Seed data | kebab-case under `db/src/seeds/` | `crops.ts`, `crop-companions.ts` |
 | Cradle key | camelCase, one per dependency | `plantingService` |
 | Zod schema | `<name>Schema` in `<name>-<action>.schema.ts` | `validators/plantings/planting-place.schema.ts` |
@@ -155,7 +155,7 @@ New reusable components go here:
 - CSRF: state-changing routes require the custom header that `apiCall`/`apiUpload` always set.
 - Rate limiting: login/register and **every AI endpoint** (per-user daily quota + per-minute limit) → 429.
 - Ownership on every record (gardens, beds, plantings, operations, AI conversations), resolving bed/planting ownership through the garden and never trusting a client-sent `gardenId`. Fail closed.
-- Uploads: size limit before buffering (e.g. 8 MB), allow-list `jpeg/png/webp` by magic bytes, re-encode, **strip EXIF**, random UUID keys, no client filenames in paths. Photos are served only via an authenticated, ownership-checked route.
+- Uploads (when photos ship, Later D09): size limit before buffering (e.g. 8 MB), allow-list `jpeg/png/webp` by magic bytes, re-encode, **strip EXIF**, random UUID keys, no client filenames in paths. Photos are served only via an authenticated, ownership-checked route.
 - Location minimization: store frost dates + coarse region only. Send the AI only climate zone/frost dates.
 - AI: user text goes to the model delimited as data, never merged into instructions. The model sees only the current garden's data. Output is untrusted: never rendered as HTML, never written without explicit "apply". Answers are labeled as suggestions, and safety facts (e.g. toxicity) come from the catalog.
 - Input bounds: max bed size, beds per garden, plantings per bed and text lengths in the Zod schemas, as named constants.
@@ -179,12 +179,12 @@ New reusable components go here:
 - **100 % unit test coverage is mandatory.** Every new feature, module, branch and function ships with unit tests that fully cover it — `npm test` enforces 100 % statements/branches/functions/lines over `packages/*/src/**` and `scripts/*.mjs` (`vitest.config.ts`) and CI's `unit` job fails the PR otherwise. There is no "add tests later": a PR that drops coverage below 100 % does not merge. The only exclusions are the ones explicitly listed in `vitest.config.ts`, each with a reason comment (e.g. generated migrations, exercised by integration tests instead) — don't add new ones to dodge the gate; write the test.
 - Colocate unit tests next to the source as `<name>.test.ts(x)`, so missing coverage is easy to spot in review.
 - Pure modules (`grid-rules.ts`, companion detection, `sowing-windows.ts`) get **table-driven unit tests first**, covering edges: bed borders, multi-cell crops, empty bed, crops with no frost dependency, Southern Hemisphere / late frost.
-- AI parsing is tested against malformed, partial and hostile output, grid-rule violations and unknown crops.
-- Integration tests (`tests/integration/`, `npm run test:integration`) boot the real app against an ephemeral PostgreSQL (Testcontainers) and drive it with `agent-browser`; CI's `integration` job runs them on every PR. They cover a stale bed write (409) and double-applying a proposal (applied once), on top of the always-on basics (home page, admin panel, `/api/health`).
+- AI parsing is tested against malformed, partial and hostile output and unknown crops (plus grid-rule violations once the layout proposal ships, Later D08).
+- Integration tests (`tests/integration/`, `npm run test:integration`) boot the real app against an ephemeral PostgreSQL (Testcontainers) and drive it with `agent-browser`; CI's `integration` job runs them on every PR. They cover a stale bed write (409), and double-applying a proposal (applied once) once the layout proposal ships (Later, D08), on top of the always-on basics (home page, admin panel, `/api/health`).
 - A seed-integrity test checks that companion relations reference existing crops and are symmetric where the data says so.
 - Behavior changes ship with a test that fails on the old code. Bug fixes (especially security ones) ship a regression test.
 
-## Scaffolding a new concept (e.g. "add journal")
+## Scaffolding a new concept (e.g. "add operations")
 
 1. `db/src/entities/<concept>/<name>.entity.ts` → register → generate migration (reference data → `db/src/seeds/`).
 2. Pure rules in `core/src/services/<concept>/`, **tests first**.
