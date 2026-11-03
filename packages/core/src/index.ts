@@ -19,6 +19,14 @@ export {
 } from "./http/apiHandler.ts";
 export type { Actor } from "./http/auth.ts";
 export {
+  makeCrudRoute,
+  type CrudListOptions,
+  type CrudRouteOptions,
+  type CrudRoutes,
+  type CrudService,
+  type CrudServiceKey,
+} from "./http/makeCrudRoute.ts";
+export {
   AiUnavailableError,
   AppError,
   ConflictError,

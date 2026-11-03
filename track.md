@@ -32,7 +32,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 
 - [x] 2.1 `core/src/http/apiHandler.ts` (body limit, CSRF, Zod parse, envelope, error mapping, request logging, injected `resolveActor`).
 - [x] 2.2 `db/src/ownership.ts` (`findOwned`, `OwnerFilter`, `EntityManager`/`EntityName` re-export) + `core/src/services/shared/owned.ts` (`findOwnedOrFail`). `ownedBy` deferred: `ownedBy.garden` lands in 5.1 with the `owner` column (no empty registry now).
-- [ ] 2.3 `core/src/http/makeCrudRoute.ts` (+ `CrudService` type).
+- [x] 2.3 `core/src/http/makeCrudRoute.ts` (+ `CrudService` type).
 
 **Manual test after Phase 2:** no route uses it yet; review tests (`npm test`).
 

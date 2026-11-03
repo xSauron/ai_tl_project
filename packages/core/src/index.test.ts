@@ -26,6 +26,7 @@ describe("@plantai/core public API", () => {
       "entities",
       "getContainer",
       "getOrm",
+      "makeCrudRoute",
       "withScope",
     ]);
   });
