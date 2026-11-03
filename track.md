@@ -4,7 +4,7 @@
 - **Branch:** `feat/app-primitives`, checked out in `/workspace` (worked in a `/tmp` worktree until task 1.5; moved so the editor and preview on :3000 show the branch).
 - **Run log:** [`.ai/runs/2026-11-03-implement-app-primitives.md`](.ai/runs/2026-11-03-implement-app-primitives.md)
 - **Rules:** one commit per task; full gate (`typecheck`, `lint`, `test` 100 %, `build`, `npm audit --omit=dev`, `/api/health`) green after every task; stop for manual testing after every phase.
-- **Gate note:** D05 is superseded by D11 (brief Q10: moot), so Phases 0–3 are unblocked. Phase 4 waits for the spec update for D16/Q17 (task 4.0, owner decision).
+- **Gate note:** D05 is superseded by D11 (brief Q10: moot), so Phases 0–3 are unblocked. Phase 4 unblocked by the 4.0 spec update (owner answers Q5–Q7, 2026-11-03).
 
 Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 
@@ -44,17 +44,22 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 3.4 `backend/forms/CrudForm.tsx` (`zod` peer dep of ui; `_root`/`VALIDATION_FAILED` contract test with core).
 - [x] 3.5 `backend/tables/DataTable.tsx` (table `md+`, cards below; error → loading → empty → rows).
 
-**Manual test after Phase 3:** Storybook / `npm test` for the new components (no page uses them yet).
+**Manual test after Phase 3:** Storybook / `npm test` for the new components (no page uses them yet). Pending owner confirmation.
 
-## Phase 4 — Auth (blocked until 4.0 is done)
+## Phase 4 — Auth
 
-- [!] 4.0 Update spec A for D16/Q17 (e-mail verification, reset, settings, PL/EN, e-mail port, confirmation-link sign-in, unconfirmed log-in) with the owner; update `AGENTS.md` ports list. Re-plan Phase 4 tasks from the updated spec.
-- [ ] 4.1 `User` entity + migration `add-users`; `password.ts`; `user.service.ts`.
+- [x] 4.0 Spec A updated for D16/Q17 (owner answers Q5–Q7 on 2026-11-03; agent proposals P1–P4 wait for confirmation). Phase 4 re-planned below; settings moved to 5.4 (needs the `(app)` layout).
+- [ ] 4.1 `User` entity (+ `emailVerifiedAt`) + migration `add-users`; `password.ts`; `user.service.ts` (register, authenticate with a dummy compare); `UserDto`.
 - [ ] 4.2 `http/auth.ts` (jose session cookie, `requireSession`), `http/rate-limit.ts` + `InMemoryRateLimiter`; `apiHandler` uses the real session.
 - [ ] 4.3 `/api/auth/{register,login,logout,me}`, `app/src/server/session.ts` DAL, `(auth)` layout + login/register pages; integration test.
+- [ ] 4.4 E-mail confirmation: `EmailSender` port + `LocalOutboxEmailSender`/`InMemoryEmailSender`, `APP_BASE_URL`/`EMAIL_OUTBOX_DIR`, `AccountToken` + migration `add-account-tokens`, `account-token.service.ts`, `/api/auth/verify-email{,/resend}`, `/verify-email` page; `AGENTS.md` ports list. (Needs P1, P2.)
+- [ ] 4.5 Password reset (first to cut, D17): `/api/auth/password-reset/{request,confirm}`, `/forgot-password`, `/reset-password`.
+
+**Manual test after Phase 4:** register, log in and out on `/login`/`/register`; confirm the address from the link in `.local/outbox/`; reset the password the same way.
 
 ## Phase 5 — Owned gardens
 
 - [ ] 5.1 Migration `add-garden-owner` + `ownedBy.garden` in `db/src/ownership.ts`; `GardenService` as `CrudService(actor)` with `MAX_GARDENS_PER_USER` under user row lock.
 - [ ] 5.2 `api/gardens` + `api/gardens/[id]` via `makeCrudRoute`; `validators/gardens/garden-{create,update}.schema.ts`.
-- [ ] 5.3 `(app)` layout with `AppShell`, `(app)/gardens` page; remove `/admin/gardens` + `createGardenAction`; integration tests; `BACKWARD_COMPATIBILITY.md`, `AGENTS.md` table.
+- [ ] 5.3 `(app)` layout with `AppShell` and the e-mail confirmation reminder (resend), `(app)/gardens` page; remove `/admin/gardens` + `createGardenAction`; integration tests; `BACKWARD_COMPATIBILITY.md`, `AGENTS.md` table.
+- [ ] 5.4 Account settings (first to cut, D17): `(app)/settings` + `POST /api/auth/password`. (Needs P4.)
