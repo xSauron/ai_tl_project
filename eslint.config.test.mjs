@@ -53,6 +53,57 @@ describe("eslint.config.mjs layer rules", () => {
     expect(await layerViolations(packageName, source)).toEqual([]);
   }, LINT_TIMEOUT_MS);
 
+  describe("client-safe core/src/validators/**", () => {
+    const VALIDATOR = "src/validators/layer-fixture.ts";
+    const NESTED_VALIDATOR = "src/validators/common/layer-fixture.ts";
+
+    it.each([
+      [VALIDATOR, 'import "../services/gardens/garden.service.ts";'],
+      [VALIDATOR, 'import "../container/container.ts";'],
+      [VALIDATOR, 'import "../config/env.ts";'],
+      [VALIDATOR, 'import "../logger.ts";'],
+      [VALIDATOR, 'import { NotFoundError } from "../http/errors.ts";'],
+      [NESTED_VALIDATOR, 'import "../../http/errors.ts";'],
+      [NESTED_VALIDATOR, 'import "../../services/gardens/garden.service.ts";'],
+      [NESTED_VALIDATOR, 'import "../../logger";'],
+      [VALIDATOR, 'import "@plantai/core";'],
+      [VALIDATOR, 'import "@plantai/core/http";'],
+      [VALIDATOR, 'import "@plantai/db";'],
+      [VALIDATOR, 'import type { Garden } from "@plantai/db";'],
+      [VALIDATOR, 'import "server-only";'],
+      [VALIDATOR, 'import "pino";'],
+      [VALIDATOR, 'import "node:crypto";'],
+      [VALIDATOR, 'import "fs";'],
+      [VALIDATOR, 'import "fs/promises";'],
+      [NESTED_VALIDATOR, 'export * from "../../http/errors.ts";'],
+      // The core layer rules still apply inside validators.
+      [VALIDATOR, 'import "@mikro-orm/core";'],
+      [VALIDATOR, 'import "next/server";'],
+      [VALIDATOR, 'import "@plantai/ui";'],
+      [VALIDATOR, 'import "@plantai/app";'],
+      [NESTED_VALIDATOR, 'import "../../../../db/src/index.ts";'],
+    ])("%s rejects %s", async (file, source) => {
+      expect(await layerViolations("core", source, file)).toHaveLength(1);
+    }, LINT_TIMEOUT_MS);
+
+    it.each([
+      [VALIDATOR, 'import { z } from "zod";'],
+      [VALIDATOR, 'import "./common/index.ts";'],
+      [VALIDATOR, 'import { MAX_EMAIL_LENGTH } from "./limits.ts";'],
+      [NESTED_VALIDATOR, 'import { uuidSchema } from "./uuid.schema.ts";'],
+      [NESTED_VALIDATOR, 'import { MAX_EMAIL_LENGTH } from "../limits.ts";'],
+      [NESTED_VALIDATOR, 'import "../gardens/garden-create.schema.ts";'],
+      [VALIDATOR, 'import "@plantai/core/validators";'],
+    ])("%s allows %s", async (file, source) => {
+      expect(await layerViolations("core", source, file)).toEqual([]);
+    }, LINT_TIMEOUT_MS);
+
+    it("leaves the rest of core free to import server code", async () => {
+      const source = 'import "../http/errors.ts"; import "pino"; import "node:crypto"; import "@plantai/db";';
+      expect(await layerViolations("core", source, "src/services/layer-fixture.ts")).toEqual([]);
+    }, LINT_TIMEOUT_MS);
+  });
+
   it("applies the layer rules outside src/ too", async () => {
     expect(await layerViolations("ui", 'import "@plantai/core";', ".storybook/fixture.tsx")).toHaveLength(1);
   }, LINT_TIMEOUT_MS);

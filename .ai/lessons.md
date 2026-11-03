@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-11-03 — `no-restricted-imports` gitignore groups match relative paths too
+- **Context:** app-primitives 1.4 banned Node built-ins in `core/src/validators/**` with `group: ["http", "http/*", …]`; it also fired on `../../http/errors.ts`, double-reporting core's own `http/` folder.
+- **Lesson:** `patterns[].group` uses gitignore semantics, so an unanchored `http/*` matches any path segment. Also, two flat-config blocks setting the same rule for overlapping files don't merge: the later one replaces the options.
+- **Action:** use an anchored `regex` for bare package names that collide with folder names, and repeat the parent layer's patterns in a narrower block (`CORE_LAYER` in `eslint.config.mjs`). Cover both in `eslint.config.test.mjs`.
+
 ### 2026-11-03 — eslint-config-next applies React/Next rules to every file
 - **Context:** app-primitives 0.5 moved the ESLint config to the repo root to lint every package; `react-hooks/rules-of-hooks` then flagged the vitest helper `useBrowser()` in `tests/integration` as a hook call.
 - **Lesson:** `eslint-config-next` registers its plugins for `**/*.{js,…,tsx}` with no package scoping, so in a monorepo root config its rules hit non-React/non-Next code too.

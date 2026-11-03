@@ -1,3 +1,4 @@
+import { builtinModules } from "node:module";
 import path from "node:path";
 
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -48,6 +49,28 @@ const layerRules = (...patterns) => [
   { patterns: [...patterns, NO_CROSS_PACKAGE_RELATIVE] },
 ];
 
+// `core/src/validators/**` is the client-safe `@plantai/core/validators` entry:
+// Client Components import it, so it must not pull in server-only code.
+const CLIENT_SAFE = "validators are imported by Client Components; keep them free of server code.";
+const NO_SERVER_CORE_RELATIVE = {
+  regex: "^(\\.\\./)+(services|container|http|config|logger)(\\.ts)?(/|$)",
+  message: `No core services/container/http/config/logger in validators: ${CLIENT_SAFE}`,
+};
+const NO_CORE_SELF_IMPORT = {
+  regex: "^@plantai/core(/(?!validators$).*)?$",
+  message: `Import sibling validators relatively; only @plantai/core/validators is client-safe. ${CLIENT_SAFE}`,
+};
+const NO_SERVER_PACKAGES = restrict(["@plantai/db", "server-only", "pino"], `Server-only package: ${CLIENT_SAFE}`);
+// A regex, not a gitignore `group`: `http/*` would also match `../http/errors.ts`.
+const BARE_BUILTINS = builtinModules.filter((name) => !name.startsWith("node:")).map((name) => name.split("/")[0]);
+const NO_NODE_BUILTINS = {
+  regex: `^(node:|(${[...new Set(BARE_BUILTINS)].join("|")})(/|$))`,
+  message: `No Node.js built-ins: ${CLIENT_SAFE}`,
+};
+// Same file pattern as `plantai/layers/core`; flat config replaces a rule's
+// options instead of merging them, so this repeats the core restrictions.
+const CORE_LAYER = [NO_APP, NO_UI, NO_MIKRO_ORM, NO_NEXT];
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -73,7 +96,20 @@ const eslintConfig = defineConfig([
   {
     name: "plantai/layers/core",
     files: ["packages/core/**"],
-    rules: { "no-restricted-imports": layerRules(NO_APP, NO_UI, NO_MIKRO_ORM, NO_NEXT) },
+    rules: { "no-restricted-imports": layerRules(...CORE_LAYER) },
+  },
+  {
+    name: "plantai/layers/core-validators-client-safe",
+    files: ["packages/core/src/validators/**"],
+    rules: {
+      "no-restricted-imports": layerRules(
+        ...CORE_LAYER,
+        NO_SERVER_CORE_RELATIVE,
+        NO_CORE_SELF_IMPORT,
+        NO_SERVER_PACKAGES,
+        NO_NODE_BUILTINS,
+      ),
+    },
   },
   {
     name: "plantai/layers/db",
