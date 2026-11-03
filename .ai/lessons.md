@@ -46,6 +46,16 @@ Long-term memory for AI agents working in this repository. Read this file before
 - **Lesson:** the "env only through `core/src/config/env.ts`" rule can't hold for DB connection vars. They now live in `db/src/env.ts`. Migrations keep their applied state across a folder move because MikroORM tracks them by class name in `mikro_orm_migrations`, not by path.
 - **Action:** when task 1.1 moves env to Zod, give `db/src/env.ts` the same treatment instead of pulling it back into `core`. When moving migrations, `git mv` only (R100) and confirm with `mikro-orm migration:list`.
 
+### 2026-11-02 — om-discover refresh: wrote the brief before step-7 confirmation; decisions from a working doc must reach the brief
+- **Context:** `om-discover --refresh` after the account prototype and its synthetic walkthrough. The owner's account decisions (L13, L19–L22) lived only in the screen map, not in the brief. The agent edited `product-brief.md` in place while drafting, before the owner confirmed it; the skeptic then found that "foundation work" was no longer ready, because spec A's auth steps contradict D16.
+- **Lesson:** Draft in a scratch copy, not in the brief: the brief may be written only after step 7. Owner decisions recorded in prototype maps or specs (e.g. `WŁ:` rows) are brief-level decisions and must get D-rows on the next refresh. A new scope decision can invalidate a readiness claim for already-specified foundations.
+- **Action:** On refresh, grep `.ai/prototypes/**` and open specs for owner-decision rows and compare them with the brief's Decisions table. Write the brief only after confirmation. After any scope decision, re-check each "ready for" item against the specs it names.
+
+### 2026-11-02 — Ask the owner about "standard" features instead of silently leaving them out
+- **Context:** screen map for E02-S01. Following the "don't add what isn't in the materials" rule, the agent listed password reset, account settings and email verification as open questions. The owner answered that they are standard and should be in, and asked what decision had been missing.
+- **Lesson:** Leaving these out was correct, but the questions read like doubt about obvious features. What the owner actually has to decide is the cost: the email port missing from AGENTS.md, i18n, and the 25 h budget (D06).
+- **Action:** When a standard feature is missing from the spec, ask "include it? Here is what it costs and what rules it touches", not "do you want it?". Record the owner's yes in the working document and list the spec, backlog and AGENTS.md changes it needs as a separate section.
+
 ### 2026-10-21 — Check that every collected field is consumed by a derivation
 - **Context:** grilling the task-list spec (#19). It stored `first_autumn_frost`, validated it, and then derived every window from the spring frost only. It also stored annual frost days as full dates next to a `?year=` parameter, and timing as single columns on `crops` that could not hold a second (autumn) sowing.
 - **Lesson:** a spec reviewed against its stories alone can pass while carrying dead inputs and a model that can't express common cases (autumn sowing, perennials planted once, 30 identical tasks for 30 plants).

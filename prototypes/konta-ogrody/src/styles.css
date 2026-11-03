@@ -1,0 +1,12 @@
+/*
+ * Same entry as packages/ui/.storybook/storybook.css: Tailwind first, then the
+ * design-system theme and tokens. Nothing here defines a color, spacing or
+ * radius of its own — every class in the prototype resolves to a DS token.
+ */
+@import "tailwindcss";
+@import "../../../packages/ui/src/styles/globals.css";
+/* Self-hosted Geist, the same files Storybook uses (no CDN). */
+@import "../../../packages/ui/.storybook/fonts.css";
+
+@source "../../../packages/ui/src/components";
+@source "./";
