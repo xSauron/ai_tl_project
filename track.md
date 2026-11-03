@@ -14,7 +14,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 0.2 Rename scope `@plant-ai/*` → `@plantai/*` (package.json files, imports, scripts, configs, docs, `BACKWARD_COMPATIBILITY.md`).
 - [x] 0.3 Create `packages/db` (entities in `entities/<concept>/`, migrations + snapshot, ORM config, `getOrm`).
 - [x] 0.4 Core container split: `core/src/container/{container,cradle,scope}.ts` with `withScope`; `services/gardens/garden.service.ts`; app uses `withScope` (remove `request-scope.ts`).
-- [ ] 0.5 ESLint over every package + `no-restricted-imports` layer rules (`app → core → db`, `ui` isolated, `@mikro-orm/*` only in `db`); update `AGENTS.md` migration table.
+- [x] 0.5 ESLint over every package + `no-restricted-imports` layer rules (`app → core → db`, `ui` isolated, `@mikro-orm/*` only in `db`); update `AGENTS.md` migration table.
 
 **Manual test after Phase 0:** `npm run dev` → `/`, `/admin`, `/admin/gardens` (create a garden), `/api/health` behave as before.
 

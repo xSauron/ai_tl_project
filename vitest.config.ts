@@ -61,6 +61,15 @@ export default defineConfig({
         },
       },
       {
+        test: {
+          // Repo-root config files (eslint.config.mjs layer rules).
+          name: "config",
+          root: fromRoot(),
+          environment: "node",
+          include: ["eslint.config.test.mjs"],
+        },
+      },
+      {
         // Design system (packages/ui): runs every Storybook story as a real
         // Vitest test (a11y included, `a11y.test: 'error'` in preview.tsx) in
         // a headless Chromium via Playwright. See `@storybook/addon-vitest`.
@@ -85,7 +94,7 @@ export default defineConfig({
       provider: "v8",
       reportsDirectory: fromRoot("coverage"),
       reporter: ["text", "html", "lcov", "json-summary"],
-      include: ["packages/*/src/**/*.{ts,tsx}", "packages/app/next.config.ts", "scripts/*.mjs"],
+      include: ["packages/*/src/**/*.{ts,tsx}", "packages/app/next.config.ts", "scripts/*.mjs", "eslint.config.mjs"],
       exclude: [
         "**/*.test.{ts,tsx}",
         "**/*.test.mjs",

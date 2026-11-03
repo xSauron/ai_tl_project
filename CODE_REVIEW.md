@@ -69,7 +69,7 @@ Major (block unless explicitly waived with a reason in the PR):
 
 ## Severity guidance
 
-- **Blocker** — the checked-box security items above; broken dependency direction (`app`/`ui` reaching into `core`/`db` internals it shouldn't); a grid write missing bounds/overlap/version checks; a merged migration edited in place; coverage dropped below 100%.
+- **Blocker** — the checked-box security items above; broken dependency direction (`app`/`ui` reaching into `core`/`db` internals it shouldn't; `npm run lint` enforces the layer rules in the root `eslint.config.mjs`, so an `eslint-disable` of `no-restricted-imports` or an edit loosening them is itself a blocker); a grid write missing bounds/overlap/version checks; a merged migration edited in place; coverage dropped below 100%.
 - **Major** — the unchecked-box "Major" security items; a missing regression test for a behavior change; a reusable-layer bypass (hand-rolled fetch/form/table) without a stated reason; an AI call made synchronously without the documented timeout.
 - **Minor** — naming drift, a missed opportunity to use an existing pure-rule module, a magic number that should be named, a comment that explains "what" instead of "why".
 

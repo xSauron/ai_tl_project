@@ -47,7 +47,7 @@ packages/
 └── ui/   @plantai/ui    Presentation: shadcn primitives, concept components, reusable backend panel layer
 ```
 
-- **Dependency direction:** `app → core → db`. `ui` is imported by `app` only. `ui` never imports `core` or `db`. No package imports `app`. Enforce with ESLint `no-restricted-imports`.
+- **Dependency direction:** `app → core → db`. `ui` is imported by `app` only. `ui` never imports `core` or `db`. No package imports `app`. Only `app` imports `next`. Enforced by `no-restricted-imports` in the root `eslint.config.mjs` (one flat config for every package; `eslint.config.test.mjs` proves the rules fire).
 - **Separation of concerns:** persistence in `db`, business rules in `core`, HTTP/rendering in `app`, presentation in `ui`. A page never runs a MikroORM query or an AI SDK call.
 - Internal packages ship TypeScript source (no build step). Next.js transpiles them.
 - The full target tree is in §4 of the standards doc. Don't create folders ahead of need.
@@ -233,7 +233,6 @@ The repo is at the bootstrap stage. Follow §5 of the standards doc **one builda
 | Target rule | Current state | Closed by §5 step |
 | --- | --- | --- |
 | `core/src/http/`, `ui/src/backend/`, Zod, pino, events | not yet present | 3 / 9 |
-| ESLint `no-restricted-imports` layer rules; ESLint over all packages | ESLint covers `app` only | 3 |
 | shadcn primitives in `ui/src/components/ui/` | `ui/src/components/` | 3 |
 | Route groups `(marketing)`, `(auth)`, `(app)` | `(frontend)`, `(admin)/admin` | 3–5 |
 | Auth (`auth` concept) | none yet | when first needed (before user-owned data) |

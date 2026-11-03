@@ -21,6 +21,11 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-11-03 — eslint-config-next applies React/Next rules to every file
+- **Context:** app-primitives 0.5 moved the ESLint config to the repo root to lint every package; `react-hooks/rules-of-hooks` then flagged the vitest helper `useBrowser()` in `tests/integration` as a hook call.
+- **Lesson:** `eslint-config-next` registers its plugins for `**/*.{js,…,tsx}` with no package scoping, so in a monorepo root config its rules hit non-React/non-Next code too.
+- **Action:** The root `eslint.config.mjs` switches `@next/next/*` off outside `packages/app` and `react-hooks/*` off outside `app`/`ui`. Add new layer/import rules there and a case to `eslint.config.test.mjs`; don't rename helpers to dodge a misapplied rule.
+
 ### 2026-11-03 — Moving persistence to `packages/db` drags the DB env reader with it
 - **Context:** app-primitives 0.3 moved the ORM config from `core` to `db`. `createOrmConfig` reads `DATABASE_URL`/`DB_POOL_*` through `core/src/config/env.ts`, but `db` may not import `core` (`app → core → db`), and the MikroORM CLI runs from `packages/db` alone.
 - **Lesson:** the "env only through `core/src/config/env.ts`" rule can't hold for DB connection vars. They now live in `db/src/env.ts`. Migrations keep their applied state across a folder move because MikroORM tracks them by class name in `mikro_orm_migrations`, not by path.

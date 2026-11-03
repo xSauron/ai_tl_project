@@ -134,7 +134,7 @@ Request ─► Server Component / Server Action / Route Handler
 | `npm run dev` | Start the Next.js dev server |
 | `npm run build` / `npm start` | Production build / start |
 | `npm run typecheck` | Type-check all packages |
-| `npm run lint` | Lint |
+| `npm run lint` | Lint every package plus `tests/`, `scripts/`, `tools/` (one root `eslint.config.mjs`, with the `app → core → db` layer import rules) |
 | `npm run db:migrate` · `db:migrate:create` · `db:migrate:down` | Database migrations |
 | `npm run ui:add -- <component>` | Add a shadcn/ui component to `@plantai/ui` |
 
