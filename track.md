@@ -16,7 +16,7 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 0.4 Core container split: `core/src/container/{container,cradle,scope}.ts` with `withScope`; `services/gardens/garden.service.ts`; app uses `withScope` (remove `request-scope.ts`).
 - [x] 0.5 ESLint over every package + `no-restricted-imports` layer rules (`app → core → db`, `ui` isolated, `@mikro-orm/*` only in `db`); update `AGENTS.md` migration table.
 
-**Manual test after Phase 0:** `npm run dev` → `/`, `/admin`, `/admin/gardens` (create a garden), `/api/health` behave as before.
+**Manual test after Phase 0:** `npm run dev` → `/`, `/admin`, `/admin/gardens` (create a garden), `/api/health` behave as before. ✅ Owner confirmed 2026-11-03.
 
 ## Phase 1 — Server foundation
 
