@@ -3,7 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ERROR_CODES } from "../../http/errors.ts";
 import { hashPassword, verifyPassword } from "./password.ts";
-import { INVALID_CREDENTIALS_MESSAGE, normalizeEmail, REGISTRATION_FAILED_MESSAGE, UserService } from "./user.service.ts";
+import {
+  INVALID_CREDENTIALS_MESSAGE,
+  normalizeEmail,
+  REGISTRATION_FAILED_MESSAGE,
+  UserService,
+  WRONG_CURRENT_PASSWORD_MESSAGE,
+} from "./user.service.ts";
 
 /** Stands in for MikroORM's exception, which `core` may not import (layer rule). */
 class DuplicateKeyError extends Error {}
@@ -138,5 +144,46 @@ describe("UserService.getById", () => {
     em.findOne.mockResolvedValue(null);
 
     await expect(service.getById("u1")).resolves.toBeNull();
+  });
+});
+
+describe("UserService.changePassword", () => {
+  const ACTOR = { userId: "u1" };
+  const INPUT = { currentPassword: "secret-pass", newPassword: "brand-new-pass" };
+
+  it("checks the current password, stores the new hash and flushes", async () => {
+    const { em, service } = createEm();
+    const stored = { ...STORED };
+    em.findOne.mockResolvedValue(stored);
+    vi.mocked(verifyPassword).mockResolvedValue(true);
+
+    await expect(service.changePassword(ACTOR, INPUT)).resolves.toBeUndefined();
+    expect(em.findOne).toHaveBeenCalledWith(User, { id: "u1" });
+    expect(verifyPassword).toHaveBeenCalledWith("secret-pass", STORED.passwordHash);
+    expect(stored.passwordHash).toBe("hashed:brand-new-pass");
+    expect(em.flush).toHaveBeenCalledOnce();
+  });
+
+  it("answers a wrong current password with a field error and changes nothing", async () => {
+    const { em, service } = createEm();
+    const stored = { ...STORED };
+    em.findOne.mockResolvedValue(stored);
+    vi.mocked(verifyPassword).mockResolvedValue(false);
+
+    await expect(service.changePassword(ACTOR, INPUT)).rejects.toMatchObject({
+      status: 422,
+      code: ERROR_CODES.VALIDATION_FAILED,
+      fieldErrors: { currentPassword: [WRONG_CURRENT_PASSWORD_MESSAGE] },
+    });
+    expect(stored.passwordHash).toBe(STORED.passwordHash);
+    expect(em.flush).not.toHaveBeenCalled();
+  });
+
+  it("fails closed with 401 when the account no longer exists", async () => {
+    const { em, service } = createEm();
+    em.findOne.mockResolvedValue(null);
+
+    await expect(service.changePassword(ACTOR, INPUT)).rejects.toMatchObject({ status: 401 });
+    expect(verifyPassword).not.toHaveBeenCalled();
   });
 });

@@ -7,7 +7,8 @@ const { push, refresh, apiCall } = vi.hoisted(() => ({ push: vi.fn(), refresh: v
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push, refresh }) }));
 vi.mock("@plantai/ui/backend/api/apiCall", () => ({ apiCall }));
 
-const { CredentialsForm, PASSWORD_RULE_DESCRIPTION } = await import("./credentials-form");
+const { CredentialsForm } = await import("./credentials-form");
+const { PASSWORD_RULE_DESCRIPTION } = await import("@/lib/password-rule");
 
 const fill = (label: string, value: string) => fireEvent.change(screen.getByLabelText(new RegExp(label)), { target: { value } });
 

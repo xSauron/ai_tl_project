@@ -1,6 +1,7 @@
 import { isUniqueViolation, User, type EntityManager } from "@plantai/db";
 
 import type { RequestCradle } from "../../container/cradle.ts";
+import type { Actor } from "../../http/auth.ts";
 import { ERROR_CODES, UnauthorizedError, ValidationError } from "../../http/errors.ts";
 import { hashPassword, verifyPassword } from "./password.ts";
 import { toUserDto, type UserDto } from "./user.dto.ts";
@@ -13,6 +14,12 @@ export interface CredentialsInput {
 /** Shown for every registration failure, including an e-mail that is taken (AGENTS.md: never reveal it). */
 export const REGISTRATION_FAILED_MESSAGE = "Could not create the account. If you already have one, log in.";
 export const INVALID_CREDENTIALS_MESSAGE = "The e-mail or password is incorrect.";
+export const WRONG_CURRENT_PASSWORD_MESSAGE = "The current password is incorrect.";
+
+export interface PasswordChangeInput {
+  currentPassword: string;
+  newPassword: string;
+}
 
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -64,5 +71,21 @@ export class UserService {
       throw new UnauthorizedError({ code: ERROR_CODES.INVALID_CREDENTIALS, message: INVALID_CREDENTIALS_MESSAGE });
     }
     return toUserDto(user);
+  }
+
+  /**
+   * Replaces the actor's password after checking the current one. A wrong
+   * current password is a field error (the user is signed in, so nothing
+   * about the account leaks). Existing sessions stay valid until they expire
+   * (stateless JWT, spec A Risks).
+   */
+  async changePassword(actor: Actor, input: PasswordChangeInput): Promise<void> {
+    const user = await this.em.findOne(User, { id: actor.userId });
+    if (!user) throw new UnauthorizedError();
+    if (!(await verifyPassword(input.currentPassword, user.passwordHash))) {
+      throw new ValidationError({ currentPassword: [WRONG_CURRENT_PASSWORD_MESSAGE] });
+    }
+    user.passwordHash = await hashPassword(input.newPassword);
+    await this.em.flush();
   }
 }

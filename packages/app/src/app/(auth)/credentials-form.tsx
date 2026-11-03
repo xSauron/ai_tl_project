@@ -2,11 +2,12 @@
 
 import { useRouter } from "next/navigation";
 
-import { loginSchema, MIN_PASSWORD_LENGTH, registerSchema, type LoginInput } from "@plantai/core/validators";
+import { loginSchema, registerSchema, type LoginInput } from "@plantai/core/validators";
 import { apiCall } from "@plantai/ui/backend/api/apiCall";
 import { useMutation } from "@plantai/ui/backend/api/useMutation";
 import { CrudForm, type FieldConfig } from "@plantai/ui/backend/forms/CrudForm";
 
+import { PASSWORD_RULE_DESCRIPTION } from "@/lib/password-rule";
 import { ROUTES } from "@/lib/routes";
 
 export type CredentialsMode = "login" | "register";
@@ -15,8 +16,6 @@ const MODES = {
   login: { endpoint: "/api/auth/login", submitLabel: "Log in", passwordAutoComplete: "current-password" },
   register: { endpoint: "/api/auth/register", submitLabel: "Create account", passwordAutoComplete: "new-password" },
 } as const;
-
-export const PASSWORD_RULE_DESCRIPTION = `At least ${MIN_PASSWORD_LENGTH} characters.`;
 
 /** Login and register share one form: e-mail + password, then into the app. */
 export function CredentialsForm({ mode }: { mode: CredentialsMode }) {

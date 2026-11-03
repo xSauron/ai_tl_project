@@ -27,6 +27,7 @@ export {
   type Actor,
 } from "./http/auth.ts";
 export { credentialsRateLimit } from "./http/credentials-rate-limit.ts";
+export { AUTH_RATE_LIMIT } from "./http/rate-limit.ts";
 export {
   makeCrudRoute,
   type CrudListOptions,

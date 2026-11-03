@@ -3,6 +3,7 @@ export const ROUTES = {
   login: "/login",
   register: "/register",
   gardens: "/gardens",
+  settings: "/settings",
   /** Where a successful sign-in lands (spec A: "Moje ogrody"). */
   afterSignIn: "/gardens",
 } as const;

@@ -9,6 +9,7 @@ describe("@plantai/core/validators barrel", () => {
         "uuidSchema",
         "registerSchema",
         "loginSchema",
+        "passwordChangeSchema",
         "gardenCreateSchema",
         "gardenUpdateSchema",
         "idParamsSchema",

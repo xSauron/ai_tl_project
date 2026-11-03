@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Sprout } from "lucide-react";
+import { LogOut, Settings, Sprout } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -12,7 +12,10 @@ import { AppShell } from "@plantai/ui/backend/layout/AppShell";
 
 import { ROUTES } from "@/lib/routes";
 
-const NAV = [{ href: ROUTES.gardens, label: "Gardens", icon: <Sprout /> }] as const;
+const NAV = [
+  { href: ROUTES.gardens, label: "Gardens", icon: <Sprout /> },
+  { href: ROUTES.settings, label: "Settings", icon: <Settings /> },
+] as const;
 
 /** `AppShell` with the current page marked active and a log-out button. */
 export function AppFrame({ children }: { children: ReactNode }) {

@@ -76,6 +76,22 @@ describe("Auth API against PostgreSQL", () => {
     expect(Number(limited.response.headers.get("retry-after"))).toBeGreaterThan(0);
   });
 
+  it("changes the password: the old one stops working, the new one logs in", async () => {
+    const email = uniqueEmail();
+    const registered = await call("/api/auth/register", { body: { email, password: PASSWORD } });
+    const cookie = sessionCookie(registered.response);
+    const newPassword = "integration-pass-2";
+
+    const wrong = await call("/api/auth/password", { body: { currentPassword: "not-it", newPassword }, cookie });
+    expect(wrong.response.status).toBe(422);
+
+    const changed = await call("/api/auth/password", { body: { currentPassword: PASSWORD, newPassword }, cookie });
+    expect(changed.response.status).toBe(200);
+
+    expect((await call("/api/auth/login", { body: { email, password: PASSWORD } })).response.status).toBe(401);
+    expect((await call("/api/auth/login", { body: { email, password: newPassword } })).response.status).toBe(200);
+  });
+
   it("rejects a state-changing request without the CSRF header", async () => {
     const response = await fetch(new URL("/api/auth/login", inject("baseUrl")), {
       method: "POST",
@@ -98,5 +114,21 @@ describe("Auth pages", () => {
     await browser().clickRole("link", "Create one");
     await browser().waitForPath("/register");
     expect(await browser().headingText("Create account")).toBe("Create account");
+  });
+
+  // Last: it leaves the session signed in, which would redirect /login above.
+  it("shows the signed-in user's e-mail on the settings page", async () => {
+    const email = uniqueEmail();
+    await browser().open("/register");
+    await browser().fillLabel("E-mail", email);
+    await browser().fillLabel("Password", PASSWORD);
+    await browser().clickRole("button", "Create account");
+    await browser().waitForPath("/gardens");
+
+    await browser().clickRole("link", "Settings");
+    await browser().waitForPath("/settings");
+
+    expect(await browser().headingText("Settings")).toBe("Settings");
+    expect(await browser().text("main")).toContain(email);
   });
 });

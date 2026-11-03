@@ -6,7 +6,7 @@
 - **Rules:** one commit per task; full gate (`typecheck`, `lint`, `test` 100 %, `build`, `npm audit --omit=dev`, `/api/health`) green after every task; stop for manual testing after every phase.
 - **Gate note:** D05 is superseded by D11 (brief Q10: moot), so Phases 0–3 are unblocked. Phase 4 unblocked by the 4.0 spec update (owner answers Q5–Q7, 2026-11-03).
 
-Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
+Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked · `[-]` deferred
 
 ## Phase 0 — Alignment
 
@@ -52,8 +52,8 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 4.1 `User` entity (+ `emailVerifiedAt`) + migration `add-users`; `password.ts` (SHA-256 pre-hash, bcrypt 12); `user.service.ts` (register, authenticate with a dummy compare); `UserDto`.
 - [x] 4.2 `http/auth.ts` (jose session cookie, `requireSession`), `http/rate-limit.ts` + `InMemoryRateLimiter`; `apiHandler` uses the real session, gains `rateLimit` rules and `ctx.headers`.
 - [x] 4.3 `/api/auth/{register,login,logout,me}`, `app/src/server/session.ts` DAL, `(auth)` layout + login/register pages; integration test. (Login lands on `/gardens`, which ships in 5.3.)
-- [ ] 4.4 E-mail confirmation: `EmailSender` port + `LocalOutboxEmailSender`/`InMemoryEmailSender`, `APP_BASE_URL`/`EMAIL_OUTBOX_DIR`, `AccountToken` + migration `add-account-tokens`, `account-token.service.ts`, `/api/auth/verify-email{,/resend}`, `/verify-email` page; `AGENTS.md` ports list. (Needs P1, P2.)
-- [ ] 4.5 Password reset (first to cut, D17): `/api/auth/password-reset/{request,confirm}`, `/forgot-password`, `/reset-password`.
+- [-] 4.4 *Deferred by the owner 2026-11-03 (spec A Q8: no e-mail service yet).* E-mail confirmation: `EmailSender` port + `LocalOutboxEmailSender`/`InMemoryEmailSender`, `APP_BASE_URL`/`EMAIL_OUTBOX_DIR`, `AccountToken` + migration `add-account-tokens`, `account-token.service.ts`, `/api/auth/verify-email{,/resend}`, `/verify-email` page; `AGENTS.md` ports list. (Needs P1, P2.)
+- [-] 4.5 *Deferred by the owner 2026-11-03 (spec A Q8).* Password reset (first to cut, D17): `/api/auth/password-reset/{request,confirm}`, `/forgot-password`, `/reset-password`.
 
 **Manual test after Phase 4:** register, log in and out on `/login`/`/register`; confirm the address from the link in `.local/outbox/`; reset the password the same way.
 
@@ -62,4 +62,4 @@ Legend: `[x]` done · `[ ]` pending · `[~]` in progress · `[!]` blocked
 - [x] 5.1 Migration `add-garden-owner` + `ownedBy.garden` in `db/src/ownership.ts`; `GardenService` as `CrudService(actor)` with `MAX_GARDENS_PER_USER` under user row lock. `/admin/gardens` + `createGardenAction` removed here (not in 5.3): they can't compile against an actor-scoped service.
 - [x] 5.2 `api/gardens` + `api/gardens/[id]` via `makeCrudRoute`; `validators/gardens/garden-{create,update}.schema.ts`.
 - [x] 5.3 `(app)` layout with `AppShell` (the e-mail confirmation reminder lands with 4.4), `(app)/gardens` page; integration tests; `BACKWARD_COMPATIBILITY.md`, `AGENTS.md` table.
-- [ ] 5.4 Account settings (first to cut, D17): `(app)/settings` + `POST /api/auth/password`. (Needs P4.)
+- [x] 5.4 Account settings (first to cut, D17): `(app)/settings` + `POST /api/auth/password`. (P4 confirmed by the owner 2026-11-03.)

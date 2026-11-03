@@ -38,6 +38,7 @@ describe("AppFrame", () => {
     render(<AppFrame>x</AppFrame>);
 
     expect(within(screen.getByRole("navigation")).getByRole("link", { name: "Gardens" }).hasAttribute("aria-current")).toBe(false);
+    expect(within(screen.getByRole("navigation")).getByRole("link", { name: "Settings" }).getAttribute("aria-current")).toBe("page");
   });
 
   it("logs out through the API and returns to the login page", async () => {
