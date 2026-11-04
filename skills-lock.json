@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "eliminate-no-op": {
+      "source": "pat-lewczuk/skills",
+      "sourceType": "github",
+      "skillPath": "skills/eliminate-no-op/SKILL.md",
+      "computedHash": "80de98ef960b1eb0775871463ade2fac1f9eb83c54964eb53a43fb0b6c344bf6"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
