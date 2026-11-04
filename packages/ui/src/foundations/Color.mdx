@@ -26,13 +26,12 @@ The calendar-phase colors below are decided (R02.2, "przyjęte") and are the fir
 
 ### Brand green
 
-Decided by the owner on 2026-11-03: the sign-in pages should feel alive and plant-related, "not plain black/white". The brand tokens reuse the plant-out green hue, so the product keeps one green. `brand-surface` is a page tint only: muted text directly on it fails contrast (4.22 : 1), so text there sits on a card.
+Decided by the owner on 2026-11-03: the sign-in pages should feel alive and plant-related, "not plain black/white". The brand tokens reuse the plant-out green hue, so the product keeps one green. On the sign-in pages the brand green is the whole page, drawn as a square-foot bed behind the form card.
 
 <Unstyled>
-  <Swatch token="--brand" label="Brand: panel / primary action surface" origin="owner, 2026-11-03" />
+  <Swatch token="--brand" label="Brand: page / primary action surface" origin="owner, 2026-11-03" />
   <Swatch token="--brand-foreground" label="Brand: text and icons on brand" origin="owner, 2026-11-03" />
   <Swatch token="--brand-muted-foreground" label="Brand: secondary text on brand" origin="owner, 2026-11-03" />
-  <Swatch token="--brand-surface" label="Brand: page tint (no text directly on it)" origin="owner, 2026-11-03" />
 </Unstyled>
 
 **Opt-in accent:** inside an element with the `accent-brand` class, `primary` and `ring` become brand green, so `Button` and focus rings turn green there without a new variant. Only the `(auth)` layout uses it today; making it app-wide is the open neutral-palette decision above.

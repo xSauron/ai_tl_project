@@ -62,18 +62,11 @@
    * plant-related, "not plain black/white"). Same green hue as the
    * plant-out phase, reused so the product keeps one green.
    * Contrast (light): brand-foreground on brand 7.00 : 1, brand-muted-
-   * foreground on brand 5.60 : 1. `brand-surface` is a page tint only:
-   * muted text on it measures 4.22 : 1 (fails), so text there sits on a card.
+   * foreground on brand 5.60 : 1.
    */
   --brand: var(--raw-green-900);
   --brand-foreground: var(--raw-green-50);
   --brand-muted-foreground: var(--raw-green-300);
-  --brand-surface: var(--raw-green-50);
-}
-
-.dark {
-  /* The deep panel stays; the page tint goes deep instead of pale. */
-  --brand-surface: var(--raw-green-950);
 }
 
 /*

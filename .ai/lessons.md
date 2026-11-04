@@ -203,3 +203,8 @@ Long-term memory for AI agents working in this repository. Read this file before
 - **Context:** `shadcn add` (v4) wrote `cn` imports from the `cn` npm package and installed it.
 - **Lesson:** `cn` is shadcn's official replacement for `clsx` + `tailwind-merge`, not a typo-squat.
 - **Action:** Keep `cn`; `@plantai/ui/lib/utils` re-exports it.
+
+### 2026-11-04 — Next 16.4.0 `next build` stops once with a security nudge
+- **Context:** The gate's `npm run build` failed with `SecurityFatalError: Your version of Next.js is affected by a known security vulnerability`; the same build passed the day before.
+- **Lesson:** It's an upgrade nudge for the known `next` advisory, not a build failure caused by the change. Retrying the same command builds normally.
+- **Action:** Retry the build once, report the upgrade recommendation to the owner, and don't run `next upgrade` without their approval (it swaps a stack version).
