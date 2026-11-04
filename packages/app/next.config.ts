@@ -14,7 +14,7 @@ for (const file of [".env.local", ".env"]) {
 
 const nextConfig: NextConfig = {
   // MikroORM drivers and pg must run as native Node modules, not be bundled.
-  // (@plant-ai/core itself is a workspace package and is always bundled.)
+  // (@plantai/core and @plantai/db are workspace packages and are always bundled.)
   serverExternalPackages: [
     "@mikro-orm/core",
     "@mikro-orm/sql",

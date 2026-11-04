@@ -3,7 +3,8 @@
  * README.md's Quick start section and skips any that are already done.
  * CLI entry point: `scripts/setup-cli.mjs`.
  */
-import { existsSync, statSync, copyFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -25,6 +26,10 @@ export const DB_HEALTHCHECK_TIMEOUT_MS = 60_000;
 export const DB_HEALTHCHECK_POLL_INTERVAL_MS = 2_000;
 export const DB_CONNECT_TIMEOUT_MS = 2_000;
 export const DATABASE_URL_VAR = "DATABASE_URL";
+export const JWT_SECRET_VAR = "JWT_SECRET";
+// Above the app's 32-byte minimum (`MIN_JWT_SECRET_BYTES` in core's env.ts).
+export const GENERATED_JWT_SECRET_BYTES = 48;
+const JWT_SECRET_LINE = new RegExp(`^${JWT_SECRET_VAR}=.*$`, "m");
 
 // `npm`/`docker` resolve to `.cmd` shims on Windows, which spawnSync only finds through a shell.
 const USE_SHELL_ON_WINDOWS = process.platform === "win32";
@@ -36,7 +41,9 @@ const USE_SHELL_ON_WINDOWS = process.platform === "win32";
 export const defaultIo = {
   fileExists: existsSync,
   fileMtimeMs: (filePath) => statSync(filePath).mtimeMs,
-  copyFile: copyFileSync,
+  readFile: (filePath) => readFileSync(filePath, "utf8"),
+  writeFile: (filePath, contents) => writeFileSync(filePath, contents),
+  randomSecret: () => randomBytes(GENERATED_JWT_SECRET_BYTES).toString("base64"),
   loadEnvFile: (filePath) => process.loadEnvFile(filePath),
   getEnv: (name) => process.env[name],
   runCommand(command, args, options = {}) {
@@ -104,8 +111,9 @@ export function createEnvFile(io) {
     logSkip(io, ".env");
     return;
   }
-  io.copyFile(ENV_EXAMPLE_FILE, ENV_FILE);
-  io.log("  Created .env from .env.example.");
+  const example = io.readFile(ENV_EXAMPLE_FILE);
+  io.writeFile(ENV_FILE, example.replace(JWT_SECRET_LINE, () => `${JWT_SECRET_VAR}=${io.randomSecret()}`));
+  io.log(`  Created .env from .env.example with a random ${JWT_SECRET_VAR}.`);
 }
 
 function getDbContainerId(io) {

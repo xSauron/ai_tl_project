@@ -51,9 +51,10 @@ npm run dev                     # http://localhost:3000
 ```
 .
 ├── packages/
-│   ├── app/    @plant-ai/app   Next.js application — integration layer / composition root
-│   ├── core/   @plant-ai/core  Domain & persistence — entities, migrations, services, DI container
-│   └── ui/     @plant-ai/ui    shadcn/ui component library + admin theme
+│   ├── app/    @plantai/app   Next.js application — integration layer / composition root
+│   ├── core/   @plantai/core  Business rules — services, DI container
+│   ├── db/     @plantai/db    Persistence — entities, migrations, ORM config (the only `@mikro-orm/*` importer)
+│   └── ui/     @plantai/ui    shadcn/ui component library + admin theme
 ├── docker-compose.yml          Local PostgreSQL
 ├── tsconfig.base.json          Shared compiler options
 └── .env.example                Environment variables (copy to .env)
@@ -61,18 +62,21 @@ npm run dev                     # http://localhost:3000
 
 ```mermaid
 graph LR
-  app["@plant-ai/app<br/>Next.js routes, layouts,<br/>Server Actions, Route Handlers"]
-  core["@plant-ai/core<br/>entities · services · Awilix · MikroORM"]
-  ui["@plant-ai/ui<br/>shadcn/ui components"]
-  db[(PostgreSQL)]
+  app["@plantai/app<br/>Next.js routes, layouts,<br/>Server Actions, Route Handlers"]
+  core["@plantai/core<br/>services · Awilix"]
+  dbpkg["@plantai/db<br/>entities · migrations · MikroORM"]
+  ui["@plantai/ui<br/>shadcn/ui components"]
+  pg[(PostgreSQL)]
   app --> core
   app --> ui
-  core --> db
+  core --> dbpkg
+  dbpkg --> pg
 ```
 
-- **`@plant-ai/app`**: the only package that knows about Next.js. It holds routing, layouts, Server Actions and Route Handlers, and stays thin: validate input, resolve a service, render.
-- **`@plant-ai/core`**: server-only business logic and persistence. It has no Next.js or React dependencies.
-- **`@plant-ai/ui`**: presentational shadcn/ui components used by the admin pages.
+- **`@plantai/app`**: the only package that knows about Next.js. It holds routing, layouts, Server Actions and Route Handlers, and stays thin: validate input, resolve a service, render.
+- **`@plantai/core`**: server-only business logic. It has no Next.js or React dependencies and reaches the database only through `@plantai/db`.
+- **`@plantai/db`**: persistence — entities, migrations, ORM config and `getOrm()`. It re-exports the MikroORM types other packages need.
+- **`@plantai/ui`**: presentational shadcn/ui components used by the admin pages.
 
 Internal packages are consumed as TypeScript source (no build step). Next.js transpiles them.
 
@@ -83,7 +87,7 @@ Internal packages are consumed as TypeScript source (no build step). Next.js tra
 | Route group | URL | Styling |
 | --- | --- | --- |
 | `(frontend)/` | `/`, … | Tailwind CSS with Plant.AI `@theme` tokens (`frontend.css`) |
-| `(admin)/admin/` | `/admin/…` | Tailwind + shadcn/ui theme from `@plant-ai/ui/styles.css` (`admin.css`) |
+| `(admin)/admin/` | `/admin/…` | Tailwind + shadcn/ui theme from `@plantai/ui/styles.css` (`admin.css`) |
 
 Because these are separate root layouts, moving between the public site and the admin is a full page load. That keeps the two design systems fully isolated.
 
@@ -91,8 +95,8 @@ Because these are separate root layouts, moving between the public site and the 
 
 ```
 Request ─► Server Component / Server Action / Route Handler
-             └─ withRequestScope(({ gardenService }) => …)        packages/app/src/server/request-scope.ts
-                  └─ Awilix scope: em = orm.em.fork()              packages/core/src/di/container.ts
+             └─ withScope(({ gardenService }) => …)               packages/core/src/container/scope.ts
+                  └─ Awilix scope: em = orm.em.fork()              packages/core/src/container/container.ts (cradle types: cradle.ts; ORM from packages/db/src/orm.ts)
                        └─ GardenService({ em }) → MikroORM → PostgreSQL
 ```
 
@@ -102,9 +106,9 @@ Request ─► Server Component / Server Action / Route Handler
 
 ### Persistence
 
-- Entities are defined with `defineEntity` (no decorators) in `packages/core/src/entities` and registered in `entities/index.ts`.
+- Entities are defined with `defineEntity` (no decorators) in `packages/db/src/entities/<concept>/` and registered explicitly in `entities/index.ts`.
 - Connection pooling is configured by `DB_POOL_MIN` / `DB_POOL_MAX`.
-- Migrations live in `packages/core/src/migrations` and are generated from entity changes:
+- Migrations live in `packages/db/src/migrations` and are generated from entity changes:
 
   ```bash
   npm run db:migrate:create -- --name add-beds   # diff entities → new migration
@@ -119,6 +123,11 @@ Request ─► Server Component / Server Action / Route Handler
 | `DATABASE_URL` | — (required at runtime) | PostgreSQL connection string |
 | `DB_POOL_MIN` / `DB_POOL_MAX` | `0` / `10` | Connection pool size |
 | `DB_DEBUG` | `false` | Log SQL queries |
+| `JWT_SECRET` | — (required at request time, ≥ 32 bytes) | Session signing secret; `npm run setup` generates one (or `openssl rand -base64 48`) |
+| `LOG_LEVEL` | `info` | pino level: `fatal`, `error`, `warn`, `info`, `debug`, `trace`, `silent` |
+| `TRUSTED_PROXY_IP_HEADER` | unset | Header the proxy overwrites with the client IP; when set, login/register rate limits also key by IP |
+
+All variables are Zod-validated on first use, not at import, so `npm run build` needs none of them: `packages/db/src/env.ts` (DB vars) and `packages/core/src/config/env.ts` (the rest). Errors name the variable, never its value.
 
 `.env.local` and `.env` are read from the **repo root**, both by `next.config.ts` and by the MikroORM CLI config. Variables already set in the environment take precedence.
 
@@ -130,9 +139,9 @@ Request ─► Server Component / Server Action / Route Handler
 | `npm run dev` | Start the Next.js dev server |
 | `npm run build` / `npm start` | Production build / start |
 | `npm run typecheck` | Type-check all packages |
-| `npm run lint` | Lint |
+| `npm run lint` | Lint every package plus `tests/`, `scripts/`, `tools/` (one root `eslint.config.mjs`, with the `app → core → db` layer import rules) |
 | `npm run db:migrate` · `db:migrate:create` · `db:migrate:down` | Database migrations |
-| `npm run ui:add -- <component>` | Add a shadcn/ui component to `@plant-ai/ui` |
+| `npm run ui:add -- <component>` | Add a shadcn/ui component to `@plantai/ui` |
 
 ## AI-assisted development
 

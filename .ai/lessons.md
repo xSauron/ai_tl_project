@@ -21,6 +21,41 @@ Long-term memory for AI agents working in this repository. Read this file before
 
 ## Entries
 
+### 2026-11-03 — Browser tests on Radix sheets: wait for the slide-in and for the sheet to close
+- **Context:** app-primitives 5.3, `tests/integration/gardens.test.ts` against `next start`. The create step failed every run even though the same steps worked by hand.
+- **Lesson:** agent-browser clicked "Create garden" while the sheet was still animating in, so the click missed the moving button. After "Save", `wait --text` matched the new name already typed in the input, before the request finished. A fixed sleep hid both problems.
+- **Action:** after opening a dialog, call `Browser.waitForAnimations()`. After a submit that closes it, call `waitForNoDialog()` before checking the page. Don't add sleeps.
+
+### 2026-11-03 — Tailwind in the app only sees ui classes from folders listed with `@source`
+- **Context:** app-primitives 4.3. `CrudForm` looked right in Storybook but had no field spacing and wrong text sizes on the real `/register` page.
+- **Lesson:** the app imports `@plantai/ui/styles.css` through `node_modules`, which Tailwind v4 never scans automatically. Only `@source "../components"` was listed, so every class used only under `ui/src/backend` was never generated. Storybook scans the ui package itself, so it hid the problem, and so did unit tests and a11y tests.
+- **Action:** when ui gets a new folder of shipped components, add an `@source` line (`ui/src/styles/globals.test.ts` now enforces it). Check a new ui component once on a real app page, not only in Storybook.
+
+### 2026-11-03 — Radix popups in jsdom: outside content goes aria-hidden, and React bubbles portal keys
+- **Context:** app-primitives 3.4 (`CrudForm` with a Radix `Select`). Tests that found the form via `getByRole("button", …)` failed as soon as the Select was open, and an `Escape` pressed inside the open list reached the form's `onKeyDown` and would have cancelled the whole form.
+- **Lesson:** an open Radix Select/Dialog runs `hideOthers`, so everything outside it drops out of role queries. React synthetic events bubble along the React tree, through portals, even though the portal's DOM sits outside the form.
+- **Action:** in tests, reach containers outside an open popup by `data-slot`, not by role. In form-level key handlers, ignore events whose DOM target the form doesn't `contains`. Also: the first `next build` on `next` 16.4.0 stops with a `SecurityFatalError` upgrade nudge for the known advisory; the retry builds normally (the advisory is pre-existing, not something to fix inside a feature task).
+
+### 2026-11-03 — Don't hide a run in a /tmp worktree when the owner tests in the editor and the :3000 preview
+- **Context:** implementing spec A, the agent created a worktree in `/tmp/opencode/` to keep the owner's uncommitted `/workspace` changes untouched. The owner's editor and the sandbox preview (`workspace-agent-cli exec --process preview` → `next dev` on :3000) both serve `/workspace`, so they saw none of the work and had to test on another port.
+- **Lesson:** a worktree outside `/workspace` is invisible to the owner's tools. The preview supervisor restarts `next dev` on :3000 by itself when it is killed.
+- **Action:** when the owner will test manually, work in `/workspace`: stash their WIP (named stash) and switch branches, after asking. Don't start your own server on :3000; the supervisor does it.
+
+### 2026-11-03 — `no-restricted-imports` gitignore groups match relative paths too
+- **Context:** app-primitives 1.4 banned Node built-ins in `core/src/validators/**` with `group: ["http", "http/*", …]`; it also fired on `../../http/errors.ts`, double-reporting core's own `http/` folder.
+- **Lesson:** `patterns[].group` uses gitignore semantics, so an unanchored `http/*` matches any path segment. Also, two flat-config blocks setting the same rule for overlapping files don't merge: the later one replaces the options.
+- **Action:** use an anchored `regex` for bare package names that collide with folder names, and repeat the parent layer's patterns in a narrower block (`CORE_LAYER` in `eslint.config.mjs`). Cover both in `eslint.config.test.mjs`.
+
+### 2026-11-03 — eslint-config-next applies React/Next rules to every file
+- **Context:** app-primitives 0.5 moved the ESLint config to the repo root to lint every package; `react-hooks/rules-of-hooks` then flagged the vitest helper `useBrowser()` in `tests/integration` as a hook call.
+- **Lesson:** `eslint-config-next` registers its plugins for `**/*.{js,…,tsx}` with no package scoping, so in a monorepo root config its rules hit non-React/non-Next code too.
+- **Action:** The root `eslint.config.mjs` switches `@next/next/*` off outside `packages/app` and `react-hooks/*` off outside `app`/`ui`. Add new layer/import rules there and a case to `eslint.config.test.mjs`; don't rename helpers to dodge a misapplied rule.
+
+### 2026-11-03 — Moving persistence to `packages/db` drags the DB env reader with it
+- **Context:** app-primitives 0.3 moved the ORM config from `core` to `db`. `createOrmConfig` reads `DATABASE_URL`/`DB_POOL_*` through `core/src/config/env.ts`, but `db` may not import `core` (`app → core → db`), and the MikroORM CLI runs from `packages/db` alone.
+- **Lesson:** the "env only through `core/src/config/env.ts`" rule can't hold for DB connection vars. They now live in `db/src/env.ts`. Migrations keep their applied state across a folder move because MikroORM tracks them by class name in `mikro_orm_migrations`, not by path.
+- **Action:** when task 1.1 moves env to Zod, give `db/src/env.ts` the same treatment instead of pulling it back into `core`. When moving migrations, `git mv` only (R100) and confirm with `mikro-orm migration:list`.
+
 ### 2026-11-02 — om-discover refresh: wrote the brief before step-7 confirmation; decisions from a working doc must reach the brief
 - **Context:** `om-discover --refresh` after the account prototype and its synthetic walkthrough. The owner's account decisions (L13, L19–L22) lived only in the screen map, not in the brief. The agent edited `product-brief.md` in place while drafting, before the owner confirmed it; the skeptic then found that "foundation work" was no longer ready, because spec A's auth steps contradict D16.
 - **Lesson:** Draft in a scratch copy, not in the brief: the brief may be written only after step 7. Owner decisions recorded in prototype maps or specs (e.g. `WŁ:` rows) are brief-level decisions and must get D-rows on the next refresh. A new scope decision can invalidate a readiness claim for already-specified foundations.
@@ -167,4 +202,9 @@ Long-term memory for AI agents working in this repository. Read this file before
 ### 2026-10-13 — shadcn CLI emits `import { cn } from "cn"`
 - **Context:** `shadcn add` (v4) wrote `cn` imports from the `cn` npm package and installed it.
 - **Lesson:** `cn` is shadcn's official replacement for `clsx` + `tailwind-merge`, not a typo-squat.
-- **Action:** Keep `cn`; `@plant-ai/ui/lib/utils` re-exports it.
+- **Action:** Keep `cn`; `@plantai/ui/lib/utils` re-exports it.
+
+### 2026-11-04 — Next 16.4.0 `next build` stops once with a security nudge
+- **Context:** The gate's `npm run build` failed with `SecurityFatalError: Your version of Next.js is affected by a known security vulnerability`; the same build passed the day before.
+- **Lesson:** It's an upgrade nudge for the known `next` advisory, not a build failure caused by the change. Retrying the same command builds normally.
+- **Action:** Retry the build once, report the upgrade recommendation to the owner, and don't run `next upgrade` without their approval (it swaps a stack version).

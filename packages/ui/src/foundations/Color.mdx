@@ -24,6 +24,18 @@ The calendar-phase colors below are decided (R02.2, "przyjęte") and are the fir
   <Swatch token="--phase-prune-foreground" label="Phase: prune — text, darkened from the mockup's original (see contrast below)" origin="R02.2" />
 </Unstyled>
 
+### Brand green
+
+Decided by the owner on 2026-11-03: the sign-in pages should feel alive and plant-related, "not plain black/white". The brand tokens reuse the plant-out green hue, so the product keeps one green. On the sign-in pages the brand green is the whole page, drawn as a square-foot bed behind the form card.
+
+<Unstyled>
+  <Swatch token="--brand" label="Brand: page / primary action surface" origin="owner, 2026-11-03" />
+  <Swatch token="--brand-foreground" label="Brand: text and icons on brand" origin="owner, 2026-11-03" />
+  <Swatch token="--brand-muted-foreground" label="Brand: secondary text on brand" origin="owner, 2026-11-03" />
+</Unstyled>
+
+**Opt-in accent:** inside an element with the `accent-brand` class, `primary` and `ring` become brand green, so `Button` and focus rings turn green there without a new variant, and the `AppShell` sidebar (bottom bar on phones) becomes a brand panel whose current item is a step darker (green 950). The `(auth)` and `(app)` layouts both opt in (owner, 2026-11-04: the gardens page is the example for the next panel pages); the neutral base stays the default outside the scope.
+
 R02.2 also names a fourth phase, "zbiór" (harvest). No token exists for it: the task-list spec's `GET /api/gardens/[id]/tasks` only derives `sow | plant-out | prune` windows — the catalogue has no harvest-timing column. Flagged in `packages/ui/POSTEP.md`, not silently dropped.
 
 ## Contrast — light theme
@@ -40,6 +52,10 @@ Re-measured live against the actual rendered colors (open this page and resize/t
       { label: "Phase sow: text on surface", foreground: "var(--phase-sow-foreground)", background: "var(--phase-sow)", origin: "R02.2" },
       { label: "Phase plant-out: text on surface", foreground: "var(--phase-plant-out-foreground)", background: "var(--phase-plant-out)", origin: "R02.2" },
       { label: "Phase prune: text on surface", foreground: "var(--phase-prune-foreground)", background: "var(--phase-prune)", origin: "R02.2 (fixed — see below)" },
+      { label: "Brand: text on brand", foreground: "var(--brand-foreground)", background: "var(--brand)", origin: "owner, 2026-11-03" },
+      { label: "Brand: secondary text on brand", foreground: "var(--brand-muted-foreground)", background: "var(--brand)", origin: "owner, 2026-11-03" },
+      { label: "Brand link on card", foreground: "var(--brand)", background: "var(--card)", origin: "owner, 2026-11-03 (accent-brand links)" },
+      { label: "Brand: current nav item", foreground: "var(--brand-foreground)", background: "var(--raw-green-950)", origin: "owner, 2026-11-04 (accent-brand sidebar)" },
     ]}
   />
 </Unstyled>

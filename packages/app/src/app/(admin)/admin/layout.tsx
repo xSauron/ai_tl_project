@@ -3,7 +3,7 @@ import { Geist } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { Separator } from "@plant-ai/ui/components/separator";
+import { Separator } from "@plantai/ui/components/ui/separator";
 
 import "./admin.css";
 
@@ -14,10 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const nav = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/gardens", label: "Gardens" },
-];
+const nav = [{ href: "/admin", label: "Dashboard" }];
 
 /** Root layout for backend (admin) pages — built with shadcn/ui components. */
 export default function AdminLayout({ children }: Readonly<{ children: ReactNode }>) {

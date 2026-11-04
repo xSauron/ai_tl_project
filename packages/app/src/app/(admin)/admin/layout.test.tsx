@@ -16,7 +16,7 @@ describe("AdminLayout", () => {
     expect(html).toMatch(/^<html lang="en" class="font-geist-test">/);
     expect(html).toContain("bg-background");
     expect(html).toMatch(/<a[^>]*href="\/admin"[^>]*>Dashboard<\/a>/);
-    expect(html).toMatch(/<a[^>]*href="\/admin\/gardens"[^>]*>Gardens<\/a>/);
+    expect(html).not.toContain("/admin/gardens");
     expect(html).toContain('data-slot="separator"');
     expect(html).toContain("<p>child</p>");
   });

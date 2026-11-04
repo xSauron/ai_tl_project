@@ -1,4 +1,4 @@
-import { checkDbConnection } from "@plant-ai/core";
+import { checkDbConnection } from "@plantai/core";
 
 /** Liveness + DB readiness probe. */
 export async function GET() {

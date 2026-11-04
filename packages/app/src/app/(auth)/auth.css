@@ -1,0 +1,46 @@
+/*
+ * Sign-in pages — Tailwind CSS + the shadcn/ui theme from @plantai/ui.
+ */
+@import "tailwindcss";
+@import "@plantai/ui/styles.css";
+
+/*
+ * The decorative square-foot bed behind the form. The lines are a tiled
+ * background and the planted cells sit on a grid of the same cell size, so
+ * both start at the top-left corner and stay aligned on every width.
+ */
+.auth-bed {
+  --bed-cell: --spacing(16);
+  --bed-line: color-mix(in oklab, var(--brand-foreground) 12%, transparent);
+
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--bed-cell));
+  grid-auto-rows: var(--bed-cell);
+  color: var(--brand-muted-foreground);
+  background-image:
+    linear-gradient(to right, var(--bed-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--bed-line) 1px, transparent 1px);
+  background-size: var(--bed-cell) var(--bed-cell);
+  /* The bed fades out toward the middle, where the form is. */
+  mask-image: radial-gradient(ellipse at center, transparent 15%, black 70%);
+
+  @variant md {
+    --bed-cell: --spacing(20);
+  }
+}
+
+.auth-bed-cell {
+  /* Phones have no free edge beside the form, so only the lines show. */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  margin: --spacing(2);
+  border-radius: var(--radius-lg);
+
+  @variant sm {
+    display: flex;
+  }
+}

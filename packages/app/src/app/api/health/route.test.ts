@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { checkDbConnection } = vi.hoisted(() => ({ checkDbConnection: vi.fn() }));
 
-vi.mock("@plant-ai/core", () => ({ checkDbConnection }));
+vi.mock("@plantai/core", () => ({ checkDbConnection }));
 
 const { GET } = await import("./route");
 

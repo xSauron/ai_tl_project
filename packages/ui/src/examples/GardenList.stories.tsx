@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Plus } from "lucide-react"
 
-import { Badge } from "../components/badge"
-import { Button } from "../components/button"
-import { Card, CardDescription, CardHeader, CardTitle } from "../components/card"
-import { Input } from "../components/input"
-import { Label } from "../components/label"
-import { Separator } from "../components/separator"
+import { Badge } from "../components/ui/badge"
+import { Button } from "../components/ui/button"
+import { Card, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
+import { Input } from "../components/ui/input"
+import { Label } from "../components/ui/label"
+import { Separator } from "../components/ui/separator"
 
 // Example screen: the signed-in "my gardens" list, built only from the base
 // components, to show how they compose. Not a product component.
