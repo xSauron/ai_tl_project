@@ -14,14 +14,15 @@ export const metadata: Metadata = {
 };
 
 /**
- * Root layout of the signed-in app. It holds no session check on purpose:
+ * Root layout of the signed-in app, with the brand-green accent (green
+ * sidebar and primary actions, `accent-brand`). It holds no session check on purpose:
  * layouts don't re-run on client navigation, so every page calls
  * `requireActor()` next to its data (Next 16 auth guide).
  */
 export default function AppLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className={geist.variable}>
-      <body className="min-h-svh bg-background font-sans text-foreground antialiased">
+      <body className="accent-brand min-h-svh bg-background font-sans text-foreground antialiased">
         <AppFrame>{children}</AppFrame>
       </body>
     </html>

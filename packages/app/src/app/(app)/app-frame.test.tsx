@@ -33,6 +33,13 @@ describe("AppFrame", () => {
     expect(screen.getByRole("main").textContent).toContain("page body");
   });
 
+  it("shows the brand with a decorative logo", () => {
+    render(<AppFrame>x</AppFrame>);
+
+    const brand = within(screen.getByRole("navigation")).getByText("Plant.AI");
+    expect(brand.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
+  });
+
   it("leaves the section inactive elsewhere", () => {
     pathname.current = "/settings";
     render(<AppFrame>x</AppFrame>);

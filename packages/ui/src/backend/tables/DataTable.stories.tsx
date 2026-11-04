@@ -13,7 +13,7 @@ const GARDENS: Garden[] = [
 ]
 
 const COLUMNS: DataTableColumn<Garden>[] = [
-  { key: "name", header: "Nazwa", cell: (row) => <span className="font-medium">{row.name}</span> },
+  { key: "name", header: "Nazwa", cell: (row) => <span className="font-medium">{row.name}</span>, isPrimary: true },
   { key: "description", header: "Opis", cell: (row) => row.description },
   { key: "createdAt", header: "Utworzono", cell: (row) => row.createdAt, hideOnMobile: true },
 ]
@@ -32,10 +32,10 @@ function GardenTable(props: { rows: Garden[]; isLoading?: boolean; hasError?: bo
       onRetry={() => undefined}
       rowActions={(row) => (
         <>
-          <Button variant="outline" aria-label={`Zmień nazwę: ${row.name}`}>
+          <Button variant="ghost" aria-label={`Zmień nazwę: ${row.name}`}>
             <Pencil aria-hidden />
           </Button>
-          <Button variant="outline" aria-label={`Usuń: ${row.name}`}>
+          <Button variant="ghost" aria-label={`Usuń: ${row.name}`}>
             <Trash2 aria-hidden />
           </Button>
         </>

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Plus } from "lucide-react"
+import { Plus, Sprout } from "lucide-react"
 
 import { Button } from "../../components/ui/button"
 import { EmptyState } from "./EmptyState"
@@ -17,6 +17,7 @@ function FeedbackStates() {
       />
       <EmptyState
         title="Nie masz jeszcze ogrodów"
+        icon={<Sprout />}
         description="Utwórz pierwszy, żeby zaplanować grządki."
         action={
           <Button>

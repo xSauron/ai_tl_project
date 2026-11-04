@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Sprout, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -30,9 +30,23 @@ const FIELDS: FieldConfig<"name" | "description">[] = [
   { name: "description", label: "Description", type: "textarea", emptyValue: "null" },
 ];
 
+/** The garden's name with its description underneath, so a long description never squeezes the other columns. */
+function GardenName({ garden }: { garden: GardenDto }) {
+  return (
+    <div className="flex items-center gap-between-groups">
+      <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <Sprout className="size-5" />
+      </span>
+      <div className="flex min-w-0 flex-col">
+        <span className="font-medium">{garden.name}</span>
+        {garden.description && <span className="text-label whitespace-normal text-muted-foreground">{garden.description}</span>}
+      </div>
+    </div>
+  );
+}
+
 const COLUMNS: DataTableColumn<GardenDto>[] = [
-  { key: "name", header: "Name", cell: (garden) => <span className="font-medium">{garden.name}</span> },
-  { key: "description", header: "Description", cell: (garden) => garden.description ?? "—" },
+  { key: "name", header: "Garden", cell: (garden) => <GardenName garden={garden} />, isPrimary: true },
   { key: "createdAt", header: "Created", cell: (garden) => garden.createdAt.slice(0, DATE_ONLY_LENGTH), hideOnMobile: true },
 ];
 
@@ -79,15 +93,20 @@ export function GardensPanel({ gardens }: { gardens: GardenDto[] }) {
         columns={COLUMNS}
         rows={gardens}
         getRowId={(garden) => garden.id}
-        empty={<EmptyState title="No gardens yet" description="Create your first one." action={newGardenButton} />}
+        empty={<EmptyState
+            icon={<Sprout />}
+            title="No gardens yet"
+            description="Create your first one, then lay out its beds."
+            action={newGardenButton}
+          />}
         rowActions={(garden) => (
           <>
-            <Button variant="outline" aria-label={`Rename ${garden.name}`} onClick={() => openSheet(garden)}>
+            <Button variant="ghost" aria-label={`Rename ${garden.name}`} onClick={() => openSheet(garden)}>
               <Pencil aria-hidden />
             </Button>
             <ConfirmDialog
               trigger={
-                <Button variant="outline" aria-label={`Delete ${garden.name}`}>
+                <Button variant="ghost" aria-label={`Delete ${garden.name}`}>
                   <Trash2 aria-hidden />
                 </Button>
               }

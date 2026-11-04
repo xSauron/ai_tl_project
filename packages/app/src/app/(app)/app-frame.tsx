@@ -34,7 +34,12 @@ export function AppFrame({ children }: { children: ReactNode }) {
     <AppShell
       navItems={navItems}
       linkComponent={Link}
-      brand="Plant.AI"
+      brand={
+        <span className="flex items-center gap-in-group">
+          <Sprout aria-hidden className="size-6" />
+          Plant.AI
+        </span>
+      }
       footer={
         <Button variant="outline" onClick={() => logout.run(undefined)} disabled={logout.isPending}>
           <LogOut aria-hidden />

@@ -73,6 +73,14 @@ describe("EmptyState", () => {
     const root = container.querySelector("[data-slot=empty-state]");
     expect(root?.textContent).toBe("No gardens yet");
     expect(root?.querySelectorAll("p")).toHaveLength(1);
+    expect(root?.querySelector("[aria-hidden]")).toBeNull();
+  });
+
+  it("renders a decorative icon above the title", () => {
+    const { container } = render(<EmptyState title="No gardens yet" icon={<svg data-testid="icon" />} />);
+
+    const icon = container.querySelector("[data-slot=empty-state] > span[aria-hidden=true]");
+    expect(icon?.querySelector("[data-testid=icon]")).toBeTruthy();
   });
 
   it("renders the description, action and class", () => {

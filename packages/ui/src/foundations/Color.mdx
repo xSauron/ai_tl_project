@@ -34,7 +34,7 @@ Decided by the owner on 2026-11-03: the sign-in pages should feel alive and plan
   <Swatch token="--brand-muted-foreground" label="Brand: secondary text on brand" origin="owner, 2026-11-03" />
 </Unstyled>
 
-**Opt-in accent:** inside an element with the `accent-brand` class, `primary` and `ring` become brand green, so `Button` and focus rings turn green there without a new variant. Only the `(auth)` layout uses it today; making it app-wide is the open neutral-palette decision above.
+**Opt-in accent:** inside an element with the `accent-brand` class, `primary` and `ring` become brand green, so `Button` and focus rings turn green there without a new variant, and the `AppShell` sidebar (bottom bar on phones) becomes a brand panel whose current item is a step darker (green 950). The `(auth)` and `(app)` layouts both opt in (owner, 2026-11-04: the gardens page is the example for the next panel pages); the neutral base stays the default outside the scope.
 
 R02.2 also names a fourth phase, "zbiór" (harvest). No token exists for it: the task-list spec's `GET /api/gardens/[id]/tasks` only derives `sow | plant-out | prune` windows — the catalogue has no harvest-timing column. Flagged in `packages/ui/POSTEP.md`, not silently dropped.
 
@@ -55,6 +55,7 @@ Re-measured live against the actual rendered colors (open this page and resize/t
       { label: "Brand: text on brand", foreground: "var(--brand-foreground)", background: "var(--brand)", origin: "owner, 2026-11-03" },
       { label: "Brand: secondary text on brand", foreground: "var(--brand-muted-foreground)", background: "var(--brand)", origin: "owner, 2026-11-03" },
       { label: "Brand link on card", foreground: "var(--brand)", background: "var(--card)", origin: "owner, 2026-11-03 (accent-brand links)" },
+      { label: "Brand: current nav item", foreground: "var(--brand-foreground)", background: "var(--raw-green-950)", origin: "owner, 2026-11-04 (accent-brand sidebar)" },
     ]}
   />
 </Unstyled>

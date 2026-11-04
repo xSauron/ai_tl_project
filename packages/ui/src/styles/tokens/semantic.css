@@ -71,13 +71,21 @@
 
 /*
  * Opt-in accent: inside `.accent-brand`, primary actions and focus rings are
- * brand green instead of the neutral default. Scoped on purpose: the
- * app-wide neutral palette is still an open decision (Foundations → Color).
+ * brand green instead of the neutral default, and the app shell's sidebar
+ * (bottom bar on phones) is a brand panel whose current item goes a step
+ * darker. The sign-in pages and the signed-in app opt in (owner, 2026-11-04);
+ * the neutral base stays the default for anything that doesn't.
  */
 .accent-brand {
   --primary: var(--brand);
   --primary-foreground: var(--brand-foreground);
   --ring: var(--brand);
+  --sidebar: var(--brand);
+  --sidebar-foreground: var(--brand-foreground);
+  --sidebar-accent: var(--raw-green-950);
+  --sidebar-accent-foreground: var(--brand-foreground);
+  --sidebar-border: var(--brand);
+  --sidebar-ring: var(--brand-foreground);
 }
 
 :root {

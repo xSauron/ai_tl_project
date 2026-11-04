@@ -15,6 +15,8 @@ export interface DataTableColumn<Row> {
   cell: (row: Row) => React.ReactNode
   /** Left out of the card layout below `md`, where space is short. */
   hideOnMobile?: boolean
+  /** The card's title below `md`: shown without its label, beside the row actions. */
+  isPrimary?: boolean
 }
 
 export interface DataTableProps<Row> {
@@ -57,15 +59,16 @@ export function DataTable<Row>({
   if (isLoading) return <LoadingMessage label={loadingLabel} />
   if (rows.length === 0) return <>{empty}</>
 
-  const mobileColumns = columns.filter((column) => !column.hideOnMobile)
+  const primaryColumn = columns.find((column) => column.isPrimary)
+  const mobileColumns = columns.filter((column) => !column.hideOnMobile && column !== primaryColumn)
 
   return (
     <div data-slot="data-table">
       {/* Both layouts stay in the DOM; `display: none` keeps the hidden one out of the accessibility tree. */}
-      <div className="hidden md:block">
+      <div className="hidden overflow-hidden rounded-xl border bg-card text-card-foreground shadow-xs md:block">
         <Table>
           <TableCaption className="sr-only">{caption}</TableCaption>
-          <TableHeader>
+          <TableHeader className="bg-muted/50">
             <TableRow>
               {columns.map((column) => (
                 <TableHead key={column.key} scope="col">
@@ -97,16 +100,27 @@ export function DataTable<Row>({
       </div>
       <ul aria-label={caption} data-slot="data-table-cards" className="flex flex-col gap-in-group md:hidden">
         {rows.map((row) => (
-          <li key={getRowId(row)} className="flex flex-col gap-in-group rounded-md border p-between-groups">
-            <dl className="grid grid-cols-[auto_1fr] gap-x-between-groups gap-y-1 text-body">
-              {mobileColumns.map((column) => (
-                <div key={column.key} className="contents">
-                  <dt className="text-metadata text-muted-foreground">{column.header}</dt>
-                  <dd className="min-w-0 break-words">{column.cell(row)}</dd>
-                </div>
-              ))}
-            </dl>
-            {rowActions && <div className="flex flex-wrap gap-in-group">{rowActions(row)}</div>}
+          <li
+            key={getRowId(row)}
+            className="flex flex-col gap-in-group rounded-xl border bg-card p-between-groups text-card-foreground shadow-xs"
+          >
+            {primaryColumn && (
+              <div className="flex items-start justify-between gap-in-group">
+                <div className="min-w-0 break-words">{primaryColumn.cell(row)}</div>
+                {rowActions && <div className="flex shrink-0 gap-in-group">{rowActions(row)}</div>}
+              </div>
+            )}
+            {mobileColumns.length > 0 && (
+              <dl className="grid grid-cols-[auto_1fr] gap-x-between-groups gap-y-1 text-body">
+                {mobileColumns.map((column) => (
+                  <div key={column.key} className="contents">
+                    <dt className="text-metadata text-muted-foreground">{column.header}</dt>
+                    <dd className="min-w-0 break-words">{column.cell(row)}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {rowActions && !primaryColumn && <div className="flex flex-wrap gap-in-group">{rowActions(row)}</div>}
           </li>
         ))}
       </ul>

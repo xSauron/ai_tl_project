@@ -18,6 +18,16 @@ describe("AppLayout", () => {
     expect(html).toContain('<div data-frame=""><p>child</p></div>');
   });
 
+  it("puts the whole app in the brand-green accent", () => {
+    const html = renderToStaticMarkup(
+      <AppLayout>
+        <p>child</p>
+      </AppLayout>,
+    );
+
+    expect(html).toMatch(/<body class="accent-brand /);
+  });
+
   it("keeps app pages out of search engines", () => {
     expect(metadata.title).toEqual({ default: "Plant.AI", template: "%s · Plant.AI" });
     expect(metadata.robots).toEqual({ index: false, follow: false });

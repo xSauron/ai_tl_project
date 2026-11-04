@@ -52,6 +52,30 @@ describe("DataTable", () => {
     expect(within(list).queryByText("Three beds")).toBeNull();
   });
 
+  it("titles each card with the primary column, actions beside it, and no empty label list", () => {
+    renderTable({
+      columns: [{ ...COLUMNS[0]!, isPrimary: true }, COLUMNS[1]!],
+      rowActions: (row) => <button type="button">Rename {row.name}</button>,
+    });
+
+    const card = within(cardList()).getAllByRole("listitem")[0] as HTMLElement;
+    expect(within(card).queryByText("Name")).toBeNull();
+    expect(card.querySelector("dl")).toBeNull();
+    const title = within(card).getByText("Back yard");
+    expect(title.parentElement?.querySelector("button")?.textContent).toBe("Rename Back yard");
+    expect(within(card).getAllByRole("button")).toHaveLength(1);
+    expect(within(desktopTable()).getAllByRole("columnheader")[0]?.textContent).toBe("Name");
+  });
+
+  it("keeps the other columns as labels under a primary title without actions", () => {
+    renderTable({ columns: [{ ...COLUMNS[0]!, isPrimary: true }, { ...COLUMNS[1]!, hideOnMobile: false }] });
+
+    const card = within(cardList()).getAllByRole("listitem")[0] as HTMLElement;
+    expect(within(card).getByText("Back yard").parentElement?.querySelector("button")).toBeNull();
+    expect(within(card).getByText("Description").tagName).toBe("DT");
+    expect(within(card).queryByRole("button")).toBeNull();
+  });
+
   it("renders row actions in both layouts under a hidden header", () => {
     const onRename = vi.fn();
     renderTable({

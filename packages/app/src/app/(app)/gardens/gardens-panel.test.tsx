@@ -43,14 +43,15 @@ describe("GardensPanel", () => {
     expect(screen.getAllByRole("button", { name: "New garden" })).toHaveLength(2);
   });
 
-  it("lists gardens with description, a dash for none, and the creation date", () => {
+  it("lists gardens with the description under the name, and the creation date", () => {
     render(<GardensPanel gardens={[GARDEN, BARE]} />);
 
     const rows = within(table()).getAllByRole("row").slice(1);
-    expect(rows.map((row) => within(row).getAllByRole("cell").slice(0, 3).map((cell) => cell.textContent))).toEqual([
-      ["Back yard", "Tomatoes", "2026-11-03"],
-      ["Allotment", "—", "2026-11-02"],
+    expect(rows.map((row) => within(row).getAllByRole("cell").slice(0, 2).map((cell) => cell.textContent))).toEqual([
+      ["Back yardTomatoes", "2026-11-03"],
+      ["Allotment", "2026-11-02"],
     ]);
+    expect(within(table()).getByText("Tomatoes").className).toContain("text-muted-foreground");
   });
 
   it("creates a garden in a sheet, then closes it and refreshes", async () => {
